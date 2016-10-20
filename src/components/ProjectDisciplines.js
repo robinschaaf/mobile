@@ -15,6 +15,7 @@ import {GLOBALS} from '../constants/globals'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 import Discipline from './Discipline'
 import OverlaySpinner from './OverlaySpinner'
+import { Actions } from 'react-native-router-flux'
 
 GoogleAnalytics.setTrackerId(GLOBALS.GOOGLE_ANALYTICS_TRACKING)
 GoogleAnalytics.trackEvent('view', 'Home')
@@ -37,9 +38,13 @@ class ProjectDisciplines extends React.Component {
     this.handleSignOut = this.handleSignOut.bind(this)
   }
 
-  //this will be moved to the side drawer once implemented
+  //these two will be moved to the side drawer once implemented
   handleSignOut() {
     this.props.signOut()
+  }
+
+  handleNotificationsClick() {
+    Actions.NotificationSettings()
   }
 
   render() {
@@ -73,6 +78,9 @@ class ProjectDisciplines extends React.Component {
           <Text style={styles.userName}>{ this.props.user.display_name }</Text>
           <TouchableOpacity onPress={this.handleSignOut} style={styles.signOut}>
             <Text style={styles.signOutText}>LOG OUT</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={this.handleNotificationsClick.bind(this)} style={styles.signOut}>
+            <Text style={styles.signOutText}>Notification Settings</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.innerContainer}>

@@ -1,14 +1,18 @@
-import { merge } from 'ramda'
+import { merge, lensPath, set } from 'ramda'
 
 export const InitialState = {
   user: {},
   isFetching: false,
   errorMessage: null,
-  isConnected: null
+  isConnected: null,
+  userPreferences: {}
 }
 
 export default function(state=InitialState, action) {
+
   switch (action.type) {
+    case 'SET_STATE':
+      return set(lensPath(action.stateKey.split('.')), action.value, state)
     case 'SET_USER':
       return merge(state, {
         user: action.user

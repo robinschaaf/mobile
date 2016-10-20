@@ -11,6 +11,7 @@ import ZooniverseApp from './zooniverseApp'
 import ProjectList from '../components/ProjectList'
 import ProjectDisciplines from '../components/ProjectDisciplines'
 import SignIn from '../components/SignIn'
+import NotificationSettings from '../components/NotificationSettings'
 
 const store = compose(applyMiddleware(thunkMiddleware))(createStore)(reducer)
 
@@ -33,6 +34,7 @@ export default class App extends Component {
             <Scene key="ZooniverseApp" component={ZooniverseApp} initial />
             <Scene key="ProjectDisciplines" component={ProjectDisciplines} />
             <Scene key="ProjectList" component={ProjectList} />
+            <Scene key="NotificationSettings" component={NotificationSettings} />
             <Scene key="SignIn" hideNavBar={true} component={SignIn} type="reset" />
           </Scene>
         </Router>
