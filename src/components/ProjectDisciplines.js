@@ -2,7 +2,6 @@ import React from 'react'
 import {
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   Text,
   View
 } from 'react-native'
@@ -85,13 +84,6 @@ const styles = EStyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold'
   },
-  signOut: {
-    backgroundColor: '$transparent',
-  },
-  signOutText: {
-    color: '$darkTextColor',
-    fontSize: 11,
-  },
   messageContainer: {
     padding: 15,
   },
@@ -104,8 +96,7 @@ const styles = EStyleSheet.create({
 ProjectDisciplines.propTypes = {
   user: React.PropTypes.object,
   isConnected: React.PropTypes.bool,
-  isFetching: React.PropTypes.bool,
-  signOut: React.PropTypes.func
+  isFetching: React.PropTypes.bool
 }
 
 export default connect(mapStateToProps)(ProjectDisciplines)
