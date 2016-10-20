@@ -27,6 +27,7 @@
 		2202F9D9A1D04E919F02ECA5 /* libRCTOrientation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C73F506380064039B0EF4F34 /* libRCTOrientation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		992180751D9B18E400F8BEDD /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 992180741D9B18E400F8BEDD /* FontAwesome.ttf */; };
+		998461001DC8EB8300AB1247 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 998460FA1DC8EB2F00AB1247 /* libRCTPushNotification.a */; };
 		999F9C831DB7B4FA002B6AF0 /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 999F9C781DB7B4FA002B6AF0 /* OpenSans-Bold.ttf */; };
 		999F9C841DB7B4FA002B6AF0 /* OpenSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 999F9C791DB7B4FA002B6AF0 /* OpenSans-BoldItalic.ttf */; };
 		999F9C851DB7B4FA002B6AF0 /* OpenSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 999F9C7A1DB7B4FA002B6AF0 /* OpenSans-ExtraBold.ttf */; };
@@ -122,6 +123,13 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		998460F91DC8EB2F00AB1247 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 998460EE1DC8EB2F00AB1247 /* RCTPushNotification.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTPushNotification;
+		};
 		99AC04501D7626D400E303A3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0078DB4906E643B2AE48F0C5 /* RCTOrientation.xcodeproj */;
@@ -165,6 +173,7 @@
 		7D809E115A6D18224A63B6FC /* libPods-ZooniverseMobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ZooniverseMobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		992180741D9B18E400F8BEDD /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
+		998460EE1DC8EB2F00AB1247 /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		999F9C781DB7B4FA002B6AF0 /* OpenSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Bold.ttf"; sourceTree = "<group>"; };
 		999F9C791DB7B4FA002B6AF0 /* OpenSans-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-BoldItalic.ttf"; sourceTree = "<group>"; };
 		999F9C7A1DB7B4FA002B6AF0 /* OpenSans-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-ExtraBold.ttf"; sourceTree = "<group>"; };
@@ -201,6 +210,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				99E051DA1D7F635700052983 /* libsqlite3.0.tbd in Frameworks */,
+				998461001DC8EB8300AB1247 /* libRCTPushNotification.a in Frameworks */,
 				99E051D81D7F634900052983 /* libz.tbd in Frameworks */,
 				99E051D61D7F633F00052983 /* SystemConfiguration.framework in Frameworks */,
 				99E051D41D7F633400052983 /* CoreData.framework in Frameworks */,
@@ -330,6 +340,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				998460EE1DC8EB2F00AB1247 /* RCTPushNotification.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
 				00C302B51ABCB90400DB3ED1 /* RCTGeolocation.xcodeproj */,
@@ -378,6 +389,14 @@
 			children = (
 				13B07F961A680F5B00A75B9A /* ZooniverseMobile.app */,
 				00E356EE1AD99517003FC87E /* ZooniverseMobileTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		998460EF1DC8EB2F00AB1247 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				998460FA1DC8EB2F00AB1247 /* libRCTPushNotification.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -489,6 +508,7 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = 888MXXMABP;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
@@ -540,6 +560,10 @@
 				{
 					ProductGroup = 99AC04481D7626D400E303A3 /* Products */;
 					ProjectRef = 0078DB4906E643B2AE48F0C5 /* RCTOrientation.xcodeproj */;
+				},
+				{
+					ProductGroup = 998460EF1DC8EB2F00AB1247 /* Products */;
+					ProjectRef = 998460EE1DC8EB2F00AB1247 /* RCTPushNotification.xcodeproj */;
 				},
 				{
 					ProductGroup = 139105B71AF99BAD00B5F7CC /* Products */;
@@ -639,6 +663,13 @@
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		998460FA1DC8EB2F00AB1247 /* libRCTPushNotification.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTPushNotification.a;
+			remoteRef = 998460F91DC8EB2F00AB1247 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		99AC04511D7626D400E303A3 /* libRCTOrientation.a */ = {
@@ -851,6 +882,7 @@
 				CODE_SIGN_ENTITLEMENTS = ZooniverseMobile/ZooniverseMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = 888MXXMABP;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/HockeySDK-iOS/HockeySDK.embeddedframework",
@@ -861,6 +893,7 @@
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../node_modules/react-native-orientation/iOS/RCTOrientation/**",
 					"$(SRCROOT)/../node_modules/react-native-google-analytics-bridge/ios/RCTGoogleAnalyticsBridge/**",
+					"$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS/**",
 				);
 				INFOPLIST_FILE = ZooniverseMobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -881,6 +914,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ZooniverseMobile/ZooniverseMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 888MXXMABP;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/HockeySDK-iOS/HockeySDK.embeddedframework",
@@ -891,6 +925,7 @@
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../node_modules/react-native-orientation/iOS/RCTOrientation/**",
 					"$(SRCROOT)/../node_modules/react-native-google-analytics-bridge/ios/RCTGoogleAnalyticsBridge/**",
+					"$(SRCROOT)/../node_modules/react-native/Libraries/PushNotificationIOS/**",
 				);
 				INFOPLIST_FILE = ZooniverseMobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -924,6 +959,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Robin Schaaf (LG274446VJ)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 888MXXMABP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -949,7 +985,7 @@
 				INSTALL_GROUP = "";
 				INSTALL_MODE_FLAG = "";
 				INSTALL_OWNER = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -976,6 +1012,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer: Robin Schaaf (LG274446VJ)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				DEVELOPMENT_TEAM = 888MXXMABP;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -995,7 +1032,7 @@
 				INSTALL_GROUP = "";
 				INSTALL_MODE_FLAG = "";
 				INSTALL_OWNER = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;

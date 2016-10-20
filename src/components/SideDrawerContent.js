@@ -28,6 +28,7 @@ class SideDrawerContent extends Component {
     super(props)
     this.close = this.close.bind(this)
     this.goHome = this.goHome.bind(this)
+    this.notificationSettings = this.notificationSettings.bind(this)
     this.signOut = this.signOut.bind(this)
   }
 
@@ -39,6 +40,11 @@ class SideDrawerContent extends Component {
   goHome(){
     this.close()
     Actions.ZooniverseApp()
+  }
+
+  notificationSettings(){
+    this.close()
+    Actions.NotificationSettings()
   }
 
   signOut(){
@@ -86,6 +92,12 @@ class SideDrawerContent extends Component {
           <StyledText
             textStyle={'largeLink'}
             text={'Publications'} />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={this.notificationSettings} style={styles.linkContainer}>
+          <StyledText
+            textStyle={'largeLink'}
+            text={'Notification Settings'} />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={this.signOut} style={styles.linkContainer}>
