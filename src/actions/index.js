@@ -1,20 +1,20 @@
+export const SET_STATE = 'SET_STATE'
 export const SET_USER = 'SET_USER'
 export const SET_ERROR = 'SET_ERROR'
 export const SET_IS_FETCHING = 'SET_IS_FETCHING'
 export const SET_IS_CONNECTED = 'SET_IS_CONNECTED'
 export const SET_PROJECT_LIST = 'SET_PROJECT_LIST'
 
-export const STORE_USER = 'STORE_USER'
-export const GET_USER_STORE = 'GET_USER_STORE'
-export const SIGN_IN = 'SIGN_IN'
-
 import auth from 'panoptes-client/lib/auth'
 import apiClient from 'panoptes-client/lib/api-client'
 import store from 'react-native-simple-store'
 import { NetInfo } from 'react-native'
-import { head } from 'ramda'
+import { head, forEach } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
+export function setState(stateKey, value) {
+  return { type: SET_STATE, stateKey, value }
+}
 
 export function setUser(user) {
   return { type: SET_USER, user }
@@ -37,7 +37,8 @@ export function setProjectList(projectList) {
 }
 
 export function storeUser(user) {
-  return () => {
+  return dispatch => {
+    dispatch(setUser(user))
     store.save('@zooniverse:user', {
       user
     })
@@ -75,7 +76,7 @@ export function signIn(login, password) {
                 user.avatar = {}
               })
               .then(() => {
-                dispatch(setUser(user))
+                user.apiClientHeaders = apiClient.headers
                 dispatch(storeUser(user))
                 dispatch(setIsFetching(false))
                 Actions.ZooniverseApp({type: ActionConst.RESET})
@@ -96,8 +97,7 @@ export function signIn(login, password) {
 export function signOut() {
   return dispatch => {
     store.delete('@zooniverse:user')
-    dispatch(setUser({}))
-    dispatch(setError(null))
+    dispatch(storeUser({}))
     Actions.SignIn()
   }
 }
@@ -115,6 +115,71 @@ export function fetchProjects(parms) {
       })
       .then(() => {
         dispatch(setIsFetching(false))
+      })
+  }
+}
+
+export function loadNotificationSettings() {
+  return (dispatch, getState) => {
+    dispatch(setIsFetching(true))
+    apiClient.headers = getState().user.apiClientHeaders
+
+    apiClient.type('users').get(getState().user.id)
+      .then((user) => {
+        user.get('project_preferences')
+          .then((projectPreferences) => {
+            forEach((preference) => {
+              preference.get('project')
+                .then((project) => {
+                  dispatch(setState(`userPreferences.${preference.id}`, {
+                      name: project.display_name,
+                      notify: preference.email_communication
+                    }
+                  ))
+                })
+              },
+              projectPreferences
+            )
+          })
+          .catch((error) => {
+            dispatch(setError(error.message))
+          })
+          .then(() => {
+            dispatch(setIsFetching(false))
+          })
+      })
+      .catch((error) => {
+        dispatch(setError(error.message))
+      })
+  }
+}
+
+export function updateProjectNotification(id, value) {
+  return (dispatch, getState) => {
+    apiClient.headers = getState().user.apiClientHeaders
+
+    apiClient.type('project_preferences').get(id)
+      .then((preference) => {
+        preference.update({email_communication: value}).save()
+        dispatch(setState(`userPreferences.${id}.notify`, value))
+      })
+      .catch((error) => {
+        dispatch(setError(error.message))
+      })
+  }
+}
+
+export function updateUser(attr, value) {
+  return (dispatch, getState) => {
+    apiClient.headers = getState().user.apiClientHeaders
+
+    apiClient.type('users').get(getState().user.id)
+      .then((user) => {
+        user.update({[attr]: value}).save()
+        dispatch(setState(`user.${attr}`, value))
+      })
+      .catch((error) => {
+        dispatch(setError(error.message))
       })
   }
 }
