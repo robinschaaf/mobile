@@ -5,7 +5,8 @@ export const InitialState = {
   isFetching: false,
   errorMessage: null,
   isConnected: null,
-  userPreferences: {}
+  userPreferences: {},
+  pushEnabled: false
 }
 
 export default function(state=InitialState, action) {

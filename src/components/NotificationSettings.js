@@ -1,5 +1,7 @@
 import React from 'react'
 import {
+  Platform,
+  PushNotificationIOS,
   ScrollView,
   StyleSheet,
   Switch,
@@ -12,7 +14,7 @@ import NavBar from './NavBar'
 import OverlaySpinner from './OverlaySpinner'
 import ProjectNotification from './ProjectNotification'
 import { connect } from 'react-redux'
-import { loadNotificationSettings, updateUser } from '../actions/index'
+import { loadNotificationSettings, updateUser, setState } from '../actions/index'
 import { addIndex, keys, map } from 'ramda'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 
@@ -23,7 +25,8 @@ const mapStateToProps = (state) => ({
   userPreferences: state.userPreferences,
   isConnected: state.isConnected,
   isFetching: state.isFetching,
-  errorMessage: state.errorMessage
+  errorMessage: state.errorMessage,
+  pushEnabled: state.pushEnabled
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -33,16 +36,31 @@ const mapDispatchToProps = (dispatch) => ({
   updateGlobalNotification(checked) {
     dispatch(updateUser('global_email_communication', checked))
   },
+  setState(key, value){
+    dispatch(setState(key, value))
+  }
 })
 
 class NotificationSettings extends React.Component {
-  componentDidMount() {
+  constructor(props) {
+    super(props)
     this.props.loadNotificationSettings()
+    this.checkPermissions()
   }
 
   static renderNavigationBar() {
-    return <NavBar title={"Notification Settings"} showBack={true} />;
+    return <NavBar title={'Notification Settings'} showBack={true} />;
   }
+
+
+  checkPermissions() {
+    if (Platform.OS === 'ios') {
+      PushNotificationIOS.checkPermissions((permissions) => {
+        this.props.setState('pushEnabled', (permissions.alert === 0) ? false : true)
+      })
+    }
+  }
+
 
   render() {
     const renderPreference = (id, idx) => {
@@ -66,7 +84,7 @@ class NotificationSettings extends React.Component {
     const preferencesScrollView =
       <ScrollView>
         <StyledText
-          text={"Zooniverse would like to occassionally send you updates about new projects or projects needing help."} />
+          text={'Zooniverse would like to occassionally send you updates about new projects or projects needing help.'} />
         <View style={styles.switchContainer}>
           <Switch
             value={this.props.user.global_email_communication}
@@ -86,11 +104,20 @@ class NotificationSettings extends React.Component {
           text={'You must have an internet connection to use Zooniverse Mobile'} />
       </View>
 
+    const noNotifications =
+      <View>
+        <StyledText
+          text={'Push notifications are not enabled on your device!  Please go to Settings > Notifications > Zooniverse to allow them.'} />
+      </View>
+
+    const pageView =
+      this.props.pushEnabled ? preferencesScrollView : noNotifications
+
     return (
       <View style={styles.container}>
         { this.props.isConnected ? null : noConnection }
         <StyledText textStyle={'errorMessage'} text={this.props.errorMessage} />
-        { this.props.isFetching ? <OverlaySpinner /> : preferencesScrollView }
+        { this.props.isFetching ? <OverlaySpinner /> : pageView }
       </View>
     );
   }
@@ -125,9 +152,11 @@ NotificationSettings.propTypes = {
   userPreferences: React.PropTypes.object,
   isFetching: React.PropTypes.bool,
   isConnected: React.PropTypes.bool,
+  pushEnabled: React.PropTypes.bool,
   errorMessage: React.PropTypes.string,
   loadNotificationSettings: React.PropTypes.func,
   updateGlobalNotification: React.PropTypes.func,
+  setState: React.PropTypes.func,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationSettings)
