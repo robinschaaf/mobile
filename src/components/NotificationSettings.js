@@ -14,7 +14,7 @@ import NavBar from './NavBar'
 import OverlaySpinner from './OverlaySpinner'
 import ProjectNotification from './ProjectNotification'
 import { connect } from 'react-redux'
-import { loadNotificationSettings, updateUser, setState } from '../actions/index'
+import { loadNotificationSettings, updateUser, setState, updateInterestSubscription } from '../actions/index'
 import { addIndex, keys, map } from 'ramda'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 
@@ -35,6 +35,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
   updateGlobalNotification(checked) {
     dispatch(updateUser('global_email_communication', checked))
+    dispatch(updateInterestSubscription('general', checked))
   },
   setState(key, value){
     dispatch(setState(key, value))

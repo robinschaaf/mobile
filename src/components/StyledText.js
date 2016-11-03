@@ -41,7 +41,7 @@ const styles = EStyleSheet.create({
   },
   largeLink: {
     color: '$darkTextColor',
-    fontSize: 20,
+    fontSize: 18,
   }
 });
 

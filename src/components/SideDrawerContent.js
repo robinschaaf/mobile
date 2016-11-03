@@ -133,7 +133,7 @@ class SideDrawerContent extends Component {
 const styles = EStyleSheet.create({
   container: {
     flex: 1,
-    padding: 25,
+    padding: 20,
     paddingTop: 80
   },
   closeIcon: {

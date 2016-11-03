@@ -8,7 +8,7 @@ export const SET_PROJECT_LIST = 'SET_PROJECT_LIST'
 import auth from 'panoptes-client/lib/auth'
 import apiClient from 'panoptes-client/lib/api-client'
 import store from 'react-native-simple-store'
-import { NetInfo } from 'react-native'
+import { NativeModules, NetInfo } from 'react-native'
 import { head, forEach } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
@@ -78,6 +78,7 @@ export function signIn(login, password) {
               .then(() => {
                 user.apiClientHeaders = apiClient.headers
                 dispatch(storeUser(user))
+                dispatch(loadNotificationSettings())
                 dispatch(setIsFetching(false))
                 Actions.ZooniverseApp({type: ActionConst.RESET})
               })
@@ -122,6 +123,7 @@ export function fetchProjects(parms) {
 export function loadNotificationSettings() {
   return (dispatch, getState) => {
     dispatch(setIsFetching(true))
+    dispatch(setState('userPreferences', {}))
     apiClient.headers = getState().user.apiClientHeaders
 
     apiClient.type('users').get(getState().user.id)
@@ -132,10 +134,14 @@ export function loadNotificationSettings() {
               preference.get('project')
                 .then((project) => {
                   dispatch(setState(`userPreferences.${preference.id}`, {
+                      projectID: project.id,
                       name: project.display_name,
                       notify: preference.email_communication
                     }
                   ))
+
+                  //perform interest subscriptions to ensure they're in sync with this device (users can sign in different devices)
+                  dispatch(updateInterestSubscription(project.id, preference.email_communication))
                 })
               },
               projectPreferences
@@ -145,6 +151,8 @@ export function loadNotificationSettings() {
             dispatch(setError(error.message))
           })
           .then(() => {
+            //also subscription to user general email(/notification) setting
+            dispatch(updateInterestSubscription('general2', user.global_email_communication))
             dispatch(setIsFetching(false))
           })
       })
@@ -162,6 +170,7 @@ export function updateProjectNotification(id, value) {
       .then((preference) => {
         preference.update({email_communication: value}).save()
         dispatch(setState(`userPreferences.${id}.notify`, value))
+        dispatch(updateInterestSubscription(getState().userPreferences[id].projectID, value))
       })
       .catch((error) => {
         dispatch(setError(error.message))
@@ -181,5 +190,13 @@ export function updateUser(attr, value) {
       .catch((error) => {
         dispatch(setError(error.message))
       })
+  }
+}
+
+export function updateInterestSubscription(interest, subscribed) {
+  console.log('subscribed to...', interest, subscribed)
+  return () => {
+    var NotificationSettings = NativeModules.NotificationSettings;
+    subscribed ? NotificationSettings.subscribe(interest) : NotificationSettings.unsubscribe(interest)
   }
 }
