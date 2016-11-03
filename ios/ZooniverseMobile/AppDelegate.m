@@ -25,7 +25,8 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   self.pusher = [PTPusher pusherWithKey:@"ed07dc711db7079f2401" delegate:self encrypted:YES];
-  
+  self.movesCounter=26;
+  NSLog( @">>>>DIDFINISHINGLAUNCHING" );
   if( SYSTEM_VERSION_LESS_THAN( @"10.0" ) )
   {
     UIUserNotificationType notificationTypes = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
@@ -45,6 +46,7 @@
         NSLog( @"Push registration success." );
       }
     }];
+
   }
 
   [[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"a64221f0d73b46829478d405c90e6638"];
@@ -78,7 +80,9 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
   [[[self pusher] nativePusher] registerWithDeviceToken:deviceToken];
-  [[[self pusher] nativePusher] subscribe:@"general"];
+  [[[self pusher] nativePusher] subscribe:@"donuts"];
+  
+  NSLog( @"Push registration to donuts success." );
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification {

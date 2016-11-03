@@ -16,4 +16,7 @@
 @property (nonatomic, strong) UIWindow *window;
 @property (nonatomic, strong) PTPusher *pusher;
 
+@property int movesCounter;
+
+
 @end

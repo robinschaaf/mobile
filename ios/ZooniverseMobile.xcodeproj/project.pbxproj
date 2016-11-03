@@ -28,6 +28,7 @@
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		992180751D9B18E400F8BEDD /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 992180741D9B18E400F8BEDD /* FontAwesome.ttf */; };
 		998461001DC8EB8300AB1247 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 998460FA1DC8EB2F00AB1247 /* libRCTPushNotification.a */; };
+		999856991DCA6ADD00FB80D1 /* NotificationSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 999856981DCA6ADD00FB80D1 /* NotificationSettings.m */; };
 		999F9C831DB7B4FA002B6AF0 /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 999F9C781DB7B4FA002B6AF0 /* OpenSans-Bold.ttf */; };
 		999F9C841DB7B4FA002B6AF0 /* OpenSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 999F9C791DB7B4FA002B6AF0 /* OpenSans-BoldItalic.ttf */; };
 		999F9C851DB7B4FA002B6AF0 /* OpenSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 999F9C7A1DB7B4FA002B6AF0 /* OpenSans-ExtraBold.ttf */; };
@@ -39,6 +40,8 @@
 		999F9C8B1DB7B4FA002B6AF0 /* OpenSans-Semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 999F9C801DB7B4FA002B6AF0 /* OpenSans-Semibold.ttf */; };
 		999F9C8C1DB7B4FA002B6AF0 /* OpenSans-SemiboldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 999F9C811DB7B4FA002B6AF0 /* OpenSans-SemiboldItalic.ttf */; };
 		999F9C8D1DB7B4FA002B6AF0 /* zoo-font.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 999F9C821DB7B4FA002B6AF0 /* zoo-font.ttf */; };
+		99C2CE431DCA589E0026F318 /* PusherSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99C2CE421DCA589E0026F318 /* PusherSwift.framework */; };
+		99C2CE541DCA5EF30026F318 /* PusherSwift.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 99C2CE421DCA589E0026F318 /* PusherSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		99E051D41D7F633400052983 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E051D31D7F633400052983 /* CoreData.framework */; };
 		99E051D61D7F633F00052983 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E051D51D7F633F00052983 /* SystemConfiguration.framework */; };
 		99E051D81D7F634900052983 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 99E051D71D7F634900052983 /* libz.tbd */; };
@@ -146,6 +149,20 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		99C2CE531DCA5EB40026F318 /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				99C2CE541DCA5EF30026F318 /* PusherSwift.framework in Copy Files */,
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0078DB4906E643B2AE48F0C5 /* RCTOrientation.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTOrientation.xcodeproj; path = "../node_modules/react-native-orientation/iOS/RCTOrientation.xcodeproj"; sourceTree = "<group>"; };
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
@@ -174,6 +191,8 @@
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		992180741D9B18E400F8BEDD /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		998460EE1DC8EB2F00AB1247 /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
+		999856971DCA6A0B00FB80D1 /* NotificationSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationSettings.h; sourceTree = "<group>"; };
+		999856981DCA6ADD00FB80D1 /* NotificationSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettings.m; sourceTree = "<group>"; };
 		999F9C781DB7B4FA002B6AF0 /* OpenSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Bold.ttf"; sourceTree = "<group>"; };
 		999F9C791DB7B4FA002B6AF0 /* OpenSans-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-BoldItalic.ttf"; sourceTree = "<group>"; };
 		999F9C7A1DB7B4FA002B6AF0 /* OpenSans-ExtraBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-ExtraBold.ttf"; sourceTree = "<group>"; };
@@ -186,6 +205,7 @@
 		999F9C811DB7B4FA002B6AF0 /* OpenSans-SemiboldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-SemiboldItalic.ttf"; sourceTree = "<group>"; };
 		999F9C821DB7B4FA002B6AF0 /* zoo-font.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "zoo-font.ttf"; sourceTree = "<group>"; };
 		99B247C07D08CC4E84220651 /* Pods-ZooniverseMobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZooniverseMobile.release.xcconfig"; path = "Pods/Target Support Files/Pods-ZooniverseMobile/Pods-ZooniverseMobile.release.xcconfig"; sourceTree = "<group>"; };
+		99C2CE421DCA589E0026F318 /* PusherSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PusherSwift.framework; path = Carthage/Build/iOS/PusherSwift.framework; sourceTree = "<group>"; };
 		99C686741D958DE000FF0CB2 /* ZooniverseMobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ZooniverseMobile.entitlements; path = ZooniverseMobile/ZooniverseMobile.entitlements; sourceTree = "<group>"; };
 		99E051D31D7F633400052983 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		99E051D51D7F633F00052983 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -214,6 +234,7 @@
 				99E051D81D7F634900052983 /* libz.tbd in Frameworks */,
 				99E051D61D7F633F00052983 /* SystemConfiguration.framework in Frameworks */,
 				99E051D41D7F633400052983 /* CoreData.framework in Frameworks */,
+				99C2CE431DCA589E0026F318 /* PusherSwift.framework in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
@@ -317,6 +338,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				999856981DCA6ADD00FB80D1 /* NotificationSettings.m */,
+				999856971DCA6A0B00FB80D1 /* NotificationSettings.h */,
 			);
 			name = ZooniverseMobile;
 			sourceTree = "<group>";
@@ -448,6 +471,7 @@
 		D9B9DC58CC412F729C694FE6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				99C2CE421DCA589E0026F318 /* PusherSwift.framework */,
 				051453304969ED18A9A5693A /* libPods-ZooniverseMobile.a */,
 				7D809E115A6D18224A63B6FC /* libPods-ZooniverseMobileTests.a */,
 			);
@@ -487,6 +511,8 @@
 				99CCFA761D81CCAC00DE62AA /* ShellScript */,
 				C03FD8C6E4758D386857B691 /* [CP] Embed Pods Frameworks */,
 				A3D8C28817B8599AB50EAF1D /* [CP] Copy Pods Resources */,
+				99C2CE531DCA5EB40026F318 /* Copy Files */,
+				99C2CE511DCA590F0026F318 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -749,6 +775,20 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
+		99C2CE511DCA590F0026F318 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/PusherSwift.framework",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
 		99CCFA761D81CCAC00DE62AA /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -809,6 +849,7 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				999856991DCA6ADD00FB80D1 /* NotificationSettings.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -878,6 +919,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 2ABDCDF198F4CB5118B6B0C0 /* Pods-ZooniverseMobile.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ZooniverseMobile/ZooniverseMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -885,7 +927,7 @@
 				DEVELOPMENT_TEAM = 888MXXMABP;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/HockeySDK-iOS/HockeySDK.embeddedframework",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -911,13 +953,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 99B247C07D08CC4E84220651 /* Pods-ZooniverseMobile.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ZooniverseMobile/ZooniverseMobile.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = 888MXXMABP;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/HockeySDK-iOS/HockeySDK.embeddedframework",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

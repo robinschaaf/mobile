@@ -8,7 +8,7 @@
 
 #import "NotificationSettings.h"
 #import "RCTLog.h"
-
+#import <Pusher/Pusher.h>
 
 @implementation NotificationSettings
 
@@ -16,8 +16,17 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(subscribe:(NSString *)interest)
 {
+  
+  AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+  
   RCTLogInfo(@"Pretending to subscribe to interest %@", interest);
-  [[[self pusher] nativePusher] subscribeWithInterestName:@"donuts"];
+  NSLog(@"movescounter is currently equal to %d", appDelegate.movesCounter);
+  
+  self.pusher = appDelegate.pusher;
+  //[[[appDelegate.pusher] nativePusher] subscribe:@"donuts"];
+  [[[self pusher] nativePusher] subscribe:interest];
+  
+  RCTLogInfo(@"Supposedly subscribed to interest %@", interest);
 }
 
 @end

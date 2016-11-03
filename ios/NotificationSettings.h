@@ -7,7 +7,12 @@
 //
 
 #import "RCTBridgeModule.h"
-#import "PusherSwift/PusherSwift-Swift.h"
+#import "AppDelegate.h"
+#import <Pusher/Pusher.h>
 
-@interface NotificationSettings : NSObject <RCTBridgeModule>
+@interface NotificationSettings : NSObject <RCTBridgeModule, PTPusherDelegate>
+
+@property (nonatomic, strong) PTPusher *pusher;
+
 @end
+

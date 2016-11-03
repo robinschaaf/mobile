@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  NativeModules,
   Platform,
   PushNotificationIOS,
   ScrollView,
@@ -44,6 +45,11 @@ const mapDispatchToProps = (dispatch) => ({
 class NotificationSettings extends React.Component {
   constructor(props) {
     super(props)
+    var NotificationSettings = NativeModules.NotificationSettings;
+    NotificationSettings.subscribe('birthday');
+  }
+
+  componentDidMount() {
     this.props.loadNotificationSettings()
     this.checkPermissions()
   }
