@@ -98,7 +98,7 @@ export function signIn(login, password) {
 export function signOut() {
   return dispatch => {
     store.delete('@zooniverse:user')
-    dispatch(storeUser({}))
+    dispatch(setUser({}))
     Actions.SignIn()
   }
 }
@@ -128,36 +128,41 @@ export function loadNotificationSettings() {
 
     apiClient.type('users').get(getState().user.id)
       .then((user) => {
+        //also subscription to user general email(/notification) setting
+        dispatch(updateInterestSubscription('general2', user.global_email_communication))
         user.get('project_preferences')
           .then((projectPreferences) => {
+            var promises = []
             forEach((preference) => {
-              preference.get('project')
+              var promise = preference.get('project')
                 .then((project) => {
+                  console.log('project gotten')
                   dispatch(setState(`userPreferences.${preference.id}`, {
                       projectID: project.id,
                       name: project.display_name,
                       notify: preference.email_communication
                     }
                   ))
-
-                  //perform interest subscriptions to ensure they're in sync with this device (users can sign in different devices)
-                  dispatch(updateInterestSubscription(project.id, preference.email_communication))
                 })
+                promises.push(promise)
               },
               projectPreferences
             )
+            Promise.all(promises).then(() => {
+              console.log('>>>all teh promises resolved')
+              dispatch(syncInterestSubscriptions())
+              dispatch(setIsFetching(false))
+            })
           })
           .catch((error) => {
             dispatch(setError(error.message))
           })
           .then(() => {
-            //also subscription to user general email(/notification) setting
-            dispatch(updateInterestSubscription('general2', user.global_email_communication))
-            dispatch(setIsFetching(false))
           })
       })
       .catch((error) => {
         dispatch(setError(error.message))
+        dispatch(setIsFetching(false))
       })
   }
 }
@@ -193,8 +198,23 @@ export function updateUser(attr, value) {
   }
 }
 
+export function syncInterestSubscriptions() {
+  return (dispatch, getState) => {
+    console.log('>>>>>user prefs:', getState().userPreferences)
+    forEach((preference) => {
+      console.log('>>>>>>>preference: ', preference.projectID)
+      //perform interest subscriptions to ensure they're in sync with this device (users can sign in different devices)
+      dispatch(updateInterestSubscription(preference.projectID, preference.email_communication))
+
+    },
+    getState().userPreferences
+    )
+
+  }
+}
+
 export function updateInterestSubscription(interest, subscribed) {
-  console.log('subscribed to...', interest, subscribed)
+  console.log('subscribing to...', interest, subscribed)
   return () => {
     var NotificationSettings = NativeModules.NotificationSettings;
     subscribed ? NotificationSettings.subscribe(interest) : NotificationSettings.unsubscribe(interest)
