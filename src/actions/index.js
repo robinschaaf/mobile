@@ -45,6 +45,8 @@ export function storeUser(user) {
   }
 }
 
+//always return or throw from inside a then() function.
+
 export function setUserFromStore() {
   return dispatch => {
     dispatch(setIsFetching(true))

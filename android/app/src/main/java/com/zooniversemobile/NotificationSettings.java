@@ -5,6 +5,7 @@ import android.util.Log;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.pusher.android.notifications.PushNotificationRegistration;
 
 /**
  * Created by rschaaf on 11/4/16.
@@ -12,9 +13,7 @@ import com.facebook.react.bridge.ReactMethod;
 
 
 public class NotificationSettings extends ReactContextBaseJavaModule {
-
-    private static final String DURATION_SHORT_KEY = "SHORT";
-    private static final String DURATION_LONG_KEY = "LONG";
+    private PushNotificationRegistration nativePusher = null;
 
     public NotificationSettings(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -27,8 +26,24 @@ public class NotificationSettings extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void subscribe(String interest) {
-        //Toast.makeText(getReactApplicationContext(), message, duration).show();
         Log.d("SUBSCRIBE", "trying to subscribe to interest: " + interest);
+
+
+        nativePusher = PusherProperty.getInstance().nativePusher;
+        nativePusher.subscribe(interest);
+
+        Log.d("SUBSCRIBE", "supposedly subscribed to interest: " + interest);
+
     }
 
+    @ReactMethod
+    public void unsubscribe(String interest) {
+        Log.d("SUBSCRIBE", "trying to UNsubscribe to interest: " + interest);
+
+        nativePusher = PusherProperty.getInstance().nativePusher;
+        nativePusher.unsubscribe(interest);
+
+        Log.d("SUBSCRIBE", "supposedly UNsubscribed to interest: " + interest);
+
+    }
 }

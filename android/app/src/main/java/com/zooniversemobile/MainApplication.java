@@ -33,4 +33,18 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
   public ReactNativeHost getReactNativeHost() {
       return mReactNativeHost;
   }
+
+
+
+
+
+  private String someVariable;
+
+  public String getSomeVariable() {
+    return someVariable;
+  }
+
+  public void setSomeVariable(String someVariable) {
+    this.someVariable = someVariable;
+  }
 }
