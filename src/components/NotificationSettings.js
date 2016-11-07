@@ -14,7 +14,7 @@ import NavBar from './NavBar'
 import OverlaySpinner from './OverlaySpinner'
 import ProjectNotification from './ProjectNotification'
 import { connect } from 'react-redux'
-import { loadNotificationSettings, updateUser, setState } from '../actions/index'
+import { updateUser, setState } from '../actions/index'
 import { addIndex, keys, map } from 'ramda'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 
@@ -22,7 +22,7 @@ GoogleAnalytics.trackEvent('view', 'Notification Settings')
 
 const mapStateToProps = (state) => ({
   user: state.user,
-  userPreferences: state.userPreferences,
+  userPreferences: state.user.userPreferences,
   isConnected: state.isConnected,
   isFetching: state.isFetching,
   errorMessage: state.errorMessage,
@@ -30,9 +30,6 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  loadNotificationSettings() {
-    dispatch(loadNotificationSettings())
-  },
   updateGlobalNotification(checked) {
     dispatch(updateUser('global_email_communication', checked))
   },
@@ -43,15 +40,14 @@ const mapDispatchToProps = (dispatch) => ({
 
 class NotificationSettings extends React.Component {
   componentDidMount() {
-    this.props.loadNotificationSettings()
-    this.checkPermissions()
+    this.checkPushPermissions()
   }
 
   static renderNavigationBar() {
     return <NavBar title={'Notification Settings'} showBack={true} />;
   }
 
-  checkPermissions() {
+  checkPushPermissions() {
     if (Platform.OS === 'ios') {
       PushNotificationIOS.checkPermissions((permissions) => {
         this.props.setState('pushEnabled', (permissions.alert === 0) ? false : true)
@@ -151,7 +147,6 @@ NotificationSettings.propTypes = {
   isConnected: React.PropTypes.bool,
   pushEnabled: React.PropTypes.bool,
   errorMessage: React.PropTypes.string,
-  loadNotificationSettings: React.PropTypes.func,
   updateGlobalNotification: React.PropTypes.func,
   setState: React.PropTypes.func,
 }

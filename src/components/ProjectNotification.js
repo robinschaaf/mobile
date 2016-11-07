@@ -10,7 +10,7 @@ import { connect } from 'react-redux'
 import { updateProjectNotification } from '../actions/index'
 
 const mapStateToProps = (state, ownProps) => ({
-  userPreference: state.userPreferences[ownProps.id]
+  userPreference: state.user.userPreferences[ownProps.id]
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
