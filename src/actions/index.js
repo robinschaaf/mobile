@@ -9,7 +9,7 @@ import auth from 'panoptes-client/lib/auth'
 import apiClient from 'panoptes-client/lib/api-client'
 import store from 'react-native-simple-store'
 import { NativeModules, NetInfo } from 'react-native'
-import { head, forEach } from 'ramda'
+import { head, forEach, keys, map } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
 export function setState(stateKey, value) {
@@ -36,10 +36,10 @@ export function setProjectList(projectList) {
   return { type: SET_PROJECT_LIST, projectList }
 }
 
-export function storeUser(user) {
-  return dispatch => {
-    dispatch(setUser(user))
-    store.save('@zooniverse:user', {
+export function syncUserStore() {
+  return (dispatch, getState) => {
+    const user = getState().user
+    return store.save('@zooniverse:user', {
       user
     })
   }
@@ -60,38 +60,108 @@ export function setUserFromStore() {
   }
 }
 
+export function checkIsConnected() {
+  return () => {
+    return new Promise((resolve, reject) => {
+      NetInfo.isConnected.fetch().then(isConnected => {
+        if (!isConnected) {
+          return reject('Sorry, but you must be connected to the internet to use Zooniverse')
+        }
+        return resolve()
+      })
+    })
+  }
+}
+
 export function signIn(login, password) {
   return dispatch => {
     dispatch(setIsFetching(true))
     dispatch(setError(''))
-    NetInfo.isConnected.fetch().then(isConnected => {
-      if (isConnected) {
-        auth.signIn({login: login, password: password})
-          .then((user) => {
-            user.get('avatar')
-              .then((avatar) => {
-                user.avatar = head(avatar)
-              })
-              .catch(() => {
-                user.avatar = {}
-              })
-              .then(() => {
-                user.apiClientHeaders = apiClient.headers
-                dispatch(storeUser(user))
-                dispatch(loadNotificationSettings())
-                dispatch(setIsFetching(false))
-                Actions.ZooniverseApp({type: ActionConst.RESET})
-              })
-          })
-          .catch((error) => {
-            dispatch(setError(error.message))
-            dispatch(setIsFetching(false))
-          })
-      } else {
-        dispatch(setError('Sorry, but you must be connected to the internet to use Zooniverse'))
+    dispatch(checkIsConnected()).then(() => {
+      auth.signIn({login: login, password: password}).then((user) => {
+        user.apiClientHeaders = apiClient.headers
+        dispatch(setUser(user))
+
+        return Promise.all([
+          dispatch(loadUserAvatar()),
+          dispatch(loadNotificationSettings())
+        ])
+      }).then(() => {
+        dispatch(syncUserStore())
         dispatch(setIsFetching(false))
-      }
+        Actions.ZooniverseApp({type: ActionConst.RESET})  // Go to home screen
+      })
+      .catch((error) => {
+        dispatch(setError(error.message))
+        dispatch(setIsFetching(false))
+      })
     })
+    .catch((error) => {
+      dispatch(setError(error))
+      dispatch(setIsFetching(false))
+    })
+  }
+}
+
+
+export function loadUserAvatar() {
+  return (dispatch) => {
+    return new Promise ((resolve) => {
+      dispatch(getUserResource()).then((user) => {
+        user.get('avatar').then((avatar) => {
+          user.avatar = head(avatar)
+        }).catch(() => {
+          user.avatar = {}
+        }).then(() => {
+          dispatch(setUser(user))
+          return resolve()
+        })
+      })
+    })
+  }
+}
+
+
+export function loadNotificationSettings() {
+  return (dispatch, getState) => {
+    dispatch(setError(''))
+    return new Promise ((resolve, reject) => {
+      dispatch(getUserResource()).then((user) => {
+        user.get('project_preferences').then((projectPreferences) => {
+          var promises = []
+          forEach((preference) => {
+            var promise = preference.get('project')
+              .then((project) => {
+                dispatch(setState(`user.userPreferences.${preference.id}`, {
+                    projectID: project.id,
+                    name: project.display_name,
+                    notify: preference.email_communication
+                  }
+                ))
+              })
+              promises.push(promise)
+            },
+            projectPreferences
+          )
+          Promise.all(promises).then(() => {
+            dispatch(setUser(getState().user))
+            dispatch(syncInterestSubscriptions())
+            return resolve()
+          })
+        })
+      })
+      .catch((error) => {
+        dispatch(setError(error.message))
+        return reject()
+      })
+    })
+  }
+}
+
+export function getUserResource() {
+  return (dispatch, getState) => {
+    apiClient.headers = getState().user.apiClientHeaders
+    return apiClient.type('users').get(getState().user.id)
   }
 }
 
@@ -120,53 +190,6 @@ export function fetchProjects(parms) {
   }
 }
 
-export function loadNotificationSettings() {
-  return (dispatch, getState) => {
-    dispatch(setIsFetching(true))
-    dispatch(setState('userPreferences', {}))
-    apiClient.headers = getState().user.apiClientHeaders
-
-    apiClient.type('users').get(getState().user.id)
-      .then((user) => {
-        //also subscription to user general email(/notification) setting
-        dispatch(updateInterestSubscription('general2', user.global_email_communication))
-        user.get('project_preferences')
-          .then((projectPreferences) => {
-            var promises = []
-            forEach((preference) => {
-              var promise = preference.get('project')
-                .then((project) => {
-                  console.log('project gotten')
-                  dispatch(setState(`userPreferences.${preference.id}`, {
-                      projectID: project.id,
-                      name: project.display_name,
-                      notify: preference.email_communication
-                    }
-                  ))
-                })
-                promises.push(promise)
-              },
-              projectPreferences
-            )
-            Promise.all(promises).then(() => {
-              console.log('>>>all teh promises resolved')
-              dispatch(syncInterestSubscriptions())
-              dispatch(setIsFetching(false))
-            })
-          })
-          .catch((error) => {
-            dispatch(setError(error.message))
-          })
-          .then(() => {
-          })
-      })
-      .catch((error) => {
-        dispatch(setError(error.message))
-        dispatch(setIsFetching(false))
-      })
-  }
-}
-
 export function updateProjectNotification(id, value) {
   return (dispatch, getState) => {
     apiClient.headers = getState().user.apiClientHeaders
@@ -174,8 +197,9 @@ export function updateProjectNotification(id, value) {
     apiClient.type('project_preferences').get(id)
       .then((preference) => {
         preference.update({email_communication: value}).save()
-        dispatch(setState(`userPreferences.${id}.notify`, value))
+        dispatch(setState(`user.userPreferences.${id}.notify`, value))
         dispatch(updateInterestSubscription(getState().userPreferences[id].projectID, value))
+        dispatch(dispatch(syncUserStore()))
       })
       .catch((error) => {
         dispatch(setError(error.message))
@@ -191,6 +215,7 @@ export function updateUser(attr, value) {
       .then((user) => {
         user.update({[attr]: value}).save()
         dispatch(setState(`user.${attr}`, value))
+        dispatch(syncUserStore())
       })
       .catch((error) => {
         dispatch(setError(error.message))
@@ -200,21 +225,17 @@ export function updateUser(attr, value) {
 
 export function syncInterestSubscriptions() {
   return (dispatch, getState) => {
-    console.log('>>>>>user prefs:', getState().userPreferences)
-    forEach((preference) => {
-      console.log('>>>>>>>preference: ', preference.projectID)
-      //perform interest subscriptions to ensure they're in sync with this device (users can sign in different devices)
-      dispatch(updateInterestSubscription(preference.projectID, preference.email_communication))
-
-    },
-    getState().userPreferences
+    map(
+      (key) => {
+        var preference = getState().user.userPreferences[key]
+        dispatch(updateInterestSubscription(preference.projectID, preference.notify))
+      },
+      keys(getState().user.userPreferences)
     )
-
   }
 }
 
 export function updateInterestSubscription(interest, subscribed) {
-  console.log('subscribing to...', interest, subscribed)
   return () => {
     var NotificationSettings = NativeModules.NotificationSettings;
     subscribed ? NotificationSettings.subscribe(interest) : NotificationSettings.unsubscribe(interest)
