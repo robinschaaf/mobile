@@ -14,31 +14,34 @@
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(subscribe:(NSString *)interest)
+RCT_EXPORT_METHOD(subscribe:(NSString *)interest
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
 {
+  AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   
-  AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-  
-  RCTLogInfo(@"Pretending to subscribe to interest %@", interest);
+  RCTLogInfo(@"Going to subscribe to interest %@", interest);
   
   self.pusher = appDelegate.pusher;
   [[[self pusher] nativePusher] subscribe:interest];
-  
-  RCTLogInfo(@"Supposedly subscribed to interest %@", interest);
+
+  resolve(@"Subscribe Successful");
 }
 
 
-RCT_EXPORT_METHOD(unsubscribe:(NSString *)interest)
+RCT_EXPORT_METHOD(unsubscribe:(NSString *)interest
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
 {
   
-  AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+  AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   
-  RCTLogInfo(@"Pretending to UNsubscribe FROM interest %@", interest);
+  RCTLogInfo(@"Going to UNsubscribe FROM interest %@", interest);
   
   self.pusher = appDelegate.pusher;
   [[[self pusher] nativePusher] unsubscribe:interest];
   
-  RCTLogInfo(@"Supposedly UNsubscribed FROM interest %@", interest);
+  resolve(@"DID UNsubscribe FROM interest");
 }
 
 

@@ -9,7 +9,7 @@ import auth from 'panoptes-client/lib/auth'
 import apiClient from 'panoptes-client/lib/api-client'
 import store from 'react-native-simple-store'
 import { NativeModules, NetInfo } from 'react-native'
-import { head, forEach, keys, map } from 'ramda'
+import { head, forEach, keys, map, addIndex } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
 export function setState(stateKey, value) {
@@ -81,12 +81,12 @@ export function signIn(login, password) {
       auth.signIn({login: login, password: password}).then((user) => {
         user.apiClientHeaders = apiClient.headers
         dispatch(setUser(user))
-
         return Promise.all([
           dispatch(loadUserAvatar()),
           dispatch(loadNotificationSettings())
         ])
       }).then(() => {
+        console.log('finished with the signin promises')
         dispatch(syncUserStore())
         dispatch(setIsFetching(false))
         Actions.ZooniverseApp({type: ActionConst.RESET})  // Go to home screen
@@ -123,6 +123,7 @@ export function loadUserAvatar() {
 
 
 export function loadNotificationSettings() {
+  console.log('loadNotificationSettings')
   return (dispatch, getState) => {
     dispatch(setError(''))
     return new Promise ((resolve, reject) => {
@@ -145,6 +146,7 @@ export function loadNotificationSettings() {
           )
           Promise.all(promises).then(() => {
             dispatch(setUser(getState().user))
+            console.log('>>>>all project promises resolved')
             dispatch(syncInterestSubscriptions())
             return resolve()
           })
@@ -225,19 +227,40 @@ export function updateUser(attr, value) {
 
 export function syncInterestSubscriptions() {
   return (dispatch, getState) => {
-    map(
-      (key) => {
-        var preference = getState().user.userPreferences[key]
-        dispatch(updateInterestSubscription(preference.projectID, preference.notify))
-      },
-      keys(getState().user.userPreferences)
-    )
+    var preferences = []
+
+    map((key) => { preferences.push(getState().user.userPreferences[key]) }, keys(getState().user.userPreferences))
+
+    preferences.reduce(function(promise, preference) {
+      return promise.then(function() {
+        return dispatch(updateInterestSubscription(preference.projectID, preference.notify))
+      });
+    }, Promise.resolve())
   }
 }
 
 export function updateInterestSubscription(interest, subscribed) {
+  var NotificationSettings = NativeModules.NotificationSettings
+
   return () => {
-    var NotificationSettings = NativeModules.NotificationSettings;
-    subscribed ? NotificationSettings.subscribe(interest) : NotificationSettings.unsubscribe(interest)
+    return new Promise((resolve) => {
+      if (subscribed) {
+        NotificationSettings.subscribe(interest).then((message) => {
+          setTimeout(()=> {
+            console.log(message)
+            return resolve(message)
+          }, 10)
+
+        })
+      } else {
+        NotificationSettings.unsubscribe(interest).then((message) => {
+          setTimeout(()=> {
+            console.log(message)
+            return resolve(message)
+          }, 10)
+        })
+      }
+
+    })
   }
 }
