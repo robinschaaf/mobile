@@ -9,7 +9,7 @@ import auth from 'panoptes-client/lib/auth'
 import apiClient from 'panoptes-client/lib/api-client'
 import store from 'react-native-simple-store'
 import { NativeModules, NetInfo } from 'react-native'
-import { head, forEach, keys, map, addIndex } from 'ramda'
+import { head, forEach, keys, map } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
 export function setState(stateKey, value) {
@@ -86,7 +86,6 @@ export function signIn(login, password) {
           dispatch(loadNotificationSettings())
         ])
       }).then(() => {
-        console.log('finished with the signin promises')
         dispatch(syncUserStore())
         dispatch(setIsFetching(false))
         Actions.ZooniverseApp({type: ActionConst.RESET})  // Go to home screen
@@ -123,30 +122,24 @@ export function loadUserAvatar() {
 
 
 export function loadNotificationSettings() {
-  console.log('loadNotificationSettings')
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch(setError(''))
     return new Promise ((resolve, reject) => {
       dispatch(getUserResource()).then((user) => {
         user.get('project_preferences').then((projectPreferences) => {
           var promises = []
-          forEach((preference) => {
-            var promise = preference.get('project')
-              .then((project) => {
-                dispatch(setState(`user.userPreferences.${preference.id}`, {
-                    projectID: project.id,
-                    name: project.display_name,
-                    notify: preference.email_communication
-                  }
-                ))
-              })
-              promises.push(promise)
-            },
-            projectPreferences
-          )
+          forEach( (preference) => {
+            var promise = preference.get('project').then((project) => {
+              dispatch(setState(`user.userPreferences.${preference.id}`, {
+                  projectID: project.id,
+                  name: project.display_name,
+                  notify: preference.email_communication
+                }
+              ))
+            })
+            promises.push(promise)
+          }, projectPreferences )
           Promise.all(promises).then(() => {
-            dispatch(setUser(getState().user))
-            console.log('>>>>all project promises resolved')
             dispatch(syncInterestSubscriptions())
             return resolve()
           })
@@ -195,17 +188,15 @@ export function fetchProjects(parms) {
 export function updateProjectNotification(id, value) {
   return (dispatch, getState) => {
     apiClient.headers = getState().user.apiClientHeaders
-
-    apiClient.type('project_preferences').get(id)
-      .then((preference) => {
-        preference.update({email_communication: value}).save()
-        dispatch(setState(`user.userPreferences.${id}.notify`, value))
-        dispatch(updateInterestSubscription(getState().userPreferences[id].projectID, value))
-        dispatch(dispatch(syncUserStore()))
-      })
-      .catch((error) => {
-        dispatch(setError(error.message))
-      })
+    apiClient.type('project_preferences').get(id).then((preference) => {
+      preference.update({email_communication: value}).save()
+      dispatch(setState(`user.userPreferences.${id}.notify`, value))
+      dispatch(updateInterestSubscription(getState().user.userPreferences[id].projectID, value))
+      dispatch(syncUserStore())
+    })
+    .catch((error) => {
+      dispatch(setError(error.message))
+    })
   }
 }
 
@@ -244,22 +235,13 @@ export function updateInterestSubscription(interest, subscribed) {
 
   return () => {
     return new Promise((resolve) => {
-      if (subscribed) {
-        NotificationSettings.subscribe(interest).then((message) => {
-          setTimeout(()=> {
-            console.log(message)
-            return resolve(message)
-          }, 10)
+      NotificationSettings.setInterestSubscription(interest, subscribed).then((message) => {
+        //Timeout needed or crashes ios.  Open issue: https://github.com/pusher/libPusher/issues/230
+        setTimeout(()=> {
+          return resolve(message)
+        }, 100)
 
-        })
-      } else {
-        NotificationSettings.unsubscribe(interest).then((message) => {
-          setTimeout(()=> {
-            console.log(message)
-            return resolve(message)
-          }, 10)
-        })
-      }
+      })
 
     })
   }
