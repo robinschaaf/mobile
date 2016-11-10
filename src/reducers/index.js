@@ -1,4 +1,4 @@
-import { merge } from 'ramda'
+import { merge, lensPath, set } from 'ramda'
 
 export const InitialState = {
   user: {},
@@ -10,6 +10,8 @@ export const InitialState = {
 
 export default function(state=InitialState, action) {
   switch (action.type) {
+    case 'SET_STATE':
+      return set(lensPath(action.stateKey.split('.')), action.value, state)
     case 'SET_USER':
       return merge(state, {
         user: action.user

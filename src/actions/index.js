@@ -1,3 +1,4 @@
+export const SET_STATE = 'SET_STATE'
 export const SET_USER = 'SET_USER'
 export const SET_ERROR = 'SET_ERROR'
 export const SET_IS_FETCHING = 'SET_IS_FETCHING'
@@ -15,6 +16,9 @@ import { NetInfo } from 'react-native'
 import { head } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
+export function setState(stateKey, value) {
+  return { type: SET_STATE, stateKey, value }
+}
 
 export function setUser(user) {
   return { type: SET_USER, user }
@@ -59,6 +63,15 @@ export function setUserFromStore() {
   }
 }
 
+export function continueAsGuest() {
+  return dispatch => {
+    var user = { isGuestUser: true }
+    dispatch(setState('user.isGuestUser', true))
+    dispatch(storeUser(user))
+    Actions.ZooniverseApp({type: ActionConst.RESET})
+  }
+}
+
 export function signIn(login, password) {
   return dispatch => {
     dispatch(setIsFetching(true))
@@ -75,6 +88,7 @@ export function signIn(login, password) {
                 user.avatar = {}
               })
               .then(() => {
+                user.isGuestUser = false
                 dispatch(setUser(user))
                 dispatch(storeUser(user))
                 dispatch(setIsFetching(false))

@@ -15,6 +15,7 @@ import GoogleAnalytics from 'react-native-google-analytics-bridge'
 
 const mapStateToProps = (state) => ({
   user: state.user,
+  isGuestUser: state.user.isGuestUser
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -29,6 +30,7 @@ class SideDrawerContent extends Component {
     this.close = this.close.bind(this)
     this.goHome = this.goHome.bind(this)
     this.signOut = this.signOut.bind(this)
+    this.signIn = this.signIn.bind(this)
   }
 
   close() {
@@ -39,6 +41,11 @@ class SideDrawerContent extends Component {
   goHome(){
     this.close()
     Actions.ZooniverseApp()
+  }
+
+  signIn(){
+    this.close()
+    Actions.SignIn()
   }
 
   signOut(){
@@ -61,6 +68,20 @@ class SideDrawerContent extends Component {
   }
 
   render() {
+    const signIn =
+      <TouchableOpacity onPress={this.signIn} style={styles.linkContainer}>
+        <StyledText
+          textStyle={'largeLink'}
+          text={ 'Sign In / Register' } />
+      </TouchableOpacity>
+
+    const signOut =
+      <TouchableOpacity onPress={this.signOut} style={styles.linkContainer}>
+        <StyledText
+          textStyle={'largeLink'}
+          text={ 'Sign Out' } />
+      </TouchableOpacity>
+
     return (
       <View style={styles.container}>
         <TouchableOpacity
@@ -76,6 +97,8 @@ class SideDrawerContent extends Component {
             text={'Home'} />
         </TouchableOpacity>
 
+        { this.props.isGuestUser ? signIn : null }
+
         <TouchableOpacity onPress={this.goHome} style={styles.linkContainer}>
           <StyledText
             textStyle={'largeLink'}
@@ -88,11 +111,7 @@ class SideDrawerContent extends Component {
             text={'Publications'} />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={this.signOut} style={styles.linkContainer}>
-          <StyledText
-            textStyle={'largeLink'}
-            text={'Sign Out'} />
-        </TouchableOpacity>
+        { this.props.isGuestUser ? null : signOut }
 
 
         <View style={styles.socialMediaContainer}>
@@ -152,6 +171,7 @@ const styles = EStyleSheet.create({
 
 SideDrawerContent.propTypes = {
   user: React.PropTypes.object,
+  isGuestUser: React.PropTypes.bool,
   signOut: React.PropTypes.func
 }
 
