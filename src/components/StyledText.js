@@ -42,6 +42,22 @@ const styles = EStyleSheet.create({
   largeLink: {
     color: '$darkTextColor',
     fontSize: 18,
+  },
+  large: {
+    fontSize: 20,
+  },
+  largeBold: {
+    fontSize: 20,
+    fontWeight: 'bold'
+  },
+  citation: {
+    color: 'grey',
+    fontStyle: 'italic',
+    fontSize: 12,
+    flex: 1,
+  },
+  fullHeight: {
+    height: '100%'
   }
 });
 

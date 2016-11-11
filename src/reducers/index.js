@@ -7,7 +7,8 @@ export const InitialState = {
   isConnected: null,
   projectList: [],
   userPreferences: {},
-  pushEnabled: true
+  pushEnabled: true,
+  selectedDiscipline: null
 }
 
 export default function(state=InitialState, action) {

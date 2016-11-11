@@ -10,6 +10,8 @@ import { setIsConnected, setUserFromStore } from '../actions/index'
 import ZooniverseApp from './zooniverseApp'
 import ProjectList from '../components/ProjectList'
 import ProjectDisciplines from '../components/ProjectDisciplines'
+import About from '../components/About'
+import PublicationList from '../components/PublicationList'
 import SignIn from '../components/SignIn'
 import SideDrawer from '../components/SideDrawer'
 import NotificationSettings from '../components/NotificationSettings'
@@ -36,6 +38,8 @@ export default class App extends Component {
               <Scene key="SignIn" hideNavBar={true} component={SignIn} type="reset" />
               <Scene key="ZooniverseApp" component={ZooniverseApp} initial />
               <Scene key="ProjectDisciplines" component={ProjectDisciplines} />
+              <Scene key="Publications" component={PublicationList} />
+              <Scene key="About" component={About} />
               <Scene key="ProjectList" component={ProjectList} />
               <Scene key="NotificationSettings" component={NotificationSettings} />
             </Scene>
