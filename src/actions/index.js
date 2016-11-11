@@ -64,6 +64,7 @@ export function setUserFromStore() {
 export function continueAsGuest() {
   return dispatch => {
     dispatch(setState('user.isGuestUser', true))
+    dispatch(setState('user.global_email_communication', true))
     dispatch(syncUserStore)
     Actions.ZooniverseApp({type: ActionConst.RESET})
   }
@@ -212,17 +213,20 @@ export function updateProjectNotification(id, value) {
 
 export function updateUser(attr, value) {
   return (dispatch, getState) => {
-    apiClient.headers = getState().user.apiClientHeaders
+    dispatch(setState(`user.${attr}`, value))
+    dispatch(syncUserStore)
+    if (!getState().user.isGuestUser) {
+      apiClient.headers = getState().user.apiClientHeaders
 
-    apiClient.type('users').get(getState().user.id)
-      .then((user) => {
-        user.update({[attr]: value}).save()
-        dispatch(setState(`user.${attr}`, value))
-        dispatch(syncUserStore())
-      })
-      .catch((error) => {
-        dispatch(setError(error.message))
-      })
+      apiClient.type('users').get(getState().user.id)
+        .then((user) => {
+          user.update({[attr]: value}).save()
+        })
+        .catch((error) => {
+          dispatch(setError(error.message))
+        })
+    }
+
   }
 }
 

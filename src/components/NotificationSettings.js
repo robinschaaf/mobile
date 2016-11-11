@@ -77,6 +77,7 @@ class NotificationSettings extends React.Component {
 
     const preferencesScrollView =
       <ScrollView>
+        <StyledText textStyle={'errorMessage'} text="Note during beta - this currently will change your email subscriptions so be sure to switch them back!" />
         <StyledText
           text={'Zooniverse would like to occassionally send you updates about new projects or projects needing help.'} />
         <View style={styles.switchContainer}>
