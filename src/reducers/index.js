@@ -5,10 +5,13 @@ export const InitialState = {
   isFetching: false,
   errorMessage: null,
   isConnected: null,
-  projectList: []
+  projectList: [],
+  userPreferences: {},
+  pushEnabled: true
 }
 
 export default function(state=InitialState, action) {
+
   switch (action.type) {
     case 'SET_STATE':
       return set(lensPath(action.stateKey.split('.')), action.value, state)

@@ -87,13 +87,6 @@ const styles = EStyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold'
   },
-  signOut: {
-    backgroundColor: '$transparent',
-  },
-  signOutText: {
-    color: '$darkTextColor',
-    fontSize: 11,
-  },
   messageContainer: {
     padding: 15,
   },
@@ -107,8 +100,7 @@ ProjectDisciplines.propTypes = {
   user: React.PropTypes.object,
   isGuestUser: React.PropTypes.bool,
   isConnected: React.PropTypes.bool,
-  isFetching: React.PropTypes.bool,
-  signOut: React.PropTypes.func
+  isFetching: React.PropTypes.bool
 }
 
 export default connect(mapStateToProps)(ProjectDisciplines)

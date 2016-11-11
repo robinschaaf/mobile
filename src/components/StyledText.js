@@ -24,6 +24,13 @@ const styles = EStyleSheet.create({
     letterSpacing: 1.5,
     marginBottom: 5
   },
+  subHeaderText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginBottom: 10,
+    marginLeft: 7
+  },
   errorMessage: {
     color: 'red',
     marginBottom: 10,
@@ -34,7 +41,7 @@ const styles = EStyleSheet.create({
   },
   largeLink: {
     color: '$darkTextColor',
-    fontSize: 20,
+    fontSize: 18,
   }
 });
 

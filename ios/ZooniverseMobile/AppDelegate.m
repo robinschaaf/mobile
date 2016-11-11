@@ -25,7 +25,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   self.pusher = [PTPusher pusherWithKey:@"ed07dc711db7079f2401" delegate:self encrypted:YES];
-  
+
   if( SYSTEM_VERSION_LESS_THAN( @"10.0" ) )
   {
     UIUserNotificationType notificationTypes = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
@@ -87,15 +87,15 @@
 
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler{
-  
+
   NSLog(@"Userinfo %@",notification.request.content.userInfo);
-  
+
 }
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
-  
+
   NSLog(@"Userinfo %@",response.notification.request.content.userInfo);
-  
+
 }
 
 @end

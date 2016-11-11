@@ -10,7 +10,7 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 import { connect } from 'react-redux'
 import {Actions} from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { isEmpty } from 'ramda'
+import { isEmpty, or } from 'ramda'
 import UserAvatar from './UserAvatar'
 
 const topPadding = (Platform.OS === 'ios') ? 22 : 10
