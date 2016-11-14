@@ -2,9 +2,11 @@ package com.zooniversemobile;
 
 import android.util.Log;
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.pusher.android.notifications.PushNotificationRegistration;
 
 /**
  * Created by rschaaf on 11/4/16.
@@ -12,9 +14,7 @@ import com.facebook.react.bridge.ReactMethod;
 
 
 public class NotificationSettings extends ReactContextBaseJavaModule {
-
-    private static final String DURATION_SHORT_KEY = "SHORT";
-    private static final String DURATION_LONG_KEY = "LONG";
+    private PushNotificationRegistration nativePusher = null;
 
     public NotificationSettings(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -26,9 +26,20 @@ public class NotificationSettings extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void subscribe(String interest) {
-        //Toast.makeText(getReactApplicationContext(), message, duration).show();
+    public void setInterestSubscription(String interest, Boolean subscribed, Promise promise) {
         Log.d("SUBSCRIBE", "trying to subscribe to interest: " + interest);
+
+
+        nativePusher = PusherProperty.getInstance().nativePusher;
+
+        if (subscribed) {
+            nativePusher.subscribe(interest);
+        } else {
+            nativePusher.unsubscribe(interest);
+        }
+
+        //promise.resolve(interest);
+
     }
 
 }

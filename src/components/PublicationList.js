@@ -76,7 +76,7 @@ class PublicationList extends React.Component {
         <View key={ idx }>
           <View style={styles.projectContainer}>
             { project.avatar_src ? avatar(project.avatar_src) : defaultAvatar }
-            <StyledText textStyle={'large'} text={ project.display_name } />
+            <StyledText textStyle={'largeBold'} text={ project.display_name } />
           </View>
           <View style={styles.publicationsContainer}>
             { addIndex(map)(
