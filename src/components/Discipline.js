@@ -18,7 +18,7 @@ class Discipline extends Component {
 
   handleClick() {
     GoogleAnalytics.trackEvent('view', this.props.tag)
-    Actions.ProjectList({tag: this.props.tag})
+    Actions.ProjectList({tag: this.props.tag, color: this.props.color})
   }
 
   render() {
@@ -29,7 +29,7 @@ class Discipline extends Component {
           <View style={styles.zooIconContainer}>
             <ZooIcon iconName={this.props.icon} />
           </View>
-          <Text style={styles.title} numberOfLines={1} ellipsizeMode={"tail"}>{this.props.title}</Text>
+          <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>{this.props.title}</Text>
           <Icon name="angle-right" style={styles.icon} />
         </View>
       </TouchableOpacity>
@@ -56,9 +56,9 @@ const styles = EStyleSheet.create({
     fontFamily: 'OpenSans-Semibold',
     backgroundColor: '$transparent',
     color: '$textColor',
-    fontSize: 22,
-    lineHeight: 30,
-    width: '100% - 120'
+    fontSize: 28,
+    lineHeight: 38,
+    width: '100% - 140'
   },
   icon: {
     fontSize: 30,
@@ -66,7 +66,7 @@ const styles = EStyleSheet.create({
     width: 20,
   },
   zooIconContainer:{
-    width: 60
+    width: 80
   },
 });
 

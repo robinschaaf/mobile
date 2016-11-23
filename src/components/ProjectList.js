@@ -44,21 +44,21 @@ class ProjectList extends React.Component {
     this.props.resetProjectList()
   }
 
-  renderRow(project) {
+  renderRow(project, color) {
     return (
-      <Project project={project}/>
+      <Project project={project} color={color} />
     );
   }
 
   static renderNavigationBar() {
-    return <NavBar title={"Projects"} showBack={true} />;
+    return <NavBar title={'Projects'} showBack={true} />;
   }
 
   render() {
     const projectList =
       <ListView
         dataSource={this.props.dataSource}
-        renderRow={this.renderRow}
+        renderRow={(rowData) => this.renderRow(rowData, this.props.color)}
         enableEmptySections={true}
       />
 
@@ -82,6 +82,7 @@ const styles = EStyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 60,
+    backgroundColor: '$lightGreyBackground'
   },
   innerContainer: {
     flex: 1,
@@ -100,6 +101,7 @@ ProjectList.propTypes = {
   isConnected: React.PropTypes.bool,
   dataSource: React.PropTypes.object,
   tag: React.PropTypes.string,
+  color: React.PropTypes.string,
   fetchProjects: React.PropTypes.func
 }
 
