@@ -50,6 +50,9 @@ const styles = EStyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold'
   },
+  bold: {
+    fontWeight: 'bold',
+  },
   citation: {
     color: 'grey',
     fontStyle: 'italic',

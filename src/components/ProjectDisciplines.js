@@ -65,6 +65,10 @@ class ProjectDisciplines extends React.Component {
         )}
       </ScrollView>
 
+    const totalClassifications =
+      <StyledText
+        text={`${this.props.user.totalClassifications} total classifications`} />
+
     const noConnection =
       <View style={styles.messageContainer}>
         <StyledText textStyle={'errorMessage'}
@@ -74,9 +78,11 @@ class ProjectDisciplines extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.subNavContainer}>
-          <Text style={styles.userName}>
-            { this.props.isGuestUser ? 'Guest User' : this.props.user.display_name }
-          </Text>
+          <StyledText textStyle={'bold'}
+            text = { this.props.isGuestUser ? 'Guest User' : this.props.user.display_name } />
+          { this.props.user.totalClassifications > 0
+            ? totalClassifications
+            : null }
         </View>
         <View style={styles.innerContainer}>
           { this.props.isConnected ? DisciplineList : noConnection }
@@ -98,18 +104,6 @@ const styles = EStyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     height: 180
-  },
-  userName: {
-    color: '$darkTextColor',
-    fontSize: 14,
-    fontWeight: 'bold'
-  },
-  signOut: {
-    backgroundColor: '$transparent',
-  },
-  signOutText: {
-    color: '$darkTextColor',
-    fontSize: 11,
   },
   messageContainer: {
     padding: 15,
