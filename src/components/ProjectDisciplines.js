@@ -19,6 +19,7 @@ GoogleAnalytics.trackEvent('view', 'Home')
 
 const mapStateToProps = (state) => ({
   user: state.user,
+  isGuestUser: state.user.isGuestUser,
   isConnected: state.isConnected,
   isFetching: state.isFetching
 })
@@ -56,7 +57,9 @@ class ProjectDisciplines extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.subNavContainer}>
-          <Text style={styles.userName}>{ this.props.user.display_name }</Text>
+          <Text style={styles.userName}>
+            { this.props.isGuestUser ? 'Guest User' : this.props.user.display_name }
+          </Text>
         </View>
         <View style={styles.innerContainer}>
           { this.props.isConnected ? DisciplineList : noConnection }
@@ -84,6 +87,13 @@ const styles = EStyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold'
   },
+  signOut: {
+    backgroundColor: '$transparent',
+  },
+  signOutText: {
+    color: '$darkTextColor',
+    fontSize: 11,
+  },
   messageContainer: {
     padding: 15,
   },
@@ -95,8 +105,10 @@ const styles = EStyleSheet.create({
 
 ProjectDisciplines.propTypes = {
   user: React.PropTypes.object,
+  isGuestUser: React.PropTypes.bool,
   isConnected: React.PropTypes.bool,
-  isFetching: React.PropTypes.bool
+  isFetching: React.PropTypes.bool,
+  signOut: React.PropTypes.func
 }
 
 export default connect(mapStateToProps)(ProjectDisciplines)
