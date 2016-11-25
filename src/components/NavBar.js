@@ -36,7 +36,7 @@ class NavBar extends Component {
   render() {
     const containerHeight = (this.props.showAvatar ? height + 70 : height )
     const logo = <Image source={require('../../images/logo.png')} style={styles.logo} />
-    const userAvatar = ( this.props.user.avatar !== undefined ? this.props.user.avatar.src : null )
+    const userAvatar = ( this.props.user.avatar === undefined ? null : this.props.user.avatar.src )
 
     const avatar =
       <View style={styles.userAvatarContainer}>
