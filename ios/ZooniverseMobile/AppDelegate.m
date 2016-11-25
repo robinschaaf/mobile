@@ -78,7 +78,7 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
   [[[self pusher] nativePusher] registerWithDeviceToken:deviceToken];
-  [[[self pusher] nativePusher] subscribe:@"donuts"];
+  [[[self pusher] nativePusher] subscribe:@"general"];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification {

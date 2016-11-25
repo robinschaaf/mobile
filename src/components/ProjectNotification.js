@@ -15,7 +15,6 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   updateProjectNotification(preferenceID, checked) {
-    console.log('>>>>preferenceID:', preferenceID)
     dispatch(updateProjectNotification(ownProps.id, preferenceID, checked))
   },
 })

@@ -42,7 +42,7 @@ class NavBar extends Component {
     const avatar =
       <View style={styles.userAvatarContainer}>
         <UserAvatar avatar={ userAvatar } isGuestUser={ this.props.user.isGuestUser } />
-        <CircleRibbon />
+        { this.props.user.isGuestUser ? null : <CircleRibbon /> }
       </View>
 
     const title =
@@ -123,9 +123,10 @@ const styles = EStyleSheet.create({
   },
   logo: {
     width: '40%',
+    height: 50,
     resizeMode: 'contain',
     position: 'relative',
-    top: 5
+    top: 15
   },
   userAvatarContainer: {
     position: 'absolute',
