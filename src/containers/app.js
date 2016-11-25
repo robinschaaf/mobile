@@ -33,6 +33,8 @@ export default class App extends Component {
       store.dispatch(setIsConnected(isConnected))
       NetInfo.isConnected.addEventListener('change', dispatchConnected)
     })
+
+    store.dispatch(fetchProjects())
   }
 
   render() {
