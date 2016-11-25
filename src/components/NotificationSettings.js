@@ -26,7 +26,7 @@ GoogleAnalytics.trackEvent('view', 'Notification Settings')
 
 const mapStateToProps = (state) => ({
   user: state.user,
-  userPreferences: state.user.userPreferences,
+  projects: state.user.projects,
   isConnected: state.isConnected,
   isFetching: state.isFetching,
   errorMessage: state.errorMessage,
@@ -75,7 +75,7 @@ class NotificationSettings extends React.Component {
 
         {addIndex(map)(
             (key, idx) => { return renderPreference(key, idx) },
-            keys(this.props.userPreferences)
+            keys(this.props.projects)
         )}
       </View>
 
@@ -93,7 +93,7 @@ class NotificationSettings extends React.Component {
           <StyledText text="General Zooniverse notifications" />
         </View>
 
-        { this.props.userPreferences ? projectNotificationsList : null }
+        { this.props.projects ? projectNotificationsList : null }
       </ScrollView>
 
     const noConnection =
@@ -147,7 +147,7 @@ const styles = EStyleSheet.create({
 
 NotificationSettings.propTypes = {
   user: React.PropTypes.object,
-  userPreferences: React.PropTypes.object,
+  projects: React.PropTypes.object,
   isFetching: React.PropTypes.bool,
   isConnected: React.PropTypes.bool,
   pushEnabled: React.PropTypes.bool,

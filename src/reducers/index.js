@@ -6,7 +6,6 @@ export const InitialState = {
   errorMessage: null,
   isConnected: null,
   projectList: [],
-  userPreferences: {},
   pushEnabled: true
 }
 
