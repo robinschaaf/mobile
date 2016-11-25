@@ -85,7 +85,6 @@ ProjectList.propTypes = {
   dataSource: React.PropTypes.object,
   tag: React.PropTypes.string,
   color: React.PropTypes.string,
-  fetchProjects: React.PropTypes.func
 }
 
 export default connect(mapStateToProps)(ProjectList)

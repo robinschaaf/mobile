@@ -53,7 +53,8 @@ class ProjectDisciplines extends React.Component {
         faIcon={'undo'}
         title={'Recent'}
         tag={'recent'}
-        color={'rgba(0, 151, 157, 1)'} />
+        color={'rgba(0, 151, 157, 1)'}
+        setSelectedProjectTag={() => {this.props.setSelectedProjectTag('recent')}} />
 
     const DisciplineList =
       <ScrollView>

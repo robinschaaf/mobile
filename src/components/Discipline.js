@@ -71,7 +71,7 @@ const styles = EStyleSheet.create({
     paddingLeft: 10
   },
   zooIconContainer:{
-    width: 60,
+    width: 70,
   },
 });
 

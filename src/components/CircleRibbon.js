@@ -86,22 +86,9 @@ class CircleRibbon extends Component {
         ) }
       </Svg>
 
-    const emptyCircle =
-      <Svg height={size} width={size}>
-        <Circle
-          cx={position}
-          cy={position}
-          r={radius}
-          stroke='hsl(216, 96%, 50%)'
-          strokeWidth={width}
-          fill='transparent' />
-      </Svg>
-
-    const displayCircleArcs = length(activeProjects) > 1
-
     return (
       <View style={styles.container}>
-        { displayCircleArcs ? wholeCircle : emptyCircle }
+        { wholeCircle }
       </View>
     )
   }
