@@ -206,13 +206,13 @@ export function updateTotalClassifications() {
   }
 }
 
-export function updateProjectNotification(id, value) {
+export function updateProjectNotification(projectID, preferenceID, value) {
   return (dispatch, getState) => {
     apiClient.headers = getState().user.apiClientHeaders
 
-    apiClient.type('project_preferences').get(id).then((preference) => {
+    apiClient.type('project_preferences').get(preferenceID).then((preference) => {
       preference.update({email_communication: value}).save()
-      dispatch(setState(`user.userPreferences.${id}.notify`, value))
+      dispatch(setState(`user.projects.${projectID}.notify`, value))
       dispatch(dispatch(syncUserStore()))
     })
     .catch((error) => {
