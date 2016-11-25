@@ -16,7 +16,7 @@ import { PUBLICATIONS } from '../constants/publications'
 import { MOBILE_PROJECTS } from '../constants/mobile_projects'
 import { GLOBALS } from '../constants/globals'
 import { NetInfo } from 'react-native'
-import { addIndex, filter, forEach, head, keys, map, propEq } from 'ramda'
+import { add, addIndex, filter, forEach, head, keys, map, propEq, reduce } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
 export function setState(stateKey, value) {
@@ -96,7 +96,8 @@ export function signIn(login, password) {
         dispatch(setUser(user))
 
         return Promise.all([
-          dispatch(loadUserAvatar()) //will have more added
+          dispatch(loadUserAvatar()),
+          dispatch(loadUserProjects())
         ])
       }).then(() => {
         dispatch(syncUserStore())
@@ -132,7 +133,8 @@ export function loadUserData() {
         return
       } else {
         return Promise.all([
-          dispatch(loadUserAvatar()), //will have more added
+          dispatch(loadUserAvatar()),
+          dispatch(loadUserProjects())
         ])
       }
     }).then(() => {
@@ -156,6 +158,50 @@ export function loadUserAvatar() {
         })
       })
     })
+  }
+}
+
+export function loadUserProjects() {
+  return (dispatch) => {
+    dispatch(setError(''))
+    return new Promise ((resolve, reject) => {
+      dispatch(getAuthUser()).then((userResourse) => {
+        userResourse.get('project_preferences').then((projectPreferences) => {
+          var promises = []
+          forEach((preference) => {
+            var promise = preference.get('project').then((project) => {
+              dispatch(setState(`user.projects.${project.id}`, {
+                  preferenceID: preference.id,
+                  name: project.display_name,
+                  slug: project.slug,
+                  notify: preference.email_communication,
+                  activity_count: preference.activity_count
+                }
+              ))
+            })
+            promises.push(promise)
+            },
+            projectPreferences
+          )
+
+          Promise.all(promises).then(() => {
+            dispatch(updateTotalClassifications())
+            return resolve()
+          })
+        })
+      }).catch((error) => {
+        dispatch(setError(error.message))
+        return reject()
+      })
+    })
+  }
+}
+
+export function updateTotalClassifications() {
+  return (dispatch, getState) => {
+    const getCounts = (key) => getState().user.projects[key]['activity_count']
+    const totalClassifications = reduce(add, 0, map(getCounts, keys(getState().user.projects)))
+    dispatch(setState('user.totalClassifications', totalClassifications))
   }
 }
 
