@@ -40,8 +40,16 @@ class ProjectDisciplines extends React.Component {
           color={color} /> )
     }
 
+    const recent =
+      <Discipline
+        faIcon={'undo'}
+        title={'Recent'}
+        tag={'recent'}
+        color={'rgba(0, 151, 157, 1)'} />
+
     const DisciplineList =
       <ScrollView>
+        { this.props.isGuestUser ? null : recent }
         {addIndex(map)(
           (discipline, idx) => { return renderDiscipline(discipline, idx) },
           filter(propEq('display', true), GLOBALS.DISCIPLINES)
