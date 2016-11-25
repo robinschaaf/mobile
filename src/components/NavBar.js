@@ -90,7 +90,7 @@ const styles = EStyleSheet.create({
   navBar: {
     backgroundColor: '$headerColor',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     height: height,
     paddingBottom: 10,
     paddingTop: topPadding,

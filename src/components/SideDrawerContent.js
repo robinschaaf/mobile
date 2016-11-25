@@ -29,6 +29,7 @@ class SideDrawerContent extends Component {
     super(props)
     this.close = this.close.bind(this)
     this.goHome = this.goHome.bind(this)
+    this.notificationSettings = this.notificationSettings.bind(this)
     this.signOut = this.signOut.bind(this)
     this.goToAbout = this.goToAbout.bind(this)
     this.goToPublications = this.goToPublications.bind(this)
@@ -48,6 +49,11 @@ class SideDrawerContent extends Component {
   signIn(){
     this.close()
     Actions.SignIn()
+  }
+
+  notificationSettings(){
+    this.close()
+    Actions.NotificationSettings()
   }
 
   signOut(){
@@ -123,8 +129,13 @@ class SideDrawerContent extends Component {
             text={'Publications'} />
         </TouchableOpacity>
 
-        { this.props.isGuestUser ? null : signOut }
+        <TouchableOpacity onPress={this.notificationSettings} style={styles.linkContainer}>
+          <StyledText
+            textStyle={'largeLink'}
+            text={'Notification Settings'} />
+        </TouchableOpacity>
 
+        { this.props.isGuestUser ? null : signOut }
 
         <View style={styles.socialMediaContainer}>
           <TouchableOpacity onPress={() => this.openSocialMediaLink('https://twitter.com/the_zooniverse')}>
@@ -152,6 +163,7 @@ class SideDrawerContent extends Component {
 const styles = EStyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     paddingTop: 80
   },
   closeIcon: {

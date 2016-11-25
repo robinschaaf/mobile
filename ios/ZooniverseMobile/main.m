@@ -15,4 +15,18 @@ int main(int argc, char * argv[]) {
   @autoreleasepool {
     return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
   }
+  @autoreleasepool
+  {
+    int returnValue;
+    @try
+    {
+      returnValue = UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+    }
+    @catch (NSException* exception)
+    {
+      NSLog(@"Exception %@", [exception reason]);
+      @throw exception;
+    }
+    return returnValue;
+  }
 }

@@ -7,9 +7,11 @@ export const InitialState = {
   isConnected: null,
   selectedDiscipline: null,
   projectList: [],
+  pushEnabled: true
 }
 
 export default function(state=InitialState, action) {
+
   switch (action.type) {
     case 'SET_STATE':
       return set(lensPath(action.stateKey.split('.')), action.value, state)

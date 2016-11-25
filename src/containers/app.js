@@ -14,6 +14,7 @@ import About from '../components/About'
 import PublicationList from '../components/PublicationList'
 import SignIn from '../components/SignIn'
 import SideDrawer from '../components/SideDrawer'
+import NotificationSettings from '../components/NotificationSettings'
 
 const store = compose(applyMiddleware(thunkMiddleware))(createStore)(reducer)
 
@@ -48,6 +49,7 @@ export default class App extends Component {
               <Scene key="About" component={About} />
               <Scene key="Publications" component={PublicationList} />
               <Scene key="ProjectList" component={ProjectList} />
+              <Scene key="NotificationSettings" component={NotificationSettings} />
             </Scene>
           </Scene>
         </Router>

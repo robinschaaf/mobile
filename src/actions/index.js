@@ -15,7 +15,7 @@ import store from 'react-native-simple-store'
 import { PUBLICATIONS } from '../constants/publications'
 import { MOBILE_PROJECTS } from '../constants/mobile_projects'
 import { GLOBALS } from '../constants/globals'
-import { NetInfo } from 'react-native'
+import { NativeModules, NetInfo } from 'react-native'
 import { add, addIndex, filter, forEach, head, intersection, keys, map, propEq, reduce } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
@@ -186,6 +186,7 @@ export function loadUserProjects() {
 
           Promise.all(promises).then(() => {
             dispatch(updateTotalClassifications())
+            dispatch(syncInterestSubscriptions())
             dispatch(fetchProjectsByParms('recent'))
             return resolve()
           })
@@ -203,6 +204,67 @@ export function updateTotalClassifications() {
     const getCounts = (key) => getState().user.projects[key]['activity_count']
     const totalClassifications = reduce(add, 0, map(getCounts, keys(getState().user.projects)))
     dispatch(setState('user.totalClassifications', totalClassifications))
+  }
+}
+
+export function updateProjectNotification(projectID, preferenceID, value) {
+  return (dispatch, getState) => {
+    apiClient.headers = getState().user.apiClientHeaders
+
+    apiClient.type('project_preferences').get(preferenceID).then((preference) => {
+      preference.update({email_communication: value}).save()
+      dispatch(setState(`user.projects.${projectID}.notify`, value))
+      dispatch(dispatch(syncUserStore()))
+    })
+    .catch((error) => {
+      dispatch(setError(error.message))
+    })
+  }
+}
+
+export function updateUser(attr, value) {
+  return (dispatch, getState) => {
+    apiClient.headers = getState().user.apiClientHeaders
+
+    apiClient.type('users').get(getState().user.id)
+      .then((user) => {
+        user.update({[attr]: value}).save()
+        dispatch(setState(`user.${attr}`, value))
+        dispatch(syncUserStore())
+      })
+      .catch((error) => {
+        dispatch(setError(error.message))
+      })
+  }
+}
+
+export function syncInterestSubscriptions() {
+  return (dispatch, getState) => {
+    var preferences = []
+
+    map((key) => { preferences.push(getState().user.userPreferences[key]) }, keys(getState().user.userPreferences))
+
+    preferences.reduce(function(promise, preference) {
+      return promise.then(function() {
+        return dispatch(updateInterestSubscription(preference.projectID, preference.notify))
+      });
+    }, Promise.resolve())
+  }
+}
+
+export function updateInterestSubscription(interest, subscribed) {
+  var NotificationSettings = NativeModules.NotificationSettings
+
+  return () => {
+    return new Promise((resolve) => {
+      NotificationSettings.setInterestSubscription(interest, subscribed).then((message) => {
+        //Timeout needed or crashes ios.  Open issue: https://github.com/pusher/libPusher/issues/230
+        setTimeout(()=> {
+          return resolve(message)
+        }, 100)
+
+      })
+    })
   }
 }
 
