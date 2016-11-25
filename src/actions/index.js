@@ -8,8 +8,13 @@ export const SET_PROJECT_LIST = 'SET_PROJECT_LIST'
 import auth from 'panoptes-client/lib/auth'
 import apiClient from 'panoptes-client/lib/api-client'
 import store from 'react-native-simple-store'
+<<<<<<< HEAD
 import { NativeModules, NetInfo } from 'react-native'
 import { head, forEach, keys, map } from 'ramda'
+=======
+import { NetInfo } from 'react-native'
+import { head, forEach } from 'ramda'
+>>>>>>> notifications-settings
 import { Actions, ActionConst } from 'react-native-router-flux'
 
 export function setState(stateKey, value) {
@@ -81,6 +86,10 @@ export function signIn(login, password) {
       auth.signIn({login: login, password: password}).then((user) => {
         user.apiClientHeaders = apiClient.headers
         dispatch(setUser(user))
+<<<<<<< HEAD
+=======
+
+>>>>>>> notifications-settings
         return Promise.all([
           dispatch(loadUserAvatar()),
           dispatch(loadNotificationSettings())
@@ -144,7 +153,10 @@ export function loadNotificationSettings() {
           )
           Promise.all(promises).then(() => {
             dispatch(setUser(getState().user))
+<<<<<<< HEAD
             dispatch(syncInterestSubscriptions())
+=======
+>>>>>>> notifications-settings
             return resolve()
           })
         })
@@ -203,6 +215,14 @@ export function updateProjectNotification(id, value) {
       .catch((error) => {
         dispatch(setError(error.message))
       })
+    apiClient.type('project_preferences').get(id).then((preference) => {
+      preference.update({email_communication: value}).save()
+      dispatch(setState(`user.userPreferences.${id}.notify`, value))
+      dispatch(dispatch(syncUserStore()))
+    })
+    .catch((error) => {
+      dispatch(setError(error.message))
+    })
   }
 }
 

@@ -14,7 +14,11 @@ import NavBar from './NavBar'
 import OverlaySpinner from './OverlaySpinner'
 import ProjectNotification from './ProjectNotification'
 import { connect } from 'react-redux'
+<<<<<<< HEAD
 import { updateUser, setState, updateInterestSubscription } from '../actions/index'
+=======
+import { updateUser, setState } from '../actions/index'
+>>>>>>> notifications-settings
 import { addIndex, keys, map } from 'ramda'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 

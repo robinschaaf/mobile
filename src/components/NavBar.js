@@ -10,7 +10,6 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 import { connect } from 'react-redux'
 import {Actions} from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { isEmpty, or } from 'ramda'
 import UserAvatar from './UserAvatar'
 
 const topPadding = (Platform.OS === 'ios') ? 22 : 10
@@ -37,7 +36,7 @@ class NavBar extends Component {
   render() {
     const containerHeight = (this.props.showAvatar ? height + 70 : height )
     const logo = <Image source={require('../../images/logo.png')} style={styles.logo} />
-    const userAvatar = ( or(isEmpty(this.props.user), isEmpty(this.props.user.avatar)) ? null : null )
+    const userAvatar = ( this.props.user.avatar !== undefined ? this.props.user.avatar.src : null )
 
     const avatar =
       <View style={styles.userAvatarContainer}>
