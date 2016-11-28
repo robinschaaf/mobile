@@ -60,7 +60,7 @@ class CircleRibbon extends Component {
       const endAmount = startAmount + (project.activity_count / this.props.totalClassifications);
       const startPoint = this.getPointOnCircle(startAmount, radius);
       const endPoint = this.getPointOnCircle(endAmount, radius);
-      const largeArc = this.calcLargeArc(project.classifications, this.props.totalClassifications);
+      const largeArc = this.calcLargeArc(project.activity_count, this.props.totalClassifications);
       const color = getColorFromString(project.slug)
 
       return (
