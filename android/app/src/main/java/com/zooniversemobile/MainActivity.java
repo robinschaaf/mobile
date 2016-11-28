@@ -42,7 +42,7 @@ public class MainActivity extends ReactActivity {
                 nativePusher.registerFCM(this, new PushNotificationRegistrationListener() {
                     @Override
                     public void onSuccessfulRegistration() {
-                        nativePusher.subscribe("general2");
+                        nativePusher.subscribe("general");
                     }
 
                     @Override
@@ -62,12 +62,10 @@ public class MainActivity extends ReactActivity {
                 @Override
                 public void onMessageReceived(RemoteMessage remoteMessage) {
                     //https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/RemoteMessage.Notification
-                    System.out.println(">>>>received message fired!!");
-                    System.out.println(remoteMessage.getNotification());
-                    if (remoteMessage.getNotification() != null) {
-                        String title = remoteMessage.getNotification().getTitle();
-                        System.out.println("Title: " + title);
-                    }
+                    //if (remoteMessage.getNotification() != null) {
+                    //    String title = remoteMessage.getNotification().getTitle();
+                    //    System.out.println("Title: " + title);
+                    //}
 
                     //TODO: Use react native alert to display cross-platform alert here
 
