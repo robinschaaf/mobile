@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import {
   View
 } from 'react-native'
-import Svg, { Circle, Path } from 'react-native-svg'
+import Svg, { Path } from 'react-native-svg'
 import EStyleSheet from 'react-native-extended-stylesheet'
 import getColorFromString from '../utils/color-from-string'
 import { connect } from 'react-redux'
-import { addIndex, filter, keys, length, map } from 'ramda'
+import { addIndex, filter, keys, map } from 'ramda'
 
 const size = 120
 const position = size / 2
@@ -22,12 +22,12 @@ const mapStateToProps = (state) => ({
 class CircleRibbon extends Component {
   getPointOnCircle(amount, radius) {
     const degrees = amount * 360
-    const startingFromTop = degrees - 90;
+    const startingFromTop = degrees - 90
     const radians = startingFromTop * Math.PI / 180
     return {
       x: (radius * Math.cos(radians)) + position,
       y: (radius * Math.sin(radians)) + position,
-    };
+    }
   }
 
   calcLargeArc(classifications) {
@@ -57,10 +57,10 @@ class CircleRibbon extends Component {
         return null
       }
 
-      const endAmount = startAmount + (project.activity_count / this.props.totalClassifications);
-      const startPoint = this.getPointOnCircle(startAmount, radius);
-      const endPoint = this.getPointOnCircle(endAmount, radius);
-      const largeArc = this.calcLargeArc(project.classifications, this.props.totalClassifications);
+      const endAmount = startAmount + (project.activity_count / this.props.totalClassifications)
+      const startPoint = this.getPointOnCircle(startAmount, radius)
+      const endPoint = this.getPointOnCircle(endAmount, radius)
+      const largeArc = this.calcLargeArc(project.activity_count)
       const color = getColorFromString(project.slug)
 
       return (
@@ -76,7 +76,7 @@ class CircleRibbon extends Component {
       )
     }
 
-    const wholeCircle =
+    const circle =
       <Svg height={size} width={size}>
         { addIndex (map)(
           (project, idx) => {
@@ -86,22 +86,9 @@ class CircleRibbon extends Component {
         ) }
       </Svg>
 
-    const emptyCircle =
-      <Svg height={size} width={size}>
-        <Circle
-          cx={position}
-          cy={position}
-          r={radius}
-          stroke='hsl(216, 96%, 50%)'
-          strokeWidth={width}
-          fill='transparent' />
-      </Svg>
-
-    const displayCircleArcs = length(activeProjects) > 1
-
     return (
       <View style={styles.container}>
-        { displayCircleArcs ? wholeCircle : emptyCircle }
+        { circle }
       </View>
     )
   }
