@@ -166,7 +166,7 @@ export function loadUserProjects() {
     dispatch(setError(''))
     return new Promise ((resolve, reject) => {
       dispatch(getAuthUser()).then((userResourse) => {
-        userResourse.get('project_preferences').then((projectPreferences) => {
+        userResourse.get('project_preferences', {}).then((projectPreferences) => {
           var promises = []
           forEach((preference) => {
             var promise = preference.get('project').then((project) => {
