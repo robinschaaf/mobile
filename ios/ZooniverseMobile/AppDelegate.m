@@ -13,6 +13,7 @@
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
 
+#import "RCTPushNotificationManager.h"
 #import <Pusher/Pusher.h>
 
 @import HockeySDK;
@@ -29,6 +30,7 @@
 
   self.pusher = [PTPusher pusherWithKey:@"ed07dc711db7079f2401" delegate:self encrypted:YES];
   
+  
   if( SYSTEM_VERSION_LESS_THAN( @"10.0" ) )
   {
     UIUserNotificationType notificationTypes = UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound;
@@ -38,16 +40,7 @@
   }
   else
   {
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    center.delegate = self;
-    [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error)
-    {
-      if( !error )
-      {
-        [[UIApplication sharedApplication] registerForRemoteNotifications];  // required to get the app to do anything at all about push notifications
-        NSLog( @"Push registration success." );
-      }
-    }];
+    [self registerForRemoteNotifications];
   }
 
   [[BITHockeyManager sharedHockeyManager] configureWithIdentifier:@"a64221f0d73b46829478d405c90e6638"];
@@ -74,8 +67,20 @@
   return YES;
 }
 
+
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
   return [Orientation getOrientation];
+}
+
+- (void)registerForRemoteNotifications {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    center.delegate = self;
+    [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge) completionHandler:^(BOOL granted, NSError * _Nullable error){
+      if(!error){
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
+      }
+    }];
+
 }
 
 
@@ -84,21 +89,23 @@
   [[[self pusher] nativePusher] subscribe:@"general"];
 }
 
+
+//For iOS < 10
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)notification {
-  NSLog(@"Received remote notification: %@", notification);
+  [RCTPushNotificationManager didReceiveRemoteNotification:notification];
 }
 
 
+//For iOS >= 10 - Called when a notification is delivered to a foreground app.
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler{
-  
-  NSLog(@"Userinfo %@",notification.request.content.userInfo);
-  
+  [RCTPushNotificationManager didReceiveRemoteNotification:notification.request.content.userInfo];
+  completionHandler(UNAuthorizationOptionSound | UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
 }
 
+//For iOS >= 10 - Called to let your app know which action was selected by the user for a given notification.
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
-  
-  NSLog(@"Userinfo %@",response.notification.request.content.userInfo);
-  
+  [RCTPushNotificationManager didReceiveRemoteNotification:response.notification.request.content.userInfo];
+  completionHandler();
 }
 
 @end

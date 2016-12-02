@@ -15,7 +15,7 @@ import store from 'react-native-simple-store'
 import { PUBLICATIONS } from '../constants/publications'
 import { MOBILE_PROJECTS } from '../constants/mobile_projects'
 import { GLOBALS } from '../constants/globals'
-import { NetInfo } from 'react-native'
+import { Alert, Linking, NetInfo } from 'react-native'
 import { addIndex, filter, forEach, head, keys, map, propEq } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
@@ -144,6 +144,35 @@ export function fetchProjectsByTag(tag) {
   }
 }
 
+export function goToProject(projectID) {
+  return dispatch => {
+    dispatch(setIsFetching(true))
+    apiClient.type('projects').get({id: projectID})
+      .then((projects) => {
+        var slug = head(projects).slug
+        dispatch(openProjectLink(slug))
+      })
+      .catch((error) => {
+        dispatch(setError('The following error occurred.  Please close down Zooniverse and try again.  If it persists please notify us.  \n\n' + error,))
+      })
+      .then(() => {
+        dispatch(setIsFetching(false))
+      })
+  }
+}
+
+export function openProjectLink(slug) {
+  const zurl=`http://zooniverse.org/projects/${slug}`
+  Linking.canOpenURL(zurl).then(supported => {
+    if (supported) {
+      Linking.openURL(zurl)
+    } else {
+      Alert.alert(
+        'Error', 'Sorry, but it looks like you are unable to open the project in your default browser.',
+      )
+    }
+  })
+}
 
 export function fetchPublications() {
   return dispatch => {

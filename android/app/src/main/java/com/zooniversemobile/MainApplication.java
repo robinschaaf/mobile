@@ -1,11 +1,9 @@
 package com.zooniversemobile;
 
-import android.app.Application;
-import android.util.Log;
 import android.support.multidex.MultiDexApplication;
 
+import com.evollu.react.fcm.FIRMessagingPackage;
 import com.facebook.react.ReactApplication;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -26,6 +24,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+          new FIRMessagingPackage(),
           new GoogleAnalyticsBridgePackage()
       );
     }

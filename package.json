@@ -13,6 +13,7 @@
     "react-native-browser-builtins": "^2.0.3",
     "react-native-drawer": "^2.3.0",
     "react-native-extended-stylesheet": "^0.3.0",
+    "react-native-fcm": "^2.5.0",
     "react-native-google-analytics-bridge": "^4.0.2",
     "react-native-loading-spinner-overlay": "^0.3.0",
     "react-native-orientation": "^1.17.0",
