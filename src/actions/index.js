@@ -15,7 +15,7 @@ import store from 'react-native-simple-store'
 import { PUBLICATIONS } from '../constants/publications'
 import { MOBILE_PROJECTS } from '../constants/mobile_projects'
 import { GLOBALS } from '../constants/globals'
-import { Alert, Linking, NetInfo } from 'react-native'
+import { Alert, Linking, NativeModules, NetInfo } from 'react-native'
 import { addIndex, filter, forEach, head, keys, map, propEq } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
@@ -126,6 +126,7 @@ export function getAuthUser() {
 }
 
 export function loadUserData() {
+  console.log('>>>>loading user data')
   return (dispatch, getState) => {
     dispatch(setUserFromStore()).then(() => {
       if (getState().user.isGuestUser) {
@@ -133,6 +134,7 @@ export function loadUserData() {
       } else {
         return Promise.all([
           dispatch(loadUserAvatar()), //will have more added
+          dispatch(loadNotificationSettings()), //will have more added
         ])
       }
     }).then(() => {
@@ -245,5 +247,33 @@ export function fetchPublications() {
         PUBLICATIONS[key]
       )
     }, keys(PUBLICATIONS))
+  }
+}
+
+export function loadNotificationSettings() {
+  //loop through each mobile friendly project
+  //user.notifications.general = true / false
+  //user.notifications.projectid = true / false
+  //if that notification setting exists for this user, leave it alone
+  //if it doesn't, add it, and default it to on.  run update interest subscription for it as well
+  console.log('>>>>loading settings...')
+  return dispatch => {
+    forEach(
+      (projectID) => {
+        console.log('>>>>notification setting for projectID', projectID)
+        dispatch(setState(`notifications.${projectID}`, true))
+      }
+    )(MOBILE_PROJECTS)
+
+  }
+
+
+}
+
+export function updateInterestSubscription(interest, subscribed) {
+  console.log('subscribing to...', interest, subscribed)
+  return () => {
+    var NotificationSettings = NativeModules.NotificationSettings;
+    subscribed ? NotificationSettings.subscribe(interest) : NotificationSettings.unsubscribe(interest)
   }
 }
