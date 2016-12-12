@@ -3,9 +3,11 @@ import {
   Text
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import { append } from 'ramda'
 
 const StyledText = (props) => {
-  const textStyle = ( props.textStyle ? [styles.defaultText, styles[props.textStyle]] : styles.defaultText )
+  var textStyle = ( props.textStyle ? [styles.defaultText, styles[props.textStyle]] : [styles.defaultText] )
+  textStyle = (props.additionalStyles ? append(props.additionalStyles, textStyle) : textStyle)
 
   return (
     <Text style={textStyle}>
@@ -57,6 +59,7 @@ const styles = EStyleSheet.create({
 StyledText.propTypes = {
   text: React.PropTypes.string,
   textStyle: React.PropTypes.string,
+  additionalStyles: React.PropTypes.array,
 }
 
 export default StyledText

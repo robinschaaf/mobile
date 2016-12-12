@@ -199,34 +199,16 @@ export function fetchProjectsByTag(tag) {
   }
 }
 
-export function goToProject(projectID) {
+export function fetchProject(projectID) {
   return dispatch => {
-    dispatch(setIsFetching(true))
     apiClient.type('projects').get({id: projectID})
       .then((projects) => {
-        var slug = head(projects).slug
-        dispatch(openProjectLink(slug))
+        dispatch(setState('notificationProject', head(projects)))
       })
       .catch((error) => {
         dispatch(setError('The following error occurred.  Please close down Zooniverse and try again.  If it persists please notify us.  \n\n' + error,))
       })
-      .then(() => {
-        dispatch(setIsFetching(false))
-      })
   }
-}
-
-export function openProjectLink(slug) {
-  const zurl=`http://zooniverse.org/projects/${slug}`
-  Linking.canOpenURL(zurl).then(supported => {
-    if (supported) {
-      Linking.openURL(zurl)
-    } else {
-      Alert.alert(
-        'Error', 'Sorry, but it looks like you are unable to open the project in your default browser.',
-      )
-    }
-  })
 }
 
 export function fetchPublications() {

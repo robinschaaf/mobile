@@ -1,19 +1,11 @@
 import React, {Component} from 'react'
-import {
-  AppState,
-  NetInfo,
-  Platform,
-  PushNotificationIOS
-} from 'react-native'
-import FCM from 'react-native-fcm'
+import { AppState, NetInfo } from 'react-native'
 import { createStore, applyMiddleware, compose } from 'redux'
 import { Provider } from 'react-redux'
 import reducer from '../reducers/index'
 import thunkMiddleware from 'redux-thunk'
 import {Scene, Router} from 'react-native-router-flux'
-import { setIsConnected, loadUserData, fetchProjects, goToProject } from '../actions/index'
-import { MOBILE_PROJECTS } from '../constants/mobile_projects'
-import { indexOf } from 'ramda'
+import { setIsConnected, loadUserData, fetchProjects } from '../actions/index'
 
 import ZooniverseApp from './zooniverseApp'
 import NotificationSettings from '../components/NotificationSettings'
@@ -28,12 +20,6 @@ const store = compose(applyMiddleware(thunkMiddleware))(createStore)(reducer)
 
 export default class App extends Component {
   componentDidMount() {
-    if (Platform.OS === 'ios') {
-      PushNotificationIOS.addEventListener('notification', this.onRemoteNotificationIOS)
-    } else {
-      FCM.on('notification', this.onRemoteNotificationAndroid)
-    }
-
     store.dispatch(loadUserData())
 
     const handleAppStateChange = currentAppState => {
@@ -52,30 +38,6 @@ export default class App extends Component {
     store.dispatch(fetchProjects())
   }
 
-  componentWillUnmount() {
-    PushNotificationIOS.removeEventListener('notification', this.onRemoteNotificationIOS);
-  }
-
-  onRemoteNotificationIOS = (notification) => {
-    var projectID = ( notification._data.data !== undefined ? notification._data.data.project_id : null)
-    if (this.isMobileProject(projectID)) {
-      if (AppState.currentState !== 'active') {
-        store.dispatch(goToProject(projectID))
-      }
-    }
-  }
-
-  onRemoteNotificationAndroid = (notification) => {
-    var projectID = notification.project_id
-    if (this.isMobileProject(projectID)) {
-      store.dispatch(goToProject(projectID))
-    }
-  }
-
-  isMobileProject(projectID) {
-    return indexOf(projectID, MOBILE_PROJECTS) >= 0
-  }
-
   render() {
     return (
       <Provider store={store}>
@@ -91,6 +53,7 @@ export default class App extends Component {
               <Scene key="NotificationSettings" component={NotificationSettings} />
             </Scene>
           </Scene>
+
         </Router>
       </Provider>
     );

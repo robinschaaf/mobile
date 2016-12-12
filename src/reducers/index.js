@@ -7,6 +7,8 @@ export const InitialState = {
   isConnected: null,
   selectedDiscipline: null,
   projectList: [],
+  notificationProject: {},
+  notificationPayload: {},
 }
 
 export default function(state=InitialState, action) {

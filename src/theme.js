@@ -10,4 +10,5 @@ export default {
   transparent: 'rgba(0, 0, 0, 0)',
   darkTextColor: 'rgba(12, 71, 128, 1)',
   lightGrey: 'rgba(240, 240, 240, 1)',
+  mediumGrey: 'rgba(216, 216, 216, 1)',
 }

@@ -71,7 +71,11 @@ public class MainActivity extends ReactActivity {
                 @Override
                 public void onMessageReceived(RemoteMessage remoteMessage) {
                 String projectID = String.valueOf(remoteMessage.getData().get("project_id"));
-                sendNotification(remoteMessage.getNotification().getTitle(), projectID);
+                sendNotification(
+                    remoteMessage.getNotification().getTitle(),
+                    remoteMessage.getNotification().getBody(),
+                    projectID
+                );
                 }
             });
 
@@ -94,8 +98,10 @@ public class MainActivity extends ReactActivity {
         return true;
     }
 
-    private void sendNotification(String messageTitle, String projectID) {
+    private void sendNotification(String messageTitle, String messageBody, String projectID) {
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("title", messageTitle);
+        intent.putExtra("body", messageBody);
         intent.putExtra("project_id", projectID);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -105,6 +111,7 @@ public class MainActivity extends ReactActivity {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(messageTitle)
+                .setContentText(messageBody)
                 .setDefaults(Notification.DEFAULT_SOUND)
                 .setLights(0xff00979D, 1000, 1000)
                 .setAutoCancel(true)
