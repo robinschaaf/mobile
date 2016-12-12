@@ -53,10 +53,12 @@ export function syncUserStore() {
 }
 
 export function setUserFromStore() {
+  console.log('SETTINGUSERFROMSTORE')
   return dispatch => {
     return new Promise ((resolve, reject) => {
       store.get('@zooniverse:user').then(json => {
         dispatch(setUser(json.user))
+        console.log('>>>usernotificationsfromstore', json.user.notifications)
         return resolve()
       }).catch(() => {
         return reject()
@@ -96,7 +98,8 @@ export function signIn(login, password) {
         dispatch(setUser(user))
 
         return Promise.all([
-          dispatch(loadUserAvatar()) //will have more added
+          dispatch(loadUserAvatar()),
+          dispatch(loadNotificationSettings())
         ])
       }).then(() => {
         dispatch(syncUserStore())
@@ -126,15 +129,16 @@ export function getAuthUser() {
 }
 
 export function loadUserData() {
-  console.log('>>>>loading user data')
   return (dispatch, getState) => {
     dispatch(setUserFromStore()).then(() => {
       if (getState().user.isGuestUser) {
-        return
+        return Promise.all([
+          dispatch(loadNotificationSettings()),
+        ])
       } else {
         return Promise.all([
-          dispatch(loadUserAvatar()), //will have more added
-          dispatch(loadNotificationSettings()), //will have more added
+          dispatch(loadUserAvatar()),
+          dispatch(loadNotificationSettings()),
         ])
       }
     }).then(() => {
@@ -251,29 +255,56 @@ export function fetchPublications() {
 }
 
 export function loadNotificationSettings() {
-  //loop through each mobile friendly project
-  //user.notifications.general = true / false
-  //user.notifications.projectid = true / false
-  //if that notification setting exists for this user, leave it alone
-  //if it doesn't, add it, and default it to on.  run update interest subscription for it as well
-  console.log('>>>>loading settings...')
-  return dispatch => {
-    forEach(
-      (projectID) => {
-        console.log('>>>>notification setting for projectID', projectID)
-        dispatch(setState(`notifications.${projectID}`, true))
-      }
-    )(MOBILE_PROJECTS)
+  return (dispatch, getState) => {
+    if (getState().user.notifications.general === undefined) {
+      dispatch(setState('user.notifications.general', true))
+    }
 
+    forEach((projectID) => {
+      if (getState().user.notifications[projectID] === undefined) {
+        dispatch(setState(`user.notifications.${projectID}`, true))
+      }
+    })(MOBILE_PROJECTS)
+
+    return dispatch(syncInterestSubscriptions())
   }
 
 
 }
 
+
+export function syncInterestSubscriptions() {
+  return (dispatch, getState) => {
+    return new Promise ((resolve) => {
+      var promises = []
+      forEach((projectID) => {
+        var subscribed = getState().user.notifications[projectID]
+        var promise = dispatch(updateInterestSubscription(projectID, subscribed))
+        promises.push(promise)
+      }, keys(getState().user.notifications) )
+
+
+      Promise.all(promises).then(() => {
+        return resolve()
+      })
+    })
+  }
+}
+
+
+
 export function updateInterestSubscription(interest, subscribed) {
-  console.log('subscribing to...', interest, subscribed)
+  var NotificationSettings = NativeModules.NotificationSettings
+
   return () => {
-    var NotificationSettings = NativeModules.NotificationSettings;
-    subscribed ? NotificationSettings.subscribe(interest) : NotificationSettings.unsubscribe(interest)
+    return new Promise((resolve) => {
+      NotificationSettings.setInterestSubscription(interest, subscribed).then((message) => {
+        //Timeout needed or crashes ios.  Open issue: https://github.com/pusher/libPusher/issues/230
+        setTimeout(()=> {
+          return resolve(message)
+        }, 100)
+
+      })
+    })
   }
 }

@@ -14,15 +14,16 @@ import NavBar from './NavBar'
 import OverlaySpinner from './OverlaySpinner'
 import ProjectNotification from './ProjectNotification'
 import { connect } from 'react-redux'
-import { updateUser, setState, updateInterestSubscription } from '../actions/index'
-import { addIndex, keys, map } from 'ramda'
+import { setState, updateInterestSubscription, syncUserStore } from '../actions/index'
+import { addIndex, find, keys, map, flatten, propEq, without } from 'ramda'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 
 GoogleAnalytics.trackEvent('view', 'Notification Settings')
 
 const mapStateToProps = (state) => ({
   user: state.user,
-  projects: state.user.projects,
+  notifications: state.user.notifications,
+  projectList: state.projectList,
   isConnected: state.isConnected,
   isFetching: state.isFetching,
   errorMessage: state.errorMessage,
@@ -30,8 +31,9 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  updateGlobalNotification(checked) {
-    dispatch(updateUser('global_email_communication', checked))
+  updateGeneralNotification(checked) {
+    dispatch(setState('user.notifications.general', checked))
+    dispatch(syncUserStore())
     dispatch(updateInterestSubscription('general', checked))
   },
   setState(key, value){
@@ -57,11 +59,22 @@ class NotificationSettings extends React.Component {
   }
 
   render() {
+    var mobileProjects = flatten(
+      map((tag) => { return this.props.projectList[tag] }, keys(this.props.projectList))
+    )
+
     const renderPreference = (id, idx) => {
-      return (
-        <ProjectNotification
-          id={id}
-          key={idx} /> )
+      var project = find(propEq('id', id))(mobileProjects)
+
+      if (project === undefined) { //project may no longer exist
+        return
+      } else {
+        return (
+          <ProjectNotification
+            id={id}
+            name={project.display_name}
+            key={idx} /> )
+      }
     }
 
     const projectNotificationsList =
@@ -71,26 +84,25 @@ class NotificationSettings extends React.Component {
 
         {addIndex(map)(
             (key, idx) => { return renderPreference(key, idx) },
-            keys(this.props.projects)
+            without(['general'] , keys(this.props.notifications))
         )}
       </View>
 
     const preferencesScrollView =
       <ScrollView>
-        <StyledText textStyle={'errorMessage'} text="Note during beta - this currently will change your email subscriptions so be sure to switch them back!" />
         <StyledText
           text={'Zooniverse would like to occassionally send you updates about new projects or projects needing help.'} />
         <View style={styles.switchContainer}>
           <Switch
-            value={this.props.user.global_email_communication}
+            value={this.props.user.notifications['general']}
             style={styles.switch}
             onTintColor={theme.headerColor}
-            onValueChange={(checked) => this.props.updateGlobalNotification(checked)}
+            onValueChange={(checked) => this.props.updateGeneralNotification(checked)}
           />
           <StyledText text="General Zooniverse notifications" />
         </View>
 
-        { this.props.projects ? projectNotificationsList : null }
+        { this.props.notifications ? projectNotificationsList : null }
       </ScrollView>
 
     const noConnection =
@@ -144,13 +156,14 @@ const styles = EStyleSheet.create({
 
 NotificationSettings.propTypes = {
   user: React.PropTypes.object,
-  projects: React.PropTypes.object,
+  notifications: React.PropTypes.object,
+  projectList: React.PropTypes.object,
   isFetching: React.PropTypes.bool,
   isConnected: React.PropTypes.bool,
   pushEnabled: React.PropTypes.bool,
   errorMessage: React.PropTypes.string,
-  updateGlobalNotification: React.PropTypes.func,
   setState: React.PropTypes.func,
+  updateGeneralNotification: React.PropTypes.func,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationSettings)

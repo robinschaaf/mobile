@@ -16,6 +16,7 @@ import { MOBILE_PROJECTS } from '../constants/mobile_projects'
 import { indexOf } from 'ramda'
 
 import ZooniverseApp from './zooniverseApp'
+import NotificationSettings from '../components/NotificationSettings'
 import ProjectList from '../components/ProjectList'
 import ProjectDisciplines from '../components/ProjectDisciplines'
 import About from '../components/About'
@@ -87,6 +88,7 @@ export default class App extends Component {
               <Scene key="About" component={About} />
               <Scene key="Publications" component={PublicationList} />
               <Scene key="ProjectList" component={ProjectList} />
+              <Scene key="NotificationSettings" component={NotificationSettings} />
             </Scene>
           </Scene>
         </Router>

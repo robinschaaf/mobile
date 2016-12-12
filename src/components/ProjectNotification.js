@@ -7,15 +7,17 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 import theme from '../theme'
 import StyledText from './StyledText'
 import { connect } from 'react-redux'
-import { updateProjectNotification } from '../actions/index'
+import { setState, syncUserStore, updateInterestSubscription } from '../actions/index'
 
 const mapStateToProps = (state, ownProps) => ({
-  userProject: state.user.projects[ownProps.id]
+  notification: state.user.notifications[ownProps.id]
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  updateProjectNotification(preferenceID, checked) {
-    dispatch(updateProjectNotification(ownProps.id, preferenceID, checked))
+  updateProjectNotification(checked) {
+    dispatch(setState(`user.notifications.${ownProps.id}`, checked))
+    dispatch(syncUserStore())
+    dispatch(updateInterestSubscription(ownProps.id, checked))
   },
 })
 
@@ -24,13 +26,13 @@ class ProjectNotification extends Component {
     return (
       <View style={styles.container}>
         <Switch
-          value={this.props.userProject.notify}
+          value={this.props.notification}
           style={styles.switch}
           onTintColor={theme.headerColor}
-          onValueChange={(checked) => this.props.updateProjectNotification(this.props.userProject.preferenceID, checked)}
+          onValueChange={(checked) => this.props.updateProjectNotification(checked)}
         />
 
-        <StyledText text={this.props.userProject.name} />
+        <StyledText text={this.props.name} />
       </View>
     );
   }
@@ -49,7 +51,8 @@ const styles = EStyleSheet.create({
 
 ProjectNotification.propTypes = {
   id: React.PropTypes.string.isRequired,
-  userProject: React.PropTypes.object.isRequired,
+  name: React.PropTypes.string.isRequired,
+  notification: React.PropTypes.bool.isRequired,
   updateProjectNotification: React.PropTypes.func.isRequired,
 }
 
