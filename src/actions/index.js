@@ -110,6 +110,40 @@ export function signIn(login, password) {
   }
 }
 
+export function register() {
+  return (dispatch, getState) => {
+    dispatch(setIsFetching(true))
+    dispatch(setError(''))
+    const values={
+      login: getState().registration.login,
+      password: getState().registration.password,
+      email: getState().registration.email,
+      credited_name: getState().registration.credited_name,
+      global_email_communication: getState().registration.global_email_communication,
+    }
+    NetInfo.isConnected.fetch().then(isConnected => {
+      if (isConnected) {
+        auth.register(values)
+          .then((user) => {
+            user.avatar = {}
+            user.isGuestUser = false
+            dispatch(setUser(user))
+            dispatch(storeUser(user))
+            dispatch(setIsFetching(false))
+            Actions.ZooniverseApp({type: ActionConst.RESET})
+          })
+          .catch((error) => {
+            dispatch(setError(error.message))
+            dispatch(setIsFetching(false))
+          })
+      } else {
+        dispatch(setError('Sorry, but you must be connected to the internet to use Zooniverse'))
+        dispatch(setIsFetching(false))
+      }
+    })
+  }
+}
+
 export function signOut() {
   return dispatch => {
     store.delete('@zooniverse:user')
@@ -126,7 +160,6 @@ export function fetchProjects() {
     forEach(callFetchProjects, filter(propEq('display', true), GLOBALS.DISCIPLINES))
   }
 }
-
 
 export function fetchProjectsByTag(tag) {
   const parms = {id: MOBILE_PROJECTS, cards: true, tags: tag, sort: 'display_name'}
