@@ -46,7 +46,6 @@ class CircleRibbon extends Component {
     const isActive = (project) => project.activity_count > 0
     const activeProjects = filter(isActive, projects)
 
-
     const renderArc = (project, idx) => {
       const index = activeProjects.indexOf(project)
       const startAmount = activeProjects.slice(0, index).reduce((count, otherArc) => {
