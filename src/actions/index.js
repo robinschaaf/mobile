@@ -166,29 +166,33 @@ export function loadUserProjects() {
     dispatch(setError(''))
     return new Promise ((resolve, reject) => {
       dispatch(getAuthUser()).then((userResourse) => {
-        userResourse.get('project_preferences', {}).then((projectPreferences) => {
-          var promises = []
-          forEach((preference) => {
-            var promise = preference.get('project').then((project) => {
-              dispatch(setState(`user.projects.${project.id}`, {
-                  preferenceID: preference.id,
-                  name: project.display_name,
-                  slug: project.slug,
-                  notify: preference.email_communication,
-                  activity_count: preference.activity_count
-                }
-              ))
-            })
-            promises.push(promise)
-            },
-            projectPreferences
-          )
+        userResourse.get('project_preferences').then((forCount) => {
+          return forCount.length > 0 ? forCount[0]._meta.project_preferences.count : 0
+        }).then((preferenceCount) => {
+          userResourse.get('project_preferences', {page_size: preferenceCount}).then((projectPreferences) => {
+            var promises = []
+            forEach((preference) => {
+              var promise = preference.get('project').then((project) => {
+                dispatch(setState(`user.projects.${project.id}`, {
+                    preferenceID: preference.id,
+                    name: project.display_name,
+                    slug: project.slug,
+                    notify: preference.email_communication,
+                    activity_count: preference.activity_count
+                  }
+                ))
+              })
+              promises.push(promise)
+              },
+              projectPreferences
+            )
 
-          Promise.all(promises).then(() => {
-            dispatch(updateTotalClassifications())
-            dispatch(syncInterestSubscriptions())
-            dispatch(fetchProjectsByParms('recent'))
-            return resolve()
+            Promise.all(promises).then(() => {
+              dispatch(updateTotalClassifications())
+              dispatch(syncInterestSubscriptions())
+              dispatch(fetchProjectsByParms('recent'))
+              return resolve()
+            })
           })
         })
       }).catch((error) => {
