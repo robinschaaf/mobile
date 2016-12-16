@@ -62,10 +62,6 @@ public class MainActivity extends ReactActivity {
                 @Override
                 public void onMessageReceived(RemoteMessage remoteMessage) {
                     //https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/RemoteMessage.Notification
-                    //if (remoteMessage.getNotification() != null) {
-                    //    String title = remoteMessage.getNotification().getTitle();
-                    //    System.out.println("Title: " + title);
-                    //}
 
                     //TODO: Use react native alert to display cross-platform alert here
 
