@@ -9,7 +9,11 @@ class UserAvatar extends Component {
   render() {
     if (this.props.avatar) {
       return (
-        <Image source={{uri: this.props.avatar}} style={styles.avatar} />
+        <Image
+          defaultSource={require('../../images/simple-avatar.jpg')}
+          source={{uri: this.props.avatar}}
+          style={styles.avatar}
+        />
       )
     } else {
       return (

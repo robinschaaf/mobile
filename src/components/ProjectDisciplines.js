@@ -6,7 +6,6 @@ import {
   View
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
-import StyledText from './StyledText'
 import { addIndex, filter, map, propEq } from 'ramda'
 import { connect } from 'react-redux'
 import {GLOBALS} from '../constants/globals'
@@ -21,8 +20,7 @@ GoogleAnalytics.trackEvent('view', 'Home')
 const mapStateToProps = (state) => ({
   user: state.user,
   isGuestUser: state.user.isGuestUser,
-  isConnected: state.isConnected,
-  isFetching: state.isFetching
+  isFetching: state.isFetching,
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -56,12 +54,6 @@ class ProjectDisciplines extends React.Component {
         )}
       </ScrollView>
 
-    const noConnection =
-      <View style={styles.messageContainer}>
-        <StyledText textStyle={'errorMessage'}
-          text={'You must have an internet connection to use Zooniverse Mobile'} />
-      </View>
-
     return (
       <View style={styles.container}>
         <View style={styles.subNavContainer}>
@@ -70,7 +62,7 @@ class ProjectDisciplines extends React.Component {
           </Text>
         </View>
         <View style={styles.innerContainer}>
-          { this.props.isConnected ? DisciplineList : noConnection }
+          { DisciplineList }
         </View>
         { this.props.isFetching ? <OverlaySpinner /> : null }
       </View>
@@ -114,7 +106,6 @@ const styles = EStyleSheet.create({
 ProjectDisciplines.propTypes = {
   user: React.PropTypes.object,
   isGuestUser: React.PropTypes.bool,
-  isConnected: React.PropTypes.bool,
   isFetching: React.PropTypes.bool,
   setSelectedProjectTag: React.PropTypes.func,
 }

@@ -4,7 +4,6 @@ import {
   View
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
-import StyledText from './StyledText'
 import Project from './Project'
 import NavBar from './NavBar'
 import { connect } from 'react-redux'
@@ -14,8 +13,8 @@ GoogleAnalytics.trackEvent('view', 'Project')
 
 const mapStateToProps = (state) => ({
   user: state.user,
-  isConnected: state.isConnected,
-  dataSource: dataSource.cloneWithRows(state.projectList[state.selectedProjectTag])
+  projectList: state.projectList || {},
+  selectedProjectTag: state.selectedProjectTag || ''
 })
 
 const dataSource = new ListView.DataSource({
@@ -38,23 +37,19 @@ class ProjectList extends React.Component {
   }
 
   render() {
+    const projects = this.props.projectList[this.props.selectedProjectTag] || []
+
     const projectList =
       <ListView
-        dataSource={this.props.dataSource}
+        dataSource={dataSource.cloneWithRows(projects)}
         renderRow={this.renderRow}
         enableEmptySections={true}
       />
 
-    const noConnection =
-      <View style={styles.messageContainer}>
-        <StyledText textStyle={'errorMessage'}
-          text={'You must have an internet connection to use Zooniverse Mobile'} />
-      </View>
-
     return (
       <View style={styles.container}>
         <View style={styles.innerContainer}>
-          { this.props.isConnected ? projectList : noConnection }
+          { projectList }
         </View>
       </View>
     );
@@ -80,8 +75,8 @@ const styles = EStyleSheet.create({
 
 ProjectList.propTypes = {
   user: React.PropTypes.object,
-  isConnected: React.PropTypes.bool,
-  dataSource: React.PropTypes.object,
+  projectList: React.PropTypes.object,
+  selectedProjectTag: React.PropTypes.string,
 }
 
 export default connect(mapStateToProps)(ProjectList)
