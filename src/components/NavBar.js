@@ -26,7 +26,12 @@ class NavBar extends Component {
   }
 
   handleOnBack(){
-    Actions.pop()
+    if (this.props.onBack) {
+      this.props.onBack()
+    } else {
+      Actions.pop()
+    }
+
   }
 
   handleSideDrawer(){
