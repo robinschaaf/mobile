@@ -238,6 +238,9 @@ export function fetchPublications() {
 
 export function loadNotificationSettings() {
   return (dispatch, getState) => {
+    if (getState().user.notifications === undefined) {
+      dispatch(setState('user.notifications', {}))
+    }
     if (getState().user.notifications.general === undefined) {
       dispatch(setState('user.notifications.general', true))
     }
