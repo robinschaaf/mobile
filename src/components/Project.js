@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import {
-  ActivityIndicator,
   Alert,
   Animated,
   Image,
   Linking,
-  Image,
   Platform,
   Text,
   TouchableOpacity,
