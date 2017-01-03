@@ -14,6 +14,7 @@ import ProjectDisciplines from '../components/ProjectDisciplines'
 import About from '../components/About'
 import PublicationList from '../components/PublicationList'
 import SignIn from '../components/SignIn'
+import Register from '../components/Register'
 import SideDrawer from '../components/SideDrawer'
 
 const store = compose(applyMiddleware(thunkMiddleware))(createStore)(reducer)
@@ -51,6 +52,7 @@ export default class App extends Component {
               <Scene key="Publications" component={PublicationList} />
               <Scene key="ProjectList" component={ProjectList} />
               <Scene key="NotificationSettings" component={NotificationSettings} />
+              <Scene key="Register" component={Register} />
             </Scene>
           </Scene>
 

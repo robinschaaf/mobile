@@ -34,6 +34,13 @@ const styles = EStyleSheet.create({
   link: {
     color: '$headerColor'
   },
+  smallLink: {
+    fontSize: 12,
+    color: '$headerColor'
+  },
+  small: {
+    fontSize: 12,
+  },
   largeLink: {
     color: '$darkTextColor',
     fontSize: 20,
@@ -56,6 +63,11 @@ const styles = EStyleSheet.create({
   },
   fullHeight: {
     height: '100%'
+  },
+  subLabelText: {
+    fontSize: 12,
+    fontStyle: 'italic',
+    color: '$grey',
   }
 });
 

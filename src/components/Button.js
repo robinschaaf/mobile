@@ -46,6 +46,9 @@ const styles = EStyleSheet.create({
   greyButton: {
     backgroundColor: '$mediumGrey',
   },
+  disabledRegisterButton: {
+    backgroundColor: '$registerDisabledButtonColor'
+  },
 });
 
 Button.propTypes = {
