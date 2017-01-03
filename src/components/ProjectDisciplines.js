@@ -1,9 +1,10 @@
 import React from 'react'
 import {
+  Alert,
   Platform,
+  PushNotificationIOS,
   ScrollView,
   StyleSheet,
-  Text,
   View
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
@@ -25,12 +26,17 @@ const mapStateToProps = (state) => ({
   user: state.user,
   isGuestUser: state.user.isGuestUser,
   isConnected: state.isConnected,
-  isFetching: state.isFetching
+  isFetching: state.isFetching,
+  pushPrompted: state.user.pushPrompted
 })
 
 const mapDispatchToProps = (dispatch) => ({
   setSelectedProjectTag(tag) {
     dispatch(setState('selectedProjectTag', tag))
+  },
+  setPushPrompted(value) {
+    dispatch(setState('user.pushPrompted', value))
+    //This needs to also save to the store - once that PR is in!!!!!
   },
 })
 
@@ -38,6 +44,32 @@ class ProjectDisciplines extends React.Component {
   constructor(props) {
     super(props);
   }
+
+  componentDidMount() {
+    if ((Platform.OS === 'ios') && (!this.props.pushPrompted)) {
+      PushNotificationIOS.checkPermissions((permissions) => {
+        if (permissions.alert === 0){
+          Alert.alert(
+            'Allow Notifications?',
+            'Zooniverse would like to occasionally send you info about new projects or projects needing help.',
+            [
+              {text: 'Not Now', onPress: () => this.requestPermissions(false)},
+              {text: 'Sure!', onPress: () => this.requestPermissions(true)},
+            ]
+          )
+        }
+      })
+    }
+
+  }
+
+  requestPermissions(value) {
+    if (value) {
+      PushNotificationIOS.requestPermissions();
+    }
+    this.props.setPushPrompted(true)
+  }
+
 
   render() {
     const renderDiscipline = ({value, label, color}, idx) => {
@@ -134,6 +166,8 @@ ProjectDisciplines.propTypes = {
   isGuestUser: React.PropTypes.bool,
   isConnected: React.PropTypes.bool,
   isFetching: React.PropTypes.bool,
+  pushPrompted: React.PropTypes.bool,
+  setPushPrompted: React.PropTypes.func,
   setSelectedProjectTag: React.PropTypes.func,
 }
 
