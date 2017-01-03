@@ -41,7 +41,7 @@ class NavBar extends Component {
 
     const avatar =
       <View style={styles.userAvatarContainer}>
-        <UserAvatar avatar={ userAvatar }/>
+        <UserAvatar avatar={ userAvatar } isGuestUser={ this.props.user.isGuestUser } />
         <CircleRibbon />
       </View>
 

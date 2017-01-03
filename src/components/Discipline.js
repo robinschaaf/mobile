@@ -18,8 +18,7 @@ class Discipline extends Component {
 
   handleClick() {
     GoogleAnalytics.trackEvent('view', this.props.tag)
-    this.props.setSelectedProjectTag()
-    Actions.ProjectList()
+    Actions.ProjectList({tag: this.props.tag, color: this.props.color})
   }
 
   render() {
@@ -57,9 +56,9 @@ const styles = EStyleSheet.create({
     fontFamily: 'OpenSans-Semibold',
     backgroundColor: '$transparent',
     color: '$textColor',
-    fontSize: 22,
-    lineHeight: 30,
-    width: '100% - 120'
+    fontSize: 28,
+    lineHeight: 38,
+    width: '100% - 140'
   },
   icon: {
     fontSize: 30,
@@ -67,7 +66,7 @@ const styles = EStyleSheet.create({
     width: 20,
   },
   zooIconContainer:{
-    width: 60
+    width: 80
   },
 });
 
