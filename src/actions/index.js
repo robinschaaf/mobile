@@ -16,7 +16,7 @@ import { PUBLICATIONS } from '../constants/publications'
 import { MOBILE_PROJECTS } from '../constants/mobile_projects'
 import { GLOBALS } from '../constants/globals'
 import { NativeModules, NetInfo } from 'react-native'
-import { add, addIndex, filter, forEach, head, keys, map, propEq, reduce } from 'ramda'
+import { add, addIndex, filter, forEach, head, intersection, keys, map, propEq, reduce } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
 export function setState(stateKey, value) {
@@ -193,6 +193,7 @@ export function loadUserProjects() {
 
             Promise.all(promises).then(() => {
               dispatch(updateTotalClassifications())
+              dispatch(fetchProjectsByParms('recent'))
               return resolve()
             })
           })
@@ -225,25 +226,27 @@ export function signOut() {
 export function fetchProjects() {
   return dispatch => {
     dispatch(setError(''))
-    var callFetchProjects = tag => dispatch(fetchProjectsByTag(tag.value))
+    var callFetchProjects = tag => dispatch(fetchProjectsByParms(tag.value))
     forEach(callFetchProjects, filter(propEq('display', true), GLOBALS.DISCIPLINES))
   }
 }
 
+export function fetchProjectsByParms(tag) {
+  return (dispatch, getState) => {
+    let parms = {id: MOBILE_PROJECTS, cards: true, sort: 'display_name'}
+    if (tag === 'recent') {
+      parms.id = intersection(MOBILE_PROJECTS, keys(getState().user.projects) )
+    } else {
+      parms.tags = tag
+    }
 
-export function fetchProjectsByTag(tag) {
-  const parms = {id: MOBILE_PROJECTS, cards: true, tags: tag, sort: 'display_name'}
-  return dispatch => {
-    apiClient.type('projects').get(parms)
-      .then((projects) => {
-        dispatch(setState(`projectList.${tag}`,projects))
-      })
-      .catch((error) => {
-        dispatch(setError('The following error occurred.  Please close down Zooniverse and try again.  If it persists please notify us.  \n\n' + error,))
-      })
-      .then(() => {
-        dispatch(setIsFetching(false))
-      })
+    apiClient.type('projects').get(parms).then((projects) => {
+      dispatch(setState(`projectList.${tag}`,projects))
+    }).catch((error) => {
+      dispatch(setError('The following error occurred.  Please close down Zooniverse and try again.  If it persists please notify us.  \n\n' + error,))
+    }).then(() => {
+      dispatch(setIsFetching(false))
+    })
   }
 }
 
