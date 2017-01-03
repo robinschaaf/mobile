@@ -22,14 +22,10 @@ RCT_EXPORT_METHOD(setInterestSubscription:(NSString *)interest
   
   AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
   self.pusher = appDelegate.pusher;
-  NSLog( @">>>> and... notification settings called!" );
   
   if (subscribed) {
-    NSLog(@"sub interest: %@", interest);
     [[[self pusher] nativePusher] subscribe:interest];
-    
   } else {
-    NSLog(@"unsub: interest: %@", interest);
     [[[self pusher] nativePusher] unsubscribe:interest];
   }
   

@@ -53,12 +53,10 @@ export function syncUserStore() {
 }
 
 export function setUserFromStore() {
-  console.log('SETTINGUSERFROMSTORE')
   return dispatch => {
     return new Promise ((resolve, reject) => {
       store.get('@zooniverse:user').then(json => {
         dispatch(setUser(json.user))
-        console.log('>>>usernotificationsfromstore', json.user.notifications)
         return resolve()
       }).catch(() => {
         return reject()
@@ -253,30 +251,18 @@ export function loadNotificationSettings() {
 
     return dispatch(syncInterestSubscriptions())
   }
-
-
 }
-
 
 export function syncInterestSubscriptions() {
   return (dispatch, getState) => {
-    return new Promise ((resolve) => {
-      var promises = []
-      forEach((projectID) => {
+    MOBILE_PROJECTS.reduce(function(promise, projectID) {
+      return promise.then(function() {
         var subscribed = getState().user.notifications[projectID]
-        var promise = dispatch(updateInterestSubscription(projectID, subscribed))
-        promises.push(promise)
-      }, keys(getState().user.notifications) )
-
-
-      Promise.all(promises).then(() => {
-        return resolve()
+        return dispatch(updateInterestSubscription(projectID, subscribed))
       })
-    })
+    }, Promise.resolve())
   }
 }
-
-
 
 export function updateInterestSubscription(interest, subscribed) {
   var NotificationSettings = NativeModules.NotificationSettings
@@ -287,9 +273,9 @@ export function updateInterestSubscription(interest, subscribed) {
         //Timeout needed or crashes ios.  Open issue: https://github.com/pusher/libPusher/issues/230
         setTimeout(()=> {
           return resolve(message)
-        }, 100)
-
+        }, 500)
       })
+
     })
   }
 }
