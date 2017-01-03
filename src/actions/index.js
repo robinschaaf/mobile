@@ -286,15 +286,19 @@ export function fetchPublications() {
 
 export function loadNotificationSettings() {
   return (dispatch, getState) => {
+    console.log('>>>>setting user notifications...')
     if (getState().user.notifications === undefined) {
+      console.log('>>>>setting user notifications...')
       dispatch(setState('user.notifications', {}))
     }
     if (getState().user.notifications.general === undefined) {
+      console.log('>>>>setting general user notifications...')
       dispatch(setState('user.notifications.general', true))
     }
 
     forEach((projectID) => {
       if (getState().user.notifications[projectID] === undefined) {
+        console.log('>>>>setting project notifications...')
         dispatch(setState(`user.notifications.${projectID}`, true))
       }
     })(MOBILE_PROJECTS)
