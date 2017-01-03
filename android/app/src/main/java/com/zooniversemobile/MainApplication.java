@@ -4,6 +4,8 @@ import android.support.multidex.MultiDexApplication;
 
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.facebook.react.ReactApplication;
+import com.horcrux.svg.RNSvgPackage;
+import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -26,6 +28,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
           new MainReactPackage(),
           new MainApplicationPackage(),
           new FIRMessagingPackage(),
+          new RNSvgPackage(),
           new GoogleAnalyticsBridgePackage()
       );
     }

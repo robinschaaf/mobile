@@ -11,6 +11,7 @@ import { connect } from 'react-redux'
 import {Actions} from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import UserAvatar from './UserAvatar'
+import CircleRibbon from './CircleRibbon'
 
 const topPadding = (Platform.OS === 'ios') ? 22 : 10
 const height = 48 + topPadding
@@ -41,6 +42,7 @@ class NavBar extends Component {
     const avatar =
       <View style={styles.userAvatarContainer}>
         <UserAvatar avatar={ userAvatar }/>
+        <CircleRibbon />
       </View>
 
     const title =
@@ -130,7 +132,7 @@ const styles = EStyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    top: 36,
+    top: topPadding + 20,
     left: 60,
     right: 60,
   }
