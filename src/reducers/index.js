@@ -10,6 +10,7 @@ export const InitialState = {
   projectList: [],
   notificationProject: {},
   notificationPayload: {},
+  webViewNavCounter: 0,
 }
 
 export default function(state=InitialState, action) {

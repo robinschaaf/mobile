@@ -5,12 +5,15 @@ import {
   Animated,
   Image,
   Linking,
+  Image,
+  Platform,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
 import EStyleSheet from 'react-native-extended-stylesheet'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
+import {Actions} from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 class Project extends Component {
@@ -37,8 +40,16 @@ class Project extends Component {
 
   handleClick() {
     GoogleAnalytics.trackEvent('view', this.props.project.display_name)
+    if (Platform.OS === 'ios') {
+      Actions.ZooWebView({slug: this.props.project.slug, displayName: this.props.project.display_name})
+    } else {
+      this.openURL(this.props.project.slug)
+    }
 
-    const zurl=`http://zooniverse.org/projects/${this.props.project.slug}`
+  }
+
+  openURL(slug){
+    const zurl=`http://zooniverse.org/projects/${slug}`
     Linking.canOpenURL(zurl).then(supported => {
       if (supported) {
         Linking.openURL(zurl);
