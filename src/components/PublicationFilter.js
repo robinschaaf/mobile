@@ -16,7 +16,6 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 
 const mapStateToProps = (state) => ({
   user: state.user,
-  isConnected: state.isConnected,
   disciplines: keys(state.publications),
   selectedDiscipline: state.selectedDiscipline || null,
 })
@@ -192,7 +191,6 @@ const styles = EStyleSheet.create({
 
 PublicationFilter.propTypes = {
   user: React.PropTypes.object,
-  isConnected: React.PropTypes.bool,
   selectedDiscipline: React.PropTypes.string,
   disciplines: React.PropTypes.array,
   setSelectedDiscipline: React.PropTypes.func

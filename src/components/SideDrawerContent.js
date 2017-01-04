@@ -46,11 +46,6 @@ class SideDrawerContent extends Component {
     Actions.ZooniverseApp()
   }
 
-  goWebView(){
-    //this.close()
-    Actions.ZooWebView()
-  }
-
   signIn(){
     this.close()
     Actions.SignIn()
@@ -118,12 +113,6 @@ class SideDrawerContent extends Component {
           <StyledText
             textStyle={'largeLink'}
             text={'Home'} />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={this.goWebView} style={styles.linkContainer}>
-          <StyledText
-            textStyle={'largeLink'}
-            text={'WebView'} />
         </TouchableOpacity>
 
         { this.props.isGuestUser ? signIn : null }

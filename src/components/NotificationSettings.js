@@ -24,7 +24,6 @@ const mapStateToProps = (state) => ({
   user: state.user,
   notifications: state.user.notifications,
   projectList: state.projectList,
-  isConnected: state.isConnected,
   isFetching: state.isFetching,
   errorMessage: state.errorMessage,
   pushEnabled: state.pushEnabled
@@ -105,12 +104,6 @@ class NotificationSettings extends React.Component {
         { this.props.notifications ? projectNotificationsList : null }
       </ScrollView>
 
-    const noConnection =
-      <View style={styles.messageContainer}>
-        <StyledText textStyle={'errorMessage'}
-          text={'You must have an internet connection to use Zooniverse Mobile'} />
-      </View>
-
     const noNotifications =
       <View>
         <StyledText
@@ -122,7 +115,6 @@ class NotificationSettings extends React.Component {
 
     return (
       <View style={styles.container}>
-        { this.props.isConnected ? null : noConnection }
         <StyledText textStyle={'errorMessage'} text={this.props.errorMessage} />
         { this.props.isFetching ? <OverlaySpinner /> : pageView }
       </View>
@@ -159,7 +151,6 @@ NotificationSettings.propTypes = {
   notifications: React.PropTypes.object,
   projectList: React.PropTypes.object,
   isFetching: React.PropTypes.bool,
-  isConnected: React.PropTypes.bool,
   pushEnabled: React.PropTypes.bool,
   errorMessage: React.PropTypes.string,
   setState: React.PropTypes.func,

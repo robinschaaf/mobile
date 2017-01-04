@@ -6,7 +6,7 @@ export const InitialState = {
   isFetching: false,
   errorMessage: null,
   isConnected: null,
-  selectedDiscipline: null,
+  selectedProjectTag: '',
   projectList: [],
   notificationProject: {},
   notificationPayload: {},
@@ -28,10 +28,6 @@ export default function(state=InitialState, action) {
     case 'SET_ERROR':
       return merge(state, {
         errorMessage: action.errorMessage
-      })
-    case 'SET_IS_CONNECTED':
-      return merge(state, {
-        isConnected: action.isConnected
       })
     case 'SET_PROJECT_LIST':
       return merge(state, {

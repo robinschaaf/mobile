@@ -25,7 +25,6 @@ const topPadding = (Platform.OS === 'ios') ? 10 : 0
 const mapStateToProps = (state) => ({
   user: state.user,
   isGuestUser: state.user.isGuestUser,
-  isConnected: state.isConnected,
   isFetching: state.isFetching,
   pushPrompted: state.user.pushPrompted
 })
@@ -104,12 +103,6 @@ class ProjectDisciplines extends React.Component {
       <StyledText
         text={`${this.props.user.totalClassifications} total classifications`} />
 
-    const noConnection =
-      <View style={styles.messageContainer}>
-        <StyledText textStyle={'errorMessage'}
-          text={'You must have an internet connection to use Zooniverse Mobile'} />
-      </View>
-
     return (
       <View style={styles.container}>
         <View style={styles.subNavContainer}>
@@ -120,7 +113,7 @@ class ProjectDisciplines extends React.Component {
             : null }
         </View>
         <View style={styles.innerContainer}>
-          { this.props.isConnected ? DisciplineList : noConnection }
+          { DisciplineList }
         </View>
         { this.props.isFetching ? <OverlaySpinner /> : null }
       </View>
@@ -164,7 +157,6 @@ const styles = EStyleSheet.create({
 ProjectDisciplines.propTypes = {
   user: React.PropTypes.object,
   isGuestUser: React.PropTypes.bool,
-  isConnected: React.PropTypes.bool,
   isFetching: React.PropTypes.bool,
   pushPrompted: React.PropTypes.bool,
   setPushPrompted: React.PropTypes.func,

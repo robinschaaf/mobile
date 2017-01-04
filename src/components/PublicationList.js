@@ -19,7 +19,6 @@ GoogleAnalytics.trackEvent('view', 'Publication List')
 
 const mapStateToProps = (state) => ({
   user: state.user,
-  isConnected: state.isConnected,
   disciplines: keys(state.publications),
   publications: state.publications,
   selectedDiscipline: state.selectedDiscipline,
@@ -106,15 +105,9 @@ class PublicationList extends React.Component {
         ) }
       </ScrollView>
 
-    const noConnection =
-      <View style={styles.messageContainer}>
-        <StyledText textStyle={'errorMessage'}
-          text={'You must have an internet connection to use Zooniverse Mobile'} />
-      </View>
-
     return (
       <View style={styles.container}>
-        { this.props.isConnected ? scrollContainer : noConnection }
+        { scrollContainer }
         <PublicationFilter />
       </View>
     );
@@ -153,7 +146,6 @@ const styles = EStyleSheet.create({
 
 PublicationList.propTypes = {
   user: React.PropTypes.object,
-  isConnected: React.PropTypes.bool,
   dataSource: React.PropTypes.object,
   disciplines: React.PropTypes.array,
   selectedDiscipline: React.PropTypes.string,

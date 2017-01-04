@@ -15,7 +15,7 @@ import store from 'react-native-simple-store'
 import { PUBLICATIONS } from '../constants/publications'
 import { MOBILE_PROJECTS } from '../constants/mobile_projects'
 import { GLOBALS } from '../constants/globals'
-import { NativeModules, NetInfo } from 'react-native'
+import { Alert, NativeModules, NetInfo } from 'react-native'
 import { add, addIndex, filter, forEach, head, intersection, keys, map, propEq, reduce } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
@@ -33,10 +33,6 @@ export function setIsFetching(isFetching) {
 
 export function setError(errorMessage) {
   return { type: SET_ERROR, errorMessage }
-}
-
-export function setIsConnected(isConnected) {
-  return { type: SET_IS_CONNECTED, isConnected }
 }
 
 export function setProjectList(projectList) {
@@ -65,6 +61,28 @@ export function setUserFromStore() {
   }
 }
 
+export function syncProjectStore() {
+  return (dispatch, getState) => {
+    const projectList = getState().projectList
+    return store.save('@zooniverse:projects', {
+      projectList
+    })
+  }
+}
+
+export function setProjectListFromStore() {
+  return dispatch => {
+    return new Promise ((resolve, reject) => {
+      store.get('@zooniverse:projects').then(json => {
+        dispatch(setProjectList(json.projects))
+        return resolve()
+      }).catch(() => {
+        return reject()
+      })
+    })
+  }
+}
+
 export function continueAsGuest() {
   return dispatch => {
     dispatch(setState('user.isGuestUser', true))
@@ -74,23 +92,22 @@ export function continueAsGuest() {
 }
 
 export function checkIsConnected() {
-  return () => {
+  return (dispatch, getState) => {
     return new Promise((resolve, reject) => {
-      NetInfo.isConnected.fetch().then(isConnected => {
-        if (!isConnected) {
-          return reject('Sorry, but you must be connected to the internet to use Zooniverse')
-        }
+      if (getState().isConnected) {
         return resolve()
-      })
+      } else {
+        return reject('Sorry, but you must be connected to the internet to use Zooniverse')
+      }
     })
   }
 }
 
 export function signIn(login, password) {
   return dispatch => {
-    dispatch(setIsFetching(true))
     dispatch(setError(''))
     dispatch(checkIsConnected()).then(() => {
+      dispatch(setIsFetching(true))
       auth.signIn({login: login, password: password}).then((user) => {
         user.isGuestUser = false
         dispatch(setUser(user))
@@ -109,8 +126,7 @@ export function signIn(login, password) {
         dispatch(setIsFetching(false))
       })
     }).catch((error) => {
-      dispatch(setError(error))
-      dispatch(setIsFetching(false))
+      dispatch(displayError(error))
     })
   }
 }
@@ -121,7 +137,7 @@ export function getAuthUser() {
       auth.checkCurrent().then ((user) => {
         return resolve(user)
       }).catch(() => {
-        return reject()
+        return reject('User auth token not found.  Please log in again.')
       })
     })
   }
@@ -259,7 +275,7 @@ export function signOut() {
 
 export function fetchProjects() {
   return dispatch => {
-    dispatch(setError(''))
+    dispatch(setProjectListFromStore())
     var callFetchProjects = tag => dispatch(fetchProjectsByParms(tag.value))
     forEach(callFetchProjects, filter(propEq('display', true), GLOBALS.DISCIPLINES))
   }
@@ -276,10 +292,10 @@ export function fetchProjectsByParms(tag) {
 
     apiClient.type('projects').get(parms).then((projects) => {
       dispatch(setState(`projectList.${tag}`,projects))
-    }).catch((error) => {
-      dispatch(setError('The following error occurred.  Please close down Zooniverse and try again.  If it persists please notify us.  \n\n' + error,))
-    }).then(() => {
+      dispatch(syncProjectStore())
       dispatch(setIsFetching(false))
+    }).catch((error) => {
+      dispatch(displayError('The following error occurred.  Please close down Zooniverse and try again.  If it persists please notify us.  \n\n' + error,))
     })
   }
 }
@@ -291,7 +307,7 @@ export function fetchProject(projectID) {
         dispatch(setState('notificationProject', head(projects)))
       })
       .catch((error) => {
-        dispatch(setError('The following error occurred.  Please close down Zooniverse and try again.  If it persists please notify us.  \n\n' + error,))
+        dispatch(displayError('The following error occurred.  Please close down Zooniverse and try again.  If it persists please notify us.  \n\n' + error,))
       })
   }
 }
@@ -368,5 +384,20 @@ export function updateInterestSubscription(interest, subscribed) {
       })
 
     })
+  }
+}
+
+export function setIsConnected(isConnected) {
+  return (dispatch) => {
+    dispatch(setState('isConnected', isConnected))
+    if (isConnected === false) {
+      dispatch(displayError('Oh no!  It appears you\'ve gone offline.  Please reconnect to use Zooniverse.'))
+    }
+  }
+}
+
+export function displayError(errorMessage) {
+  return () => {
+    Alert.alert( 'Error', errorMessage )
   }
 }
