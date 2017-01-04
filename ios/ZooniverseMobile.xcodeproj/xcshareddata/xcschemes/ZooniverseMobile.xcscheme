@@ -88,7 +88,8 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "OS_ACTIVITY_DT_MODE"
-            isEnabled = "NO">
+            value = "NO"
+            isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>

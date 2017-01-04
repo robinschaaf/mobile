@@ -10,6 +10,7 @@ import NotificationModal from '../components/NotificationModal'
 import NavBar from '../components/NavBar'
 import { connect } from 'react-redux'
 import { setState } from '../actions/index'
+import { isEmpty } from 'ramda'
 import FCM from 'react-native-fcm'
 
 const mapStateToProps = (state) => ({
@@ -58,7 +59,7 @@ class ZooniverseApp extends Component {
   render() {
     return (
       <View style={styles.container}>
-        { this.props.isFetching ? null : <ProjectDisciplines /> }
+        { isEmpty(this.props.user) ? null : <ProjectDisciplines /> }
         <NotificationModal
           isVisible={this.props.isModalVisible}
           setVisibility={this.props.setModalVisibility}/>

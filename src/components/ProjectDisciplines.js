@@ -46,24 +46,27 @@ class ProjectDisciplines extends React.Component {
 
   componentDidMount() {
     if ((Platform.OS === 'ios') && (!this.props.pushPrompted)) {
-      PushNotificationIOS.checkPermissions((permissions) => {
-        if (permissions.alert === 0){
-          Alert.alert(
-            'Allow Notifications?',
-            'Zooniverse would like to occasionally send you info about new projects or projects needing help.',
-            [
-              {text: 'Not Now', onPress: () => this.requestPermissions(false)},
-              {text: 'Sure!', onPress: () => this.requestPermissions(true)},
-            ]
-          )
-        }
-      })
+      this.promptRequestPermissions()
     }
-
   }
 
-  requestPermissions(value) {
-    if (value) {
+  promptRequestPermissions() {
+    PushNotificationIOS.checkPermissions((permissions) => {
+      if (permissions.alert === 0){
+        Alert.alert(
+          'Allow Notifications?',
+          'Zooniverse would like to occasionally send you info about new projects or projects needing help.',
+          [
+            {text: 'Not Now', onPress: () => this.requestIOSPermissions(false)},
+            {text: 'Sure!', onPress: () => this.requestIOSPermissions(true)},
+          ]
+        )
+      }
+    })
+  }
+
+  requestIOSPermissions(accepted) {
+    if (accepted) {
       PushNotificationIOS.requestPermissions();
     }
     this.props.setPushPrompted(true)
