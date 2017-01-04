@@ -1,7 +1,6 @@
 package com.zooniversemobile;
 
-import android.util.Log;
-
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -25,25 +24,15 @@ public class NotificationSettings extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void subscribe(String interest) {
-        Log.d("SUBSCRIBE", "trying to subscribe to interest: " + interest);
-
-
+    public void setInterestSubscription(String interest, Boolean subscribed, Promise promise) {
         nativePusher = PusherProperty.getInstance().nativePusher;
-        nativePusher.subscribe(interest);
+        if (subscribed) {
+            nativePusher.subscribe(interest);
+        } else {
+            nativePusher.unsubscribe(interest);
+        }
 
-        Log.d("SUBSCRIBE", "supposedly subscribed to interest: " + interest);
-
+        promise.resolve("Subscription update successful");
     }
 
-    @ReactMethod
-    public void unsubscribe(String interest) {
-        Log.d("SUBSCRIBE", "trying to UNsubscribe to interest: " + interest);
-
-        nativePusher = PusherProperty.getInstance().nativePusher;
-        nativePusher.unsubscribe(interest);
-
-        Log.d("SUBSCRIBE", "supposedly UNsubscribed to interest: " + interest);
-
-    }
 }
