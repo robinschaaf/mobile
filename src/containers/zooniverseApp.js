@@ -9,7 +9,7 @@ import ProjectDisciplines from '../components/ProjectDisciplines'
 import NotificationModal from '../components/NotificationModal'
 import NavBar from '../components/NavBar'
 import { connect } from 'react-redux'
-import { setState } from '../actions/index'
+import { setState, syncInterestSubscriptions } from '../actions/index'
 import { isEmpty } from 'ramda'
 import FCM from 'react-native-fcm'
 
@@ -28,6 +28,9 @@ const mapDispatchToProps = (dispatch) => ({
   setNotificationPayload(value) {
     dispatch(setState('notificationPayload', value))
   },
+  syncInterestSubscriptions() {
+    dispatch(syncInterestSubscriptions())
+  },
 })
 
 class ZooniverseApp extends Component {
@@ -38,18 +41,24 @@ class ZooniverseApp extends Component {
   componentDidMount() {
     if (Platform.OS === 'ios') {
       PushNotificationIOS.addEventListener('notification', this.onRemoteNotification)
+      PushNotificationIOS.addEventListener('register', this.onPushRegistration)
     } else {
       FCM.on('notification', this.onRemoteNotification)
     }
   }
 
   componentWillUnmount() {
-    PushNotificationIOS.removeEventListener('notification', this.onRemoteNotificationIOS);
+    PushNotificationIOS.removeEventListener('notification', this.onRemoteNotificationIOS)
+    PushNotificationIOS.removeEventListener('register', this.onPushRegistration)
   }
 
   onRemoteNotification = (notification) => {
     this.props.setNotificationPayload(notification)
     this.props.setModalVisibility(true)
+  }
+
+  onPushRegistration = () => {
+    this.props.syncInterestSubscriptions()
   }
 
   static renderNavigationBar() {

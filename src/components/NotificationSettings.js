@@ -14,7 +14,7 @@ import NavBar from './NavBar'
 import OverlaySpinner from './OverlaySpinner'
 import ProjectNotification from './ProjectNotification'
 import { connect } from 'react-redux'
-import { setState, updateInterestSubscription, syncUserStore } from '../actions/index'
+import { checkPushPermissions, setState, updateInterestSubscription, syncUserStore } from '../actions/index'
 import { addIndex, find, keys, map, flatten, propEq, without } from 'ramda'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 
@@ -37,25 +37,21 @@ const mapDispatchToProps = (dispatch) => ({
   },
   setState(key, value){
     dispatch(setState(key, value))
+  },
+  checkPushPermissions(){
+    dispatch(checkPushPermissions())
   }
 })
 
 class NotificationSettings extends React.Component {
   componentDidMount() {
-    this.checkPushPermissions()
+    this.props.checkPushPermissions()
   }
 
   static renderNavigationBar() {
     return <NavBar title={'Notification Settings'} showBack={true} />;
   }
 
-  checkPushPermissions() {
-    if (Platform.OS === 'ios') {
-      PushNotificationIOS.checkPermissions((permissions) => {
-        this.props.setState('pushEnabled', (permissions.alert === 0) ? false : true)
-      })
-    }
-  }
 
   render() {
     var mobileProjects = flatten(

@@ -58,9 +58,7 @@ class Register extends React.Component {
     var error  = this.validateForm()
     this.props.setError(error)
 
-    console.log('error:', error)
     if (!error) {
-      console.log('no errors!')
       this.props.register()
     }
 

@@ -11,6 +11,7 @@ export const InitialState = {
   notificationProject: {},
   notificationPayload: {},
   webViewNavCounter: 0,
+  pushEnabled: false,
 }
 
 export default function(state=InitialState, action) {

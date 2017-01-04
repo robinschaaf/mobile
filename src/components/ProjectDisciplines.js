@@ -15,7 +15,7 @@ import {GLOBALS} from '../constants/globals'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 import Discipline from './Discipline'
 import OverlaySpinner from './OverlaySpinner'
-import { setState } from '../actions/index'
+import { setState, syncUserStore } from '../actions/index'
 
 GoogleAnalytics.setTrackerId(GLOBALS.GOOGLE_ANALYTICS_TRACKING)
 GoogleAnalytics.trackEvent('view', 'Home')
@@ -35,7 +35,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
   setPushPrompted(value) {
     dispatch(setState('user.pushPrompted', value))
-    //This needs to also save to the store - once that PR is in!!!!!
+    dispatch(syncUserStore())
   },
 })
 
@@ -45,7 +45,7 @@ class ProjectDisciplines extends React.Component {
   }
 
   componentDidMount() {
-    if ((Platform.OS === 'ios') && (!this.props.pushPrompted)) {
+    if ((Platform.OS === 'ios') && (!this.props.user.pushPrompted)) {
       this.promptRequestPermissions()
     }
   }
@@ -67,7 +67,7 @@ class ProjectDisciplines extends React.Component {
 
   requestIOSPermissions(accepted) {
     if (accepted) {
-      PushNotificationIOS.requestPermissions();
+      PushNotificationIOS.requestPermissions()
     }
     this.props.setPushPrompted(true)
   }

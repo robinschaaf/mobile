@@ -15,7 +15,7 @@ import store from 'react-native-simple-store'
 import { PUBLICATIONS } from '../constants/publications'
 import { MOBILE_PROJECTS } from '../constants/mobile_projects'
 import { GLOBALS } from '../constants/globals'
-import { Alert, NativeModules, NetInfo } from 'react-native'
+import { Alert, Platform, PushNotificationIOS, NativeModules, NetInfo } from 'react-native'
 import { add, addIndex, filter, forEach, head, intersection, keys, map, propEq, reduce } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
@@ -85,8 +85,10 @@ export function setProjectListFromStore() {
 
 export function continueAsGuest() {
   return dispatch => {
-    dispatch(setState('user.isGuestUser', true))
-    dispatch(syncUserStore())
+    dispatch(loadNotificationSettings()).then(() => {
+      dispatch(setState('user.isGuestUser', true))
+      dispatch(syncUserStore())
+    })
     Actions.ZooniverseApp({type: ActionConst.RESET})
   }
 }
@@ -148,7 +150,7 @@ export function loadUserData() {
     dispatch(setUserFromStore()).then(() => {
       if (getState().user.isGuestUser) {
         return Promise.all([
-          dispatch(loadNotificationSettings()),
+          dispatch(loadNotificationSettings())
         ])
       } else {
         return Promise.all([
@@ -159,6 +161,7 @@ export function loadUserData() {
       }
     }).then(() => {
       dispatch(syncUserStore())
+      dispatch(syncInterestSubscriptions())
     }).catch(() => {
       Actions.SignIn()
     })
@@ -339,33 +342,37 @@ export function fetchPublications() {
 
 export function loadNotificationSettings() {
   return (dispatch, getState) => {
-    console.log('>>>>setting user notifications...')
-    if (getState().user.notifications === undefined) {
-      console.log('>>>>setting user notifications...')
-      dispatch(setState('user.notifications', {}))
-    }
-    if (getState().user.notifications.general === undefined) {
-      console.log('>>>>setting general user notifications...')
-      dispatch(setState('user.notifications.general', true))
-    }
-
-    forEach((projectID) => {
-      if (getState().user.notifications[projectID] === undefined) {
-        console.log('>>>>setting project notifications...')
-        dispatch(setState(`user.notifications.${projectID}`, true))
+    return new Promise((resolve) => {
+      if (getState().user.notifications === undefined) {
+        dispatch(setState('user.notifications', {}))
       }
-    })(MOBILE_PROJECTS)
+      if (getState().user.notifications.general === undefined) {
+        dispatch(setState('user.notifications.general', true))
+      }
 
-    return dispatch(syncInterestSubscriptions())
+      forEach((projectID) => {
+        if (getState().user.notifications[projectID] === undefined) {
+          dispatch(setState(`user.notifications.${projectID}`, true))
+        }
+      })(MOBILE_PROJECTS)
+
+      return resolve()
+    })
   }
 }
 
 export function syncInterestSubscriptions() {
   return (dispatch, getState) => {
+    dispatch(checkPushPermissions())
     MOBILE_PROJECTS.reduce(function(promise, projectID) {
       return promise.then(function() {
         var subscribed = getState().user.notifications[projectID]
-        return dispatch(updateInterestSubscription(projectID, subscribed))
+        if (getState().pushEnabled){
+          return dispatch(updateInterestSubscription(projectID, subscribed))
+        } else {
+          return
+        }
+
       })
     }, Promise.resolve())
   }
@@ -384,6 +391,18 @@ export function updateInterestSubscription(interest, subscribed) {
       })
 
     })
+  }
+}
+
+export function checkPushPermissions() {
+  return (dispatch) => {
+    if (Platform.OS === 'ios') {
+      PushNotificationIOS.checkPermissions((permissions) => {
+        dispatch(setState('pushEnabled', (permissions.alert === 0) ? false : true))
+      })
+    } else {
+      dispatch(setState('pushEnabled', true))
+    }
   }
 }
 
