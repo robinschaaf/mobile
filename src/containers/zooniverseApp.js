@@ -10,7 +10,7 @@ import NotificationModal from '../components/NotificationModal'
 import NavBar from '../components/NavBar'
 import { connect } from 'react-redux'
 import { setState, syncInterestSubscriptions } from '../actions/index'
-import { isEmpty } from 'ramda'
+import { isEmpty, pathOr } from 'ramda'
 import FCM from 'react-native-fcm'
 
 const mapStateToProps = (state) => ({
@@ -53,8 +53,12 @@ class ZooniverseApp extends Component {
   }
 
   onRemoteNotification = (notification) => {
-    this.props.setNotificationPayload(notification)
-    this.props.setModalVisibility(true)
+    var isTokenValidation = pathOr(false, ['_data', 'pusher_token_validation'], notification)
+
+    if (!isTokenValidation) {
+      this.props.setNotificationPayload(notification)
+      this.props.setModalVisibility(true)
+    }
   }
 
   onPushRegistration = () => {

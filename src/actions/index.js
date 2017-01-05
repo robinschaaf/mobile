@@ -296,7 +296,6 @@ export function fetchProjectsByParms(tag) {
     apiClient.type('projects').get(parms).then((projects) => {
       dispatch(setState(`projectList.${tag}`,projects))
       dispatch(syncProjectStore())
-      dispatch(setIsFetching(false))
     }).catch((error) => {
       dispatch(displayError('The following error occurred.  Please close down Zooniverse and try again.  If it persists please notify us.  \n\n' + error,))
     })
