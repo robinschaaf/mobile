@@ -127,7 +127,7 @@ const styles = EStyleSheet.create({
     lineHeight: 30
   },
   logo: {
-    width: '40%',
+    height: 20,
     resizeMode: 'contain',
     position: 'relative',
     top: 5
