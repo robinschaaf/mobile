@@ -51,6 +51,14 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  
+  
+  UIView* launchScreen =  [[[NSBundle mainBundle] loadNibNamed:@"LaunchScreen" owner:self options:nil] objectAtIndex:0];
+  launchScreen.frame = [UIScreen mainScreen].bounds;
+  rootView.loadingView = launchScreen;
+  rootView.loadingViewFadeDelay = 0.30;
+  rootView.loadingViewFadeDuration = 0.30;
+  
   return YES;
 }
 

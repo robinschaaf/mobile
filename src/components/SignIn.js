@@ -17,6 +17,9 @@ import NavBar from './NavBar'
 import OverlaySpinner from './OverlaySpinner'
 import StyledText from './StyledText'
 import { Actions } from 'react-native-router-flux'
+import GoogleAnalytics from 'react-native-google-analytics-bridge'
+
+GoogleAnalytics.trackEvent('view', 'SignIn')
 
 const topPadding = (Platform.OS === 'ios') ? 72 : 60
 

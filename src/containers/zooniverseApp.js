@@ -1,10 +1,12 @@
 import React, {Component} from 'react'
 import {
+  Image,
   Platform,
   PushNotificationIOS,
   View
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
+import LaunchScreen from '../components/Launch'
 import ProjectDisciplines from '../components/ProjectDisciplines'
 import NotificationModal from '../components/NotificationModal'
 import NavBar from '../components/NavBar'
@@ -69,10 +71,11 @@ class ZooniverseApp extends Component {
     return <NavBar showAvatar={true} />;
   }
 
+  //{ isEmpty(this.props.user) ? <LaunchScreen /> : <ProjectDisciplines /> }
   render() {
     return (
       <View style={styles.container}>
-        { isEmpty(this.props.user) ? null : <ProjectDisciplines /> }
+        { isEmpty(this.props.user) ? <LaunchScreen /> : <ProjectDisciplines /> }
         <NotificationModal
           isVisible={this.props.isModalVisible}
           setVisibility={this.props.setModalVisibility}/>
@@ -85,6 +88,11 @@ const styles = EStyleSheet.create({
   container: {
     flex: 1,
   },
+  imageContainer: {
+    flex: 1,
+    width: 375,
+    height: 667,
+  },
 });
 
 ZooniverseApp.propTypes = {
@@ -94,6 +102,7 @@ ZooniverseApp.propTypes = {
   isModalVisible: React.PropTypes.bool,
   setModalVisibility: React.PropTypes.func,
   setNotificationPayload: React.PropTypes.func,
+  syncInterestSubscriptions: React.PropTypes.func,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ZooniverseApp)

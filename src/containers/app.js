@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { AppState, NetInfo } from 'react-native'
+import { AppState, Navigator, NetInfo } from 'react-native'
 import { createStore, applyMiddleware, compose } from 'redux'
 import { Provider } from 'react-redux'
 import reducer from '../reducers/index'
@@ -16,6 +16,7 @@ import PublicationList from '../components/PublicationList'
 import SignIn from '../components/SignIn'
 import Register from '../components/Register'
 import SideDrawer from '../components/SideDrawer'
+import Onboarding from '../components/Onboarding'
 import ZooWebView from '../components/ZooWebView'
 
 const store = compose(applyMiddleware(thunkMiddleware))(createStore)(reducer)
@@ -54,6 +55,7 @@ export default class App extends Component {
               <Scene key="ProjectList" component={ProjectList} />
               <Scene key="NotificationSettings" component={NotificationSettings} />
               <Scene key="Register" component={Register} />
+              <Scene key="Onboarding" component={Onboarding} hideNavBar={true} sceneConfig={Navigator.SceneConfigs.FloatFromBottom} />
               <Scene key="ZooWebView" hideNavBar={true} component={ZooWebView} duration={0} />
             </Scene>
           </Scene>

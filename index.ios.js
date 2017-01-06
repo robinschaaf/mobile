@@ -18,7 +18,6 @@ class ZooniverseMobile extends Component {
           translucent={false}
         />
         <App />
-        <View style={styles.statusBar} />
       </View>
     );
   }

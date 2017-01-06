@@ -13,6 +13,7 @@ import { addIndex, filter, map, propEq } from 'ramda'
 import { connect } from 'react-redux'
 import {GLOBALS} from '../constants/globals'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
+import NavBar from '../components/NavBar'
 import Discipline from './Discipline'
 import OverlaySpinner from './OverlaySpinner'
 import { setState, syncUserStore } from '../actions/index'
@@ -72,6 +73,9 @@ class ProjectDisciplines extends React.Component {
     this.props.setPushPrompted(true)
   }
 
+  static renderNavigationBar() {
+    return <NavBar showAvatar={true} />;
+  }
 
   render() {
     const renderDiscipline = ({value, label, color}, idx) => {

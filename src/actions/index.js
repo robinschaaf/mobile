@@ -163,7 +163,7 @@ export function loadUserData() {
       dispatch(syncUserStore())
       dispatch(syncInterestSubscriptions())
     }).catch(() => {
-      Actions.SignIn()
+      Actions.Onboarding()
     })
   }
 }
