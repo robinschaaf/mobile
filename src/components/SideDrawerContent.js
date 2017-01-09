@@ -165,12 +165,13 @@ class SideDrawerContent extends Component {
 const styles = EStyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 80
+    paddingTop: 60
   },
   closeIcon: {
     position: 'absolute',
-    right: 5,
-    top: 24
+    padding: 15,
+    right: 0,
+    top: 0
   },
   icon: {
     color: '$headerColor',

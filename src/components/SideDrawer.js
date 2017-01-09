@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Platform, View } from 'react-native'
 import Drawer from 'react-native-drawer'
 import SideDrawerContent from './SideDrawerContent'
 import {Actions, DefaultRenderer} from 'react-native-router-flux'
@@ -23,22 +24,37 @@ class SideDrawer extends Component {
         closedDrawerOffset={-3}
         styles={drawerStyles}
         tweenHandler={(ratio) => ({
-          main: { opacity:(2-ratio)/2 }
+          mainOverlay: {
+            backgroundColor: 'rgba(71, 71, 71, ' + (ratio)/2 + ')',
+            top: (Platform.OS === 'ios') ? 22 : 0
+          }
         })}
         >
         <DefaultRenderer navigationState={children[0]} onNavigate={this.props.onNavigate} />
+
+        { Platform.OS === 'ios' ? <View style={drawerStyles.statusBar} /> : null }
       </Drawer>
     )
   }
 }
 
 const drawerStyles = {
+  statusBar: {
+    position: 'absolute',
+    backgroundColor: 'rgba(0, 151, 157, 1)',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 22
+  },
   drawer: {
     backgroundColor: 'white',
     shadowColor: 'black',
     shadowOpacity: 0.8,
     shadowRadius: 3,
+    shadowOffset: { height: 5 },
     elevation: 3,
+    top: (Platform.OS === 'ios') ? 22 : 0
   }
 }
 

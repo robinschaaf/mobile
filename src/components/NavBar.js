@@ -81,21 +81,12 @@ class NavBar extends Component {
           { this.props.showDrawer ? drawer : null }
         </View>
         { this.props.showAvatar ? avatar : null }
-        { Platform.OS === 'ios' ? <View style={styles.statusBar} /> : null}
       </View>
     );
   }
 }
 
 const styles = EStyleSheet.create({
-  statusBar: {
-    position: 'absolute',
-    backgroundColor: '$headerColor',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 22
-  },
   navBarContainer: {
     position: 'absolute',
     top: 0,
