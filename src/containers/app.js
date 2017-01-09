@@ -55,7 +55,7 @@ export default class App extends Component {
               <Scene key="ProjectList" component={ProjectList} />
               <Scene key="NotificationSettings" component={NotificationSettings} />
               <Scene key="Register" component={Register} />
-              <Scene key="Onboarding" component={Onboarding} hideNavBar={true} sceneConfig={Navigator.SceneConfigs.FloatFromBottom} />
+              <Scene key="Onboarding" component={Onboarding} duration={0} hideNavBar={true} sceneConfig={Navigator.SceneConfigs.FloatFromBottom} />
               <Scene key="ZooWebView" hideNavBar={true} component={ZooWebView} duration={0} />
             </Scene>
           </Scene>

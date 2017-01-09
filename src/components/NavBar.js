@@ -12,6 +12,7 @@ import {Actions} from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import UserAvatar from './UserAvatar'
 import CircleRibbon from './CircleRibbon'
+import { isEmpty } from 'ramda'
 
 const topPadding = (Platform.OS === 'ios') ? 22 : 10
 const height = 48 + topPadding
@@ -71,9 +72,8 @@ class NavBar extends Component {
         <Icon name="bars" style={[styles.icon, styles.iconBar]} />
       </TouchableOpacity>
 
-    return (
-      <View style={[styles.navBarContainer, {height: containerHeight}]}>
-
+    const navbar =
+      <View>
         <View style={styles.navBar}>
           { this.props.showBack ? back : null }
           { this.props.title ? title : null }
@@ -81,6 +81,12 @@ class NavBar extends Component {
           { this.props.showDrawer ? drawer : null }
         </View>
         { this.props.showAvatar ? avatar : null }
+      </View>
+
+
+    return (
+      <View style={[styles.navBarContainer, {height: containerHeight}]}>
+        { (isEmpty(this.props.user) && (!this.props.showLogo)) ? null : navbar }
       </View>
     );
   }

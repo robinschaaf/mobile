@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Platform, View } from 'react-native'
+import { Platform } from 'react-native'
 import Drawer from 'react-native-drawer'
 import SideDrawerContent from './SideDrawerContent'
 import {Actions, DefaultRenderer} from 'react-native-router-flux'
@@ -31,22 +31,12 @@ class SideDrawer extends Component {
         })}
         >
         <DefaultRenderer navigationState={children[0]} onNavigate={this.props.onNavigate} />
-
-        { Platform.OS === 'ios' ? <View style={drawerStyles.statusBar} /> : null }
       </Drawer>
     )
   }
 }
 
 const drawerStyles = {
-  statusBar: {
-    position: 'absolute',
-    backgroundColor: 'rgba(0, 151, 157, 1)',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 22
-  },
   drawer: {
     backgroundColor: 'white',
     shadowColor: 'black',

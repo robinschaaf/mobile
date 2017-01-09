@@ -99,7 +99,7 @@ const styles = EStyleSheet.create({
     height: '$boxHeight + 12',
     marginLeft: 10,
     marginRight: 10,
-    marginBottom: 5,
+    marginBottom: 15,
   },
   avatar: {
     borderRadius: '$borderRadius',

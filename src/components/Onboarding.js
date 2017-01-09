@@ -17,8 +17,19 @@ class Onboarding extends React.Component {
   constructor(props) {
     super(props)
     this.handlePress = this.handlePress.bind(this)
+     this.state = {
+       fadeAnim: new Animated.Value(0), // init opacity 0
+     }
   }
-
+  componentDidMount() {
+    Animated.timing(          // Uses easing functions
+      this.state.fadeAnim,    // The value to drive
+      {
+        toValue: 1,
+        delay: 500
+      }
+    ).start();                // Don't forget start!
+  }
   handlePress() {
     Actions.SignIn()
   }
@@ -46,12 +57,15 @@ class Onboarding extends React.Component {
             text={introText} />
         </View>
         <View style={styles.footerContainer}>
-          <Button
-            additionalStyles={[styles.button]}
-            additionalTextStyles={[styles.buttonText]}
-            handlePress={this.handlePress}
-            text={'Get Started'} />
+          <Animated.View style={{opacity: this.state.fadeAnim}}>
+            <Button
+              additionalStyles={[styles.button]}
+              additionalTextStyles={[styles.buttonText]}
+              handlePress={this.handlePress}
+              text={'Get Started'} />
+          </Animated.View>
         </View>
+
       </Image>
     );
   }
@@ -106,13 +120,13 @@ const styles = EStyleSheet.create({
     backgroundColor: 'white',
     width: '70%',
     alignSelf: 'center',
-    padding: 12,
+    padding: 10,
     borderRadius: 6,
   },
   buttonText: {
     color: '$darkTeal',
     fontFamily: 'OpenSans-Semibold',
-    fontSize: 24,
+    fontSize: 22,
     letterSpacing: 1
   }
 
