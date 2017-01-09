@@ -68,7 +68,7 @@ const styles = EStyleSheet.create({
     height: '30%',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: '15%'
+    paddingTop: '5%'
   },
   logo: {
     width: '80%',
@@ -96,11 +96,11 @@ const styles = EStyleSheet.create({
   },
   footerContainer: {
     flex: 1,
-    height: '30%',
+    height: '50%',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    paddingBottom: '10%',
+    paddingBottom: '5%',
   },
   button: {
     backgroundColor: 'white',
