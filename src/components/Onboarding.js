@@ -21,35 +21,46 @@ class Onboarding extends React.Component {
        fadeAnim: new Animated.Value(0), // init opacity 0
      }
   }
+
   componentDidMount() {
+    StatusBar.setHidden(true)
     Animated.timing(          // Uses easing functions
       this.state.fadeAnim,    // The value to drive
       {
         toValue: 1,
-        delay: 500
+        delay: 1000
       }
     ).start();                // Don't forget start!
   }
+
   handlePress() {
     Actions.SignIn()
-  }
-
-  componentWillMount() {
-    StatusBar.setHidden(true)
   }
 
   componentWillUnmount() {
     StatusBar.setHidden(false)
   }
 
+  getRandomImage(images) {
+    const randomInt = Math.round(Math.random() * (images.length - 1))
+    return images[randomInt]
+  }
+
+
   render() {
+    const images=[
+      require('../../images/Planet.jpg'),
+      require('../../images/Penguin.jpg'),
+      require('../../images/Africa.jpg'),
+      require('../../images/Chimp.jpg'),
+      require('../../images/Space.jpg')]
 
     const introText = 'The Zooniverse enables everyone to take part in real cutting edge research in many fields across the sciences, humanities, and more.'
 
-    //{{uri: 'app_icon'}}
-    //{require('../../images/Planet.jpg')}
+    var requiredImage = this.getRandomImage(images)
+
     return (
-      <Image source={require('../../images/Planet.jpg')} style={styles.container}>
+      <Image source={requiredImage} style={styles.container}>
         <View style={styles.logoContainer}>
           <Image source={require('../../images/logo.png')} style={styles.logo} />
           <StyledText
@@ -73,16 +84,16 @@ class Onboarding extends React.Component {
 
 const styles = EStyleSheet.create({
   container: {
+    backgroundColor: 'black',
     flex: 1,
     width: null,
     height: null,
   },
   logoContainer: {
     flex: 1,
-    height: '30%',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: '5%'
+    paddingTop: '30%',
   },
   logo: {
     width: '80%',
@@ -94,13 +105,6 @@ const styles = EStyleSheet.create({
     backgroundColor: 'transparent',
     color: 'white'
   },
-  textContainer: {
-    flex: 1,
-    height: '30%',
-    width: '80%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   text: {
     backgroundColor: 'transparent',
     color: 'white',
@@ -109,12 +113,13 @@ const styles = EStyleSheet.create({
     width: '80%',
   },
   footerContainer: {
+    position: 'absolute',
+    bottom: 50,
     flex: 1,
-    height: '50%',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    paddingBottom: '5%',
+    width: '100%'
   },
   button: {
     backgroundColor: 'white',

@@ -116,8 +116,8 @@ export function signIn(login, password) {
 
         return Promise.all([
           dispatch(loadUserAvatar()),
+          dispatch(loadUserProjects()),
           dispatch(loadNotificationSettings()),
-          dispatch(loadUserProjects())
         ])
       }).then(() => {
         dispatch(syncUserStore())
@@ -206,11 +206,21 @@ export function loadUserProjects() {
                 ))
               })
               promises.push(promise)
+              promises.push(promise)
+              promises.push(promise)
+              promises.push(promise)
+              promises.push(promise)
+              promises.push(promise)
+              promises.push(promise)
+              promises.push(promise)
+              promises.push(promise)
+              promises.push(promise)
               },
               projectPreferences
             )
 
             Promise.all(promises).then(() => {
+              console.log('>>>>All promises resolved')
               dispatch(updateTotalClassifications())
               dispatch(fetchProjectsByParms('recent'))
               return resolve()
@@ -272,6 +282,7 @@ export function signOut() {
     store.delete('@zooniverse:user')
     dispatch(setUser({}))
     dispatch(setError(null))
+    auth.signOut()
     Actions.SignIn()
   }
 }

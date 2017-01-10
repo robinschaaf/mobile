@@ -47,7 +47,7 @@ export default class App extends Component {
         <Router ref="router">
           <Scene ref="drawer" key="drawer" component={SideDrawer} open={false}>
             <Scene key="main" tabs={false} >
-              <Scene key="SignIn" hideNavBar={true} component={SignIn} type="reset" />
+              <Scene key="SignIn" hideNavBar={true} duration={0} component={SignIn} type="reset" sceneConfig={Navigator.SceneConfigs.FloatFromBottom} />
               <Scene key="ZooniverseApp" component={ZooniverseApp} initial />
               <Scene key="ProjectDisciplines" component={ProjectDisciplines} />
               <Scene key="About" component={About} />
