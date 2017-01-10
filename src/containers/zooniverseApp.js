@@ -57,12 +57,9 @@ class ZooniverseApp extends Component {
   onRemoteNotification = (notification) => {
     var isTokenValidation = pathOr(false, ['_data', 'pusher_token_validation'], notification)
 
-    if ( (Platform.OS === 'android') && (notification.title)) {
-      if (!isTokenValidation){
-        this.props.setNotificationPayload(notification)
-        this.props.setModalVisibility(true)
-      }
-
+    if (!isTokenValidation){
+      this.props.setNotificationPayload(notification)
+      this.props.setModalVisibility(true)
     }
   }
 

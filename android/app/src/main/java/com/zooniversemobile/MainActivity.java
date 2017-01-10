@@ -70,12 +70,15 @@ public class MainActivity extends ReactActivity {
             PusherProperty.getInstance().nativePusher.setFCMListener(new FCMPushNotificationReceivedListener() {
                 @Override
                 public void onMessageReceived(RemoteMessage remoteMessage) {
-                String projectID = String.valueOf(remoteMessage.getData().get("project_id"));
-                sendNotification(
-                    remoteMessage.getNotification().getTitle(),
-                    remoteMessage.getNotification().getBody(),
-                    projectID
-                );
+                    String projectID = String.valueOf(remoteMessage.getData().get("project_id"));
+
+                    if (remoteMessage.getNotification() != null) {
+                        sendNotification(
+                                remoteMessage.getNotification().getTitle(),
+                                remoteMessage.getNotification().getBody(),
+                                projectID
+                        );
+                    }
                 }
             });
 
