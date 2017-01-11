@@ -16,7 +16,7 @@ import { PUBLICATIONS } from '../constants/publications'
 import { MOBILE_PROJECTS } from '../constants/mobile_projects'
 import { GLOBALS } from '../constants/globals'
 import { Alert, Platform, PushNotificationIOS, NativeModules, NetInfo } from 'react-native'
-import { add, addIndex, filter, forEach, head, intersection, keys, map, propEq, reduce } from 'ramda'
+import { add, addIndex, filter, forEach, head, intersection, keys, map, merge, propEq, reduce } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
 export function setState(stateKey, value) {
@@ -117,7 +117,7 @@ export function signIn(login, password) {
         return Promise.all([
           dispatch(loadUserAvatar()),
           dispatch(loadUserProjects()),
-          dispatch(loadNotificationSettings()),
+          dispatch(loadNotificationSettings())
         ])
       }).then(() => {
         dispatch(syncUserStore())
@@ -141,6 +141,14 @@ export function getAuthUser() {
       }).catch(() => {
         return reject('User auth token not found.  Please log in again.')
       })
+    })
+  }
+}
+
+export function checkUser() {
+  return (dispatch) => {
+    dispatch(setUserFromStore()).catch(() => {
+      Actions.Onboarding()
     })
   }
 }
@@ -185,6 +193,7 @@ export function loadUserAvatar() {
 }
 
 export function loadUserProjects() {
+  var projects = {}
   return (dispatch) => {
     dispatch(setError(''))
     return new Promise ((resolve, reject) => {
@@ -196,31 +205,24 @@ export function loadUserProjects() {
             var promises = []
             forEach((preference) => {
               var promise = preference.get('project').then((project) => {
-                dispatch(setState(`user.projects.${project.id}`, {
-                    preferenceID: preference.id,
-                    name: project.display_name,
-                    slug: project.slug,
-                    notify: preference.email_communication,
-                    activity_count: preference.activity_count
-                  }
-                ))
+                var projectObj = {
+                  [project.id]: {
+                      name: project.display_name,
+                      slug: project.slug,
+                      activity_count: preference.activity_count }
+
+                }
+                projects = merge(projects, projectObj)
+              }).catch(() => {
+                return
               })
-              promises.push(promise)
-              promises.push(promise)
-              promises.push(promise)
-              promises.push(promise)
-              promises.push(promise)
-              promises.push(promise)
-              promises.push(promise)
-              promises.push(promise)
-              promises.push(promise)
               promises.push(promise)
               },
               projectPreferences
             )
 
             Promise.all(promises).then(() => {
-              console.log('>>>>All promises resolved')
+              dispatch(setState('user.projects', projects))
               dispatch(updateTotalClassifications())
               dispatch(fetchProjectsByParms('recent'))
               return resolve()
