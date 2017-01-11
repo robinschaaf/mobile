@@ -41,6 +41,7 @@ class NavBar extends Component {
   }
 
   render() {
+    console.log(this.props)
     const containerHeight = (this.props.showAvatar ? height + 70 : height )
     const logo = <Image source={require('../../images/logo.png')} style={styles.logo} />
     const userAvatar = ( this.props.user.avatar === undefined ? null : this.props.user.avatar.src )
@@ -86,7 +87,7 @@ class NavBar extends Component {
 
     return (
       <View style={[styles.navBarContainer, {height: containerHeight}]}>
-        { (isEmpty(this.props.user) && (!this.props.showLogo)) ? null : navbar }
+        { (isEmpty(this.props.user) && (!this.props.showLogo) && (!this.props.title)) ? null : navbar }
       </View>
     );
   }

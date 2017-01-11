@@ -2,6 +2,7 @@ import React from 'react'
 import {
   Alert,
   Linking,
+  ScrollView,
   TouchableOpacity,
   View
 } from 'react-native'
@@ -105,82 +106,84 @@ class Register extends React.Component {
     return (
       <View style={styles.container}>
         <NavBar showDrawer={false} showBack={true} title={'Register'} />
-        <View style={styles.registerContainer}>
-          <Input
-            labelText={'User Name'}
-            handleOnChangeText={(text) => this.props.setField('login', text)} />
-          <Input
-            labelText={'Email address'}
-            keyboardType={'email-address'}
-            handleOnChangeText={(text) => this.props.setField('email', text)} />
-
-          <View style={styles.rowContainer}>
+        <ScrollView>
+          <View style={styles.registerContainer}>
             <Input
-              labelText={'Password'}
-              addLabel={'Min 8 chars'}
-              inputStyle={'small'}
-              passwordField={!this.state.showPasswordText}
-              handleOnChangeText={(text) => this.props.setField('password', text)} />
+              labelText={'User Name'}
+              handleOnChangeText={(text) => this.props.setField('login', text)} />
+            <Input
+              labelText={'Email address'}
+              keyboardType={'email-address'}
+              handleOnChangeText={(text) => this.props.setField('email', text)} />
 
-              <View style={[styles.rowContainer, styles.checkboxRowContainer]}>
+            <View style={styles.rowContainer}>
+              <Input
+                labelText={'Password'}
+                addLabel={'Min 8 chars'}
+                inputStyle={'small'}
+                passwordField={!this.state.showPasswordText}
+                handleOnChangeText={(text) => this.props.setField('password', text)} />
+
+                <View style={[styles.rowContainer, styles.checkboxRowContainer]}>
+                <Checkbox
+                    onSelect={() => this.setState({ showPasswordText: !this.state.showPasswordText })}
+                    selected={this.state.showPasswordText} />
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => this.setState({ showPasswordText: !this.state.showPasswordText })}>
+                  <StyledText
+                    textStyle={'small'}
+                    text={ 'Show password' } />
+                </TouchableOpacity>
+                </View>
+            </View>
+
+            <Input
+              labelText={'Real name'}
+              addLabel={'Optional'}
+              subLabelText={ 'We\'ll use this to give you credit in scientific papers, etc.' }
+              handleOnChangeText={(text) => this.props.setField('credited_name', text)} />
+            <View style={styles.rowContainer}>
               <Checkbox
-                  onSelect={() => this.setState({ showPasswordText: !this.state.showPasswordText })}
-                  selected={this.state.showPasswordText} />
+                onSelect={() => this.props.setField('global_email_communication', !emailChecked)}
+                selected={emailChecked}
+                leftAligned={true}
+              />
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => this.setState({ showPasswordText: !this.state.showPasswordText })}>
                 <StyledText
                   textStyle={'small'}
-                  text={ 'Show password' } />
+                  text={ 'It’s okay to send me email occasionally.' }
+                />
               </TouchableOpacity>
-              </View>
-          </View>
+            </View>
 
-          <Input
-            labelText={'Real name'}
-            addLabel={'Optional'}
-            subLabelText={ 'We\'ll use this to give you credit in scientific papers, etc.' }
-            handleOnChangeText={(text) => this.props.setField('credited_name', text)} />
-          <View style={styles.rowContainer}>
-            <Checkbox
-              onSelect={() => this.props.setField('global_email_communication', !emailChecked)}
-              selected={emailChecked}
-              leftAligned={true}
-            />
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => this.setState({ showPasswordText: !this.state.showPasswordText })}>
+            { this.props.errorMessage ? errorMessageDisplay : null }
+            <Button
+              handlePress={this.handleRegister}
+              disabled={registerDisabled}
+              buttonStyle={ registerDisabled ? 'disabledRegisterButton' : 'registerButton' }
+              text={'Register'} />
+
+            <View style={styles.privacyPolicyContainer}>
               <StyledText
                 textStyle={'small'}
-                text={ 'It’s okay to send me email occasionally.' }
+                text={ 'By signing up, I agree to Zooniverse\'s ' }
               />
-            </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={this.handleOpenPrivacyPolicy}
+                style={styles.touchContainer} >
+                <StyledText
+                  textStyle={'smallLink'}
+                  text={'Privacy Policy'}
+                />
+              </TouchableOpacity>
+            </View>
+
           </View>
-
-          { this.props.errorMessage ? errorMessageDisplay : null }
-          <Button
-            handlePress={this.handleRegister}
-            disabled={registerDisabled}
-            buttonStyle={ registerDisabled ? 'disabledRegisterButton' : 'registerButton' }
-            text={'Register'} />
-
-          <View style={styles.privacyPolicyContainer}>
-            <StyledText
-              textStyle={'small'}
-              text={ 'By signing up, I agree to Zooniverse\'s ' }
-            />
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={this.handleOpenPrivacyPolicy}
-              style={styles.touchContainer} >
-              <StyledText
-                textStyle={'smallLink'}
-                text={'Privacy Policy'}
-              />
-            </TouchableOpacity>
-          </View>
-
-        </View>
+        </ScrollView>
         { this.props.isFetching ? <OverlaySpinner /> : null }
       </View>
     );
