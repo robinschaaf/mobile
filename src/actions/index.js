@@ -331,7 +331,7 @@ export function fetchProjects() {
 export function fetchProjectsByParms(tag) {
   return (dispatch, getState) => {
     let parms = {id: MOBILE_PROJECTS, cards: true, sort: 'display_name'}
-    if (tag === 'recentddd') {
+    if (tag === 'recent') {
       parms.id = intersection(MOBILE_PROJECTS, keys(getState().user.projects) )
     } else {
       parms.tags = tag
