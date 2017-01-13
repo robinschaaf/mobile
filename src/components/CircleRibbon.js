@@ -6,7 +6,7 @@ import Svg, { Path } from 'react-native-svg'
 import EStyleSheet from 'react-native-extended-stylesheet'
 import getColorFromString from '../utils/color-from-string'
 import { connect } from 'react-redux'
-import { addIndex, filter, keys, map } from 'ramda'
+import { addIndex, keys, map, sort } from 'ramda'
 
 const size = 120
 const position = size / 2
@@ -39,16 +39,18 @@ class CircleRibbon extends Component {
   }
 
   render() {
-    const projects = map((key) => {
+    let projects = map((key) => {
       return this.props.user.projects[key]
     }, keys(this.props.user.projects))
 
-    const isActive = (project) => project.activity_count > 0
-    const activeProjects = filter(isActive, projects)
+
+    const diff = (a, b) => { return a.sort_order - b.sort_order }
+    projects = sort(diff, projects)
+
 
     const renderArc = (project, idx) => {
-      const index = activeProjects.indexOf(project)
-      const startAmount = activeProjects.slice(0, index).reduce((count, otherArc) => {
+      const index = projects.indexOf(project)
+      const startAmount = projects.slice(0, index).reduce((count, otherArc) => {
         return count + otherArc.activity_count
       }, 0) / this.props.totalClassifications
 
@@ -81,7 +83,7 @@ class CircleRibbon extends Component {
           (project, idx) => {
             return renderArc(project, idx)
           },
-          activeProjects
+          projects
         ) }
       </Svg>
 

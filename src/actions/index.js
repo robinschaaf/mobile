@@ -1,4 +1,5 @@
 export const SET_STATE = 'SET_STATE'
+export const ADD_STATE = 'ADD_STATE'
 export const SET_USER = 'SET_USER'
 export const SET_ERROR = 'SET_ERROR'
 export const SET_IS_FETCHING = 'SET_IS_FETCHING'
@@ -16,11 +17,15 @@ import { PUBLICATIONS } from '../constants/publications'
 import { MOBILE_PROJECTS } from '../constants/mobile_projects'
 import { GLOBALS } from '../constants/globals'
 import { Alert, Platform, PushNotificationIOS, NativeModules, NetInfo } from 'react-native'
-import { add, addIndex, filter, forEach, head, intersection, keys, map, merge, propEq, reduce } from 'ramda'
+import { add, addIndex, filter, forEach, head, intersection, keys, map, propEq, reduce } from 'ramda'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
 export function setState(stateKey, value) {
   return { type: SET_STATE, stateKey, value }
+}
+
+export function addState(stateKey, addition) {
+  return { type: ADD_STATE, stateKey, addition }
 }
 
 export function setUser(user) {
@@ -120,6 +125,7 @@ export function signIn(login, password) {
           dispatch(loadNotificationSettings())
         ])
       }).then(() => {
+        dispatch(setState('loadingText', 'Loading...'))
         dispatch(syncUserStore())
         dispatch(setIsFetching(false))
         Actions.ZooniverseApp({type: ActionConst.RESET})  // Go to home screen
@@ -169,7 +175,6 @@ export function loadUserData() {
       }
     }).then(() => {
       dispatch(syncUserStore())
-      dispatch(syncInterestSubscriptions())
     }).catch(() => {
       Actions.Onboarding()
     })
@@ -193,41 +198,67 @@ export function loadUserAvatar() {
 }
 
 export function loadUserProjects() {
-  var projects = {}
   return (dispatch) => {
     dispatch(setError(''))
+    dispatch(setState('loadingText', 'Loading Projects...'))
     return new Promise ((resolve, reject) => {
       dispatch(getAuthUser()).then((userResourse) => {
         userResourse.get('project_preferences').then((forCount) => {
-          return forCount.length > 0 ? forCount[0]._meta.project_preferences.count : 0
+          return forCount.length > 0 ? forCount[0].getMeta().count : 0
         }).then((preferenceCount) => {
-          userResourse.get('project_preferences', {page_size: preferenceCount}).then((projectPreferences) => {
-            var promises = []
-            forEach((preference) => {
-              var promise = preference.get('project').then((project) => {
-                var projectObj = {
-                  [project.id]: {
-                      name: project.display_name,
-                      slug: project.slug,
-                      activity_count: preference.activity_count }
+          userResourse.get('project_preferences', {page_size: preferenceCount, sort: '-updated_at'}).then((projectPreferences) => {
+            const isActive = pref => {
+              return pref.activity_count > 0
+            }
+            let activePreferences = filter(isActive, projectPreferences)
 
-                }
-                projects = merge(projects, projectObj)
-              }).catch(() => {
-                return
+            activePreferences = addIndex(map)((preference, i) => {
+              preference.sort_order = i
+              return preference
+            }, activePreferences)
+
+            const projectIDs = map((pref) => { return pref.links.project }, activePreferences);
+
+            return apiClient.type('projects').get({ id: projectIDs, page_size: activePreferences.length }).catch(() => {
+              return null;
+            }).then((projects) => {
+              const classifications = reduce((counts, projectPreference) => {
+                counts[projectPreference.links.project] = projectPreference.activity_count
+                return counts;
+              }, {}, activePreferences)
+
+              const sortOrders = reduce((orders, projectPreference) => {
+                orders[projectPreference.links.project] = projectPreference.sort_order
+                return orders;
+              }, {}, activePreferences)
+
+
+              projects = map((project) => {
+                project.activity_count = classifications[project.id]
+                project.sort_order = sortOrders[project.id]
+                return project
+              }, projects)
+
+              projects.map((project) => {
+                dispatch(setState(`user.projects.${project.id}`, {
+                    name: project.display_name,
+                    slug: project.slug,
+                    activity_count: project.activity_count,
+                    sort_order: project.sort_order
+                  }
+                ))
               })
-              promises.push(promise)
-              },
-              projectPreferences
-            )
-
-            Promise.all(promises).then(() => {
-              dispatch(setState('user.projects', projects))
+              return resolve()
+            }).then(() => {
               dispatch(updateTotalClassifications())
               dispatch(fetchProjectsByParms('recent'))
               return resolve()
             })
+          }).catch(() => {
+            return resolve()
           })
+        }).catch(() => {
+          return resolve()
         })
       }).catch((error) => {
         dispatch(setError(error.message))
@@ -300,7 +331,7 @@ export function fetchProjects() {
 export function fetchProjectsByParms(tag) {
   return (dispatch, getState) => {
     let parms = {id: MOBILE_PROJECTS, cards: true, sort: 'display_name'}
-    if (tag === 'recent') {
+    if (tag === 'recentddd') {
       parms.id = intersection(MOBILE_PROJECTS, keys(getState().user.projects) )
     } else {
       parms.tags = tag
@@ -376,8 +407,8 @@ export function loadNotificationSettings() {
 export function syncInterestSubscriptions() {
   return (dispatch, getState) => {
     dispatch(checkPushPermissions())
-    MOBILE_PROJECTS.reduce(function(promise, projectID) {
-      return promise.then(function() {
+    MOBILE_PROJECTS.reduce((promise, projectID) => {
+      return promise.then(() => {
         var subscribed = getState().user.notifications[projectID]
         if (getState().pushEnabled){
           return dispatch(updateInterestSubscription(projectID, subscribed))
@@ -399,7 +430,7 @@ export function updateInterestSubscription(interest, subscribed) {
         //Timeout needed or crashes ios.  Open issue: https://github.com/pusher/libPusher/issues/230
         setTimeout(()=> {
           return resolve(message)
-        }, 500)
+        }, 100)
       })
 
     })

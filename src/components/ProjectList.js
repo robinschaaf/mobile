@@ -6,6 +6,7 @@ import {
 import EStyleSheet from 'react-native-extended-stylesheet'
 import Project from './Project'
 import NavBar from './NavBar'
+import StyledText from './StyledText'
 import { connect } from 'react-redux'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 
@@ -38,6 +39,7 @@ class ProjectList extends React.Component {
 
   render() {
     const projects = this.props.projectList[this.props.selectedProjectTag] || []
+
     const projectList =
       <ListView
         dataSource={dataSource.cloneWithRows(projects)}
@@ -45,10 +47,15 @@ class ProjectList extends React.Component {
         enableEmptySections={true}
       />
 
+    const emptyList =
+      <StyledText
+        additionalStyles={[styles.emptyList]}
+        text={'Sorry, but you have no mobile friendly recents in your list'} />
+
     return (
       <View style={styles.container}>
         <View style={styles.innerContainer}>
-          { projectList }
+          { projects.length > 0 ? projectList : emptyList }
         </View>
       </View>
     );
@@ -68,9 +75,12 @@ const styles = EStyleSheet.create({
   listStyle: {
     paddingTop: 90
   },
-  messageContainer: {
-    padding: 15,
-  },
+  emptyList: {
+    marginHorizontal: 20,
+    color: 'grey',
+    fontStyle: 'italic',
+    lineHeight: 24
+  }
 });
 
 ProjectList.propTypes = {

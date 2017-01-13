@@ -41,7 +41,6 @@ class NavBar extends Component {
   }
 
   render() {
-    console.log(this.props)
     const containerHeight = (this.props.showAvatar ? height + 70 : height )
     const logo = <Image source={require('../../images/logo.png')} style={styles.logo} />
     const userAvatar = ( this.props.user.avatar === undefined ? null : this.props.user.avatar.src )
@@ -103,7 +102,7 @@ const styles = EStyleSheet.create({
   navBar: {
     backgroundColor: '$headerColor',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     height: height,
     paddingBottom: 10,
     paddingTop: topPadding,
@@ -111,7 +110,7 @@ const styles = EStyleSheet.create({
   leftIcon: {
     position: 'absolute',
     left: 5,
-    top: topPadding - 2
+    top: topPadding - 3
   },
   rightIcon: {
     position: 'absolute',
@@ -138,7 +137,6 @@ const styles = EStyleSheet.create({
     height: 20,
     resizeMode: 'contain',
     position: 'relative',
-    top: 5
   },
   userAvatarContainer: {
     flex: 1,

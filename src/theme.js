@@ -8,6 +8,7 @@ export default {
   backgroundColor: 'white',
   projectTitleColor: 'rgba(70, 209, 120, 1)',
   textColor: 'white',
+  transluscentWhite: 'rgba(255, 255, 255, 0.8)',
   lightTransparent: 'rgba(0, 0, 0, .03)',
   transparent: 'rgba(0, 0, 0, 0)',
   darkTextColor: 'rgba(12, 71, 128, 1)',

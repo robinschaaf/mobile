@@ -7,7 +7,7 @@ export const InitialState = {
   errorMessage: null,
   isConnected: null,
   selectedProjectTag: '',
-  projectList: [],
+  projectList: {},
   notificationProject: {},
   notificationPayload: {},
   webViewNavCounter: 0,

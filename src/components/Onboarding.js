@@ -51,7 +51,6 @@ class Onboarding extends React.Component {
     const images=[
       require('../../images/Planet.jpg'),
       require('../../images/Penguin.jpg'),
-      require('../../images/Africa.jpg'),
       require('../../images/Chimp.jpg'),
       require('../../images/Space.jpg')]
 
