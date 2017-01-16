@@ -23,7 +23,7 @@ const store = compose(applyMiddleware(thunkMiddleware))(createStore)(reducer)
 
 export default class App extends Component {
   componentDidMount() {
-    store.dispatch(checkUser())
+    store.dispatch(loadUserData())
 
     const handleAppStateChange = currentAppState => {
       if (currentAppState === 'active') {

@@ -7,16 +7,16 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 import theme from '../theme'
 import StyledText from './StyledText'
 import { connect } from 'react-redux'
-import { setState, syncUserStore, updateInterestSubscription } from '../actions/index'
+import { setState, syncNotificationStore, updateInterestSubscription } from '../actions/index'
 
 const mapStateToProps = (state, ownProps) => ({
-  notification: state.user.notifications[ownProps.id]
+  notification: state.notifications[ownProps.id]
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   updateProjectNotification(checked) {
-    dispatch(setState(`user.notifications.${ownProps.id}`, checked))
-    dispatch(syncUserStore())
+    dispatch(setState(`notifications.${ownProps.id}`, checked))
+    dispatch(syncNotificationStore())
     dispatch(updateInterestSubscription(ownProps.id, checked))
   },
 })

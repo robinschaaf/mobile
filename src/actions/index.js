@@ -88,6 +88,32 @@ export function setProjectListFromStore() {
   }
 }
 
+export function syncNotificationStore() {
+  return (dispatch, getState) => {
+    const notifications = getState().notifications
+    console.log('syncNotificationStore', notifications)
+    return store.save('@zooniverse:notifications', {
+      notifications
+    })
+  }
+}
+
+export function setNotificationFromStore() {
+  return dispatch => {
+    return new Promise ((resolve) => {
+      store.get('@zooniverse:notifications').then(json => {
+        console.log('setNotificationFromStore', json.notifications)
+        dispatch(setState('notifications', json.notifications))
+        return resolve()
+      }).catch(() => {
+        console.log('setNotificationFromStore nothing!')
+        dispatch(setState('notifications', {}))
+        return resolve()
+      })
+    })
+  }
+}
+
 export function continueAsGuest() {
   return dispatch => {
     dispatch(loadNotificationSettings()).then(() => {
@@ -115,6 +141,7 @@ export function signIn(login, password) {
     dispatch(setError(''))
     dispatch(checkIsConnected()).then(() => {
       dispatch(setIsFetching(true))
+      dispatch(setState('loadingText', 'Signing In...'))
       auth.signIn({login: login, password: password}).then((user) => {
         user.isGuestUser = false
         dispatch(setUser(user))
@@ -125,7 +152,6 @@ export function signIn(login, password) {
           dispatch(loadNotificationSettings())
         ])
       }).then(() => {
-        dispatch(setState('loadingText', 'Loading...'))
         dispatch(syncUserStore())
         dispatch(setIsFetching(false))
         Actions.ZooniverseApp({type: ActionConst.RESET})  // Go to home screen
@@ -384,38 +410,39 @@ export function fetchPublications() {
 }
 
 export function loadNotificationSettings() {
+  console.log('loadNotificationSettings')
   return (dispatch, getState) => {
     return new Promise((resolve) => {
-      if (getState().user.notifications === undefined) {
-        dispatch(setState('user.notifications', {}))
-      }
-      if (getState().user.notifications.general === undefined) {
-        dispatch(setState('user.notifications.general', true))
-      }
-
-      forEach((projectID) => {
-        if (getState().user.notifications[projectID] === undefined) {
-          dispatch(setState(`user.notifications.${projectID}`, true))
+      dispatch(setNotificationFromStore()).then(() => {
+        if (getState().notifications.general === undefined) {
+          dispatch(setState('notifications.general', true))
         }
-      })(MOBILE_PROJECTS)
 
+        forEach((projectID) => {
+          if (getState().notifications[projectID] === undefined) {
+            dispatch(setState(`notifications.${projectID}`, true))
+          }
+        })(MOBILE_PROJECTS)
+
+        dispatch(checkPushPermissions()).then(()=> {
+          if (getState().pushEnabled){
+            dispatch(syncInterestSubscriptions())
+          }
+        })
+        dispatch(syncNotificationStore())
+      })
       return resolve()
     })
   }
 }
 
 export function syncInterestSubscriptions() {
+  console.log('syncInterestSubscriptions')
   return (dispatch, getState) => {
-    dispatch(checkPushPermissions())
     MOBILE_PROJECTS.reduce((promise, projectID) => {
       return promise.then(() => {
-        var subscribed = getState().user.notifications[projectID]
-        if (getState().pushEnabled){
-          return dispatch(updateInterestSubscription(projectID, subscribed))
-        } else {
-          return
-        }
-
+        var subscribed = getState().notifications[projectID]
+        return dispatch(updateInterestSubscription(projectID, subscribed))
       })
     }, Promise.resolve())
   }
@@ -430,7 +457,7 @@ export function updateInterestSubscription(interest, subscribed) {
         //Timeout needed or crashes ios.  Open issue: https://github.com/pusher/libPusher/issues/230
         setTimeout(()=> {
           return resolve(message)
-        }, 100)
+        }, 500)
       })
 
     })
@@ -439,13 +466,16 @@ export function updateInterestSubscription(interest, subscribed) {
 
 export function checkPushPermissions() {
   return (dispatch) => {
-    if (Platform.OS === 'ios') {
-      PushNotificationIOS.checkPermissions((permissions) => {
-        dispatch(setState('pushEnabled', (permissions.alert === 0) ? false : true))
-      })
-    } else {
-      dispatch(setState('pushEnabled', true))
-    }
+    return new Promise((resolve) => {
+      if (Platform.OS === 'ios') {
+        PushNotificationIOS.checkPermissions((permissions) => {
+          dispatch(setState('pushEnabled', (permissions.alert === 0) ? false : true))
+        })
+      } else {
+        dispatch(setState('pushEnabled', true))
+      }
+      return resolve()
+    })
   }
 }
 

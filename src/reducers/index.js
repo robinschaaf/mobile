@@ -10,6 +10,7 @@ export const InitialState = {
   projectList: {},
   notificationProject: {},
   notificationPayload: {},
+  notifications: {},
   webViewNavCounter: 0,
   pushEnabled: false,
 }

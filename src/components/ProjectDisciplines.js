@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  Alert,
+  AlertIOS,
   Platform,
   PushNotificationIOS,
   ScrollView,
@@ -46,15 +46,23 @@ class ProjectDisciplines extends React.Component {
   }
 
   componentDidMount() {
+    console.log('componentDidMount ProjectDisciplines', this.props.user.pushPrompted)
     if ((Platform.OS === 'ios') && (!this.props.user.pushPrompted)) {
-      this.promptRequestPermissions()
+
+      console.log('Going to request permissions!!!!')
+      setTimeout(()=> {
+        this.promptRequestPermissions()
+      }, 500)
+
     }
   }
 
-  promptRequestPermissions() {
+  promptRequestPermissions = () => {
     PushNotificationIOS.checkPermissions((permissions) => {
+      console.log('>>>>inside checkPermissions!!!!')
       if (permissions.alert === 0){
-        Alert.alert(
+        console.log('>>>>inside permissions.alert!!!!')
+        AlertIOS.alert(
           'Allow Notifications?',
           'Zooniverse would like to occasionally send you info about new projects or projects needing help.',
           [

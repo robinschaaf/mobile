@@ -14,7 +14,7 @@ import NavBar from './NavBar'
 import OverlaySpinner from './OverlaySpinner'
 import ProjectNotification from './ProjectNotification'
 import { connect } from 'react-redux'
-import { checkPushPermissions, setState, updateInterestSubscription, syncUserStore } from '../actions/index'
+import { checkPushPermissions, setState, updateInterestSubscription, syncNotificationStore } from '../actions/index'
 import { addIndex, find, keys, map, flatten, propEq, without } from 'ramda'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 
@@ -22,7 +22,7 @@ GoogleAnalytics.trackEvent('view', 'Notification Settings')
 
 const mapStateToProps = (state) => ({
   user: state.user,
-  notifications: state.user.notifications,
+  notifications: state.notifications,
   projectList: state.projectList,
   isFetching: state.isFetching,
   errorMessage: state.errorMessage,
@@ -31,8 +31,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   updateGeneralNotification(checked) {
-    dispatch(setState('user.notifications.general', checked))
-    dispatch(syncUserStore())
+    dispatch(setState('notifications.general', checked))
+    dispatch(syncNotificationStore())
     dispatch(updateInterestSubscription('general', checked))
   },
   setState(key, value){
@@ -89,7 +89,7 @@ class NotificationSettings extends React.Component {
           text={'Zooniverse would like to occassionally send you updates about new projects or projects needing help.'} />
         <View style={styles.switchContainer}>
           <Switch
-            value={this.props.user.notifications['general']}
+            value={this.props.notifications['general']}
             style={styles.switch}
             onTintColor={theme.headerColor}
             onValueChange={(checked) => this.props.updateGeneralNotification(checked)}
