@@ -91,7 +91,6 @@ export function setProjectListFromStore() {
 export function syncNotificationStore() {
   return (dispatch, getState) => {
     const notifications = getState().notifications
-    console.log('syncNotificationStore', notifications)
     return store.save('@zooniverse:notifications', {
       notifications
     })
@@ -102,11 +101,9 @@ export function setNotificationFromStore() {
   return dispatch => {
     return new Promise ((resolve) => {
       store.get('@zooniverse:notifications').then(json => {
-        console.log('setNotificationFromStore', json.notifications)
         dispatch(setState('notifications', json.notifications))
         return resolve()
       }).catch(() => {
-        console.log('setNotificationFromStore nothing!')
         dispatch(setState('notifications', {}))
         return resolve()
       })
@@ -410,7 +407,6 @@ export function fetchPublications() {
 }
 
 export function loadNotificationSettings() {
-  console.log('loadNotificationSettings')
   return (dispatch, getState) => {
     return new Promise((resolve) => {
       dispatch(setNotificationFromStore()).then(() => {
@@ -437,7 +433,6 @@ export function loadNotificationSettings() {
 }
 
 export function syncInterestSubscriptions() {
-  console.log('syncInterestSubscriptions')
   return (dispatch, getState) => {
     MOBILE_PROJECTS.reduce((promise, projectID) => {
       return promise.then(() => {

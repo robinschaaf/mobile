@@ -46,10 +46,8 @@ class ProjectDisciplines extends React.Component {
   }
 
   componentDidMount() {
-    console.log('componentDidMount ProjectDisciplines', this.props.user.pushPrompted)
     if ((Platform.OS === 'ios') && (!this.props.user.pushPrompted)) {
 
-      console.log('Going to request permissions!!!!')
       setTimeout(()=> {
         this.promptRequestPermissions()
       }, 500)
@@ -59,9 +57,7 @@ class ProjectDisciplines extends React.Component {
 
   promptRequestPermissions = () => {
     PushNotificationIOS.checkPermissions((permissions) => {
-      console.log('>>>>inside checkPermissions!!!!')
       if (permissions.alert === 0){
-        console.log('>>>>inside permissions.alert!!!!')
         AlertIOS.alert(
           'Allow Notifications?',
           'Zooniverse would like to occasionally send you info about new projects or projects needing help.',

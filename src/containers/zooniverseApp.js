@@ -42,7 +42,6 @@ class ZooniverseApp extends Component {
 
   componentDidMount() {
     if (Platform.OS === 'ios') {
-      console.log('COMPONENT DID MOUNT')
       PushNotificationIOS.addEventListener('notification', this.onRemoteNotification)
       PushNotificationIOS.addEventListener('register', this.onPushRegistration)
     } else {
