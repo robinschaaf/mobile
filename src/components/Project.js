@@ -62,26 +62,29 @@ class Project extends Component {
 
   render() {
     const imageURI = `https://${this.props.project.avatar_src}`
+    const imageStyle = ( this.props.project.id === '55' ? [styles.avatar, styles.topAlignedAvatar] : [styles.avatar] )
+
     return (
       <Animated.View   // Special animatable View
         style={{
           opacity: this.state.fadeAnim,  // Binds
         }}>
-        <View style={styles.container}>
-          <Image source={{uri: imageURI}} style={styles.avatar} onLoadEnd={ ()=>{ this.imageLoadEnd() } } />
-          <TouchableOpacity
-            activeOpacity={0.9}
-            onPress={this.handleClick}
-            style={styles.touchContainer}>
-            <View style={styles.titleContainer}>
-              <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>{this.props.project.display_name}</Text>
-              <Text style={styles.description} numberOfLines={2} ellipsizeMode={'tail'}>{this.props.project.description}</Text>
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={this.handleClick}
+          style={styles.container}>
+          <Image source={{uri: imageURI}} style={imageStyle} onLoadEnd={ ()=>{ this.imageLoadEnd() } } />
+            <View style={styles.forBorderRadius} />
+            <View style={styles.textContainer}>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>{this.props.project.display_name}</Text>
+                <Text style={styles.description} numberOfLines={2} ellipsizeMode={'tail'}>{this.props.project.description}</Text>
+              </View>
+              <View style={[styles.iconContainer, { backgroundColor: this.props.color }]}>
+                <Icon name="angle-right" style={styles.icon} />
+              </View>
             </View>
-            <View style={[styles.iconContainer, { backgroundColor: this.props.color }]}>
-              <Icon name="angle-right" style={styles.icon} />
-            </View>
-          </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
       </Animated.View>
     )
   }
@@ -100,6 +103,7 @@ const styles = EStyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginBottom: 15,
+    overflow: 'hidden'
   },
   avatar: {
     borderRadius: '$borderRadius',
@@ -107,11 +111,24 @@ const styles = EStyleSheet.create({
     borderColor: '$greyBorder',
     flex: 1,
     height: '$boxHeight',
-    resizeMode: 'cover'
+    width: null
   },
-  touchContainer: {
+  topAlignedAvatar: {
+    height: '$boxHeight + 140',
+  },
+  forBorderRadius: {
     position: 'absolute',
     bottom: 0,
+    left: 0,
+    right: 0,
+    height: '$titleHeight',
+    backgroundColor: '$lightGreyBackground'
+  },
+  textContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     borderBottomLeftRadius: '$borderRadius',
     borderBottomRightRadius: '$borderRadius',
     borderWidth: 1,

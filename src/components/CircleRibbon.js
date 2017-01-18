@@ -100,7 +100,7 @@ const styles = EStyleSheet.create({
   $halfSize: size / 2,
   container: {
     position: 'relative',
-    top: -102,
+    top: -103,
     width: size,
     height: size,
   },
