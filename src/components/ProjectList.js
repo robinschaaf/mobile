@@ -4,9 +4,9 @@ import {
   View
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
-import StyledText from './StyledText'
 import Project from './Project'
 import NavBar from './NavBar'
+import StyledText from './StyledText'
 import { connect } from 'react-redux'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 

@@ -2,16 +2,21 @@ import auth from 'panoptes-client/lib/auth'
 import store from 'react-native-simple-store'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
-import { checkIsConnected, loadNotificationSettings, setState, setIsFetching } from '../actions/index'
-import { loadUserAvatar, loadUserProjects, syncUserStore } from '../actions/user'
+import { checkIsConnected, loadNotificationSettings, setState, setIsFetching } from './index'
+import { loadUserAvatar, loadUserProjects, syncUserStore } from './user'
+import { setSession } from './session'
 
 export function getAuthUser() {
+  //prevent red screen of death thrown by a console.error in javascript-client
+  /* eslint-disable no-console */
+  console.reportErrorsAsExceptions = false
+  console.log('FETCHING AUTH USER')
   return () => {
     return new Promise ((resolve, reject) => {
       auth.checkCurrent().then ((user) => {
         return resolve(user)
       }).catch(() => {
-        return reject()
+        return reject('User auth token not found.  Please log in again.')
       })
     })
   }
@@ -26,7 +31,7 @@ export function signIn(login, password) {
       auth.signIn({login: login, password: password}).then((user) => {
         user.isGuestUser = false
         dispatch(setState('user', user))
-
+        dispatch(setSession())
         return Promise.all([
           dispatch(loadUserAvatar()),
           dispatch(loadUserProjects()),
@@ -92,6 +97,7 @@ export function continueAsGuest() {
     dispatch(loadNotificationSettings()).then(() => {
       dispatch(setState('user.isGuestUser', true))
       dispatch(syncUserStore())
+      dispatch(setSession())
     })
     Actions.ZooniverseApp({type: ActionConst.RESET})
   }

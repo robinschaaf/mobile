@@ -35,12 +35,15 @@ class Project extends Component {
 
 
   handleClick() {
-    GoogleAnalytics.trackEvent('view', this.props.project.display_name)
-    if (this.props.project.redirect) {
-      this.openURL(this.props.project.redirect)
-    } else {
-      Actions.ZooWebView({project: this.props.project})
-    }
+    Actions.Classify({ projectID: '3321', workflowID: '2725' })
+
+    //GoogleAnalytics.trackEvent('view', this.props.project.display_name)
+
+    //if (this.props.project.redirect) {
+    //  this.openURL(this.props.project.redirect)
+    //} else {
+    //  Actions.ZooWebView({project: this.props.project})
+    //}
 
   }
 
@@ -54,7 +57,7 @@ class Project extends Component {
           'Sorry, but it looks like you are unable to open the project in your default browser.',
         )
       }
-    });
+    })
   }
 
   render() {

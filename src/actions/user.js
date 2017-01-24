@@ -4,8 +4,9 @@ import store from 'react-native-simple-store'
 import { Actions } from 'react-native-router-flux'
 import { add, addIndex, filter, head, keys, map, reduce } from 'ramda'
 
-import { fetchProjectsByParms, loadNotificationSettings, setState } from '../actions/index'
+import { fetchProjectsByParms, loadNotificationSettings, setIsFetching, setState } from '../actions/index'
 import { getAuthUser } from '../actions/auth'
+import { setSession } from './session'
 
 export function syncUserStore() {
   return (dispatch, getState) => {
@@ -31,7 +32,9 @@ export function setUserFromStore() {
 
 export function loadUserData() {
   return (dispatch, getState) => {
+    //dispatch(setIsFetching(true))
     dispatch(setUserFromStore()).then(() => {
+      dispatch(setSession())
       if (getState().user.isGuestUser) {
         return Promise.all([
           dispatch(loadNotificationSettings())
@@ -45,6 +48,8 @@ export function loadUserData() {
       }
     }).then(() => {
       dispatch(syncUserStore())
+      //dispatch(setIsFetching(false))
+      console.log('>>>>loadUserData fetch done<<<<')
     }).catch(() => {
       Actions.Onboarding()
     })
@@ -52,6 +57,7 @@ export function loadUserData() {
 }
 
 export function loadUserAvatar() {
+  console.log('loadUserAvatar')
   return (dispatch) => {
     return new Promise ((resolve) => {
       dispatch(getAuthUser()).then((userResource) => {
@@ -68,6 +74,7 @@ export function loadUserAvatar() {
 }
 
 export function loadUserProjects() {
+  console.log('loadUserProjects')
   return (dispatch) => {
     dispatch(setState('loadingText', 'Loading Projects...'))
     return new Promise ((resolve, reject) => {

@@ -20,4 +20,12 @@ export default {
   greyBorder: 'rgba(0, 0, 0, .2)',
   transluscentWhite: 'rgba(255, 255, 255, 0.8)',
   darkTeal: 'rgba(0, 116, 130, 1)',
+  darkOrange: '#ff4500',
+  beckyGray: '#EFF3F6',
+  beckyLightTeal: '#ADDDE1',
+  beckyDarkGray: '#5C5C5C',
+  beckyIconColor: '#606060',
+  beckyDisabledIconColor: '#D5DCE4',
+  beckyOrange: '#F0B101',
+  beckyLightGray: '#DFE4EB',
 }

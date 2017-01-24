@@ -13,6 +13,7 @@ import { connect } from 'react-redux'
 import { setState } from '../actions/index'
 import { isEmpty } from 'ramda'
 import FCM from 'react-native-fcm'
+import { setDimensions } from '../actions/device'
 
 const mapStateToProps = (state) => ({
   user: state.user,
@@ -29,14 +30,19 @@ const mapDispatchToProps = (dispatch) => ({
   setNotificationPayload(value) {
     dispatch(setState('notificationPayload', value))
   },
+  updateDimensions() {
+    dispatch(setDimensions())
+  },
 })
 
 class ZooniverseApp extends Component {
   constructor(props) {
-    super(props);
+    super(props)
   }
 
   componentDidMount() {
+    this.props.updateDimensions()
+
     if (Platform.OS === 'ios') {
       PushNotificationIOS.addEventListener('notification', this.onRemoteNotification)
     } else {
@@ -52,6 +58,8 @@ class ZooniverseApp extends Component {
     this.props.setNotificationPayload(notification)
     this.props.setModalVisibility(true)
   }
+
+  onLayout = () => this.props.updateDimensions()
 
   static renderNavigationBar() {
     return <NavBar showAvatar={true} />;

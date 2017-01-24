@@ -19,6 +19,7 @@ import NotificationSettings from '../components/NotificationSettings'
 import SideDrawer from '../components/SideDrawer'
 import ZooWebView from '../components/ZooWebView'
 import Onboarding from '../components/Onboarding'
+import Classify from '../components/Classify'
 
 const store = compose(applyMiddleware(thunkMiddleware))(createStore)(reducer)
 
@@ -59,6 +60,7 @@ export default class App extends Component {
               <Scene key="NotificationSettings" component={NotificationSettings} />
               <Scene key="ZooWebView" hideNavBar={true} component={ZooWebView} duration={0} />
               <Scene key="Onboarding" component={Onboarding} duration={0} hideNavBar={true} sceneConfig={Navigator.SceneConfigs.FloatFromLeft} />
+              <Scene key="Classify" component={Classify} panHandlers={null} />
             </Scene>
           </Scene>
         </Router>
