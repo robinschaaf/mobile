@@ -38,26 +38,7 @@ class Project extends Component {
 
   handleClick() {
     GoogleAnalytics.trackEvent('view', this.props.project.display_name)
-    if (Platform.OS === 'ios') {
-      Actions.ZooWebView({slug: this.props.project.slug, displayName: this.props.project.display_name})
-    } else {
-      this.openURL(this.props.project.slug)
-    }
-
-  }
-
-  openURL(slug){
-    const zurl=`http://zooniverse.org/projects/${slug}`
-    Linking.canOpenURL(zurl).then(supported => {
-      if (supported) {
-        Linking.openURL(zurl);
-      } else {
-        Alert.alert(
-          'Error',
-          'Sorry, but it looks like you are unable to open the project in your default browser.',
-        )
-      }
-    });
+    Actions.ZooWebView({slug: this.props.project.slug, displayName: this.props.project.display_name})
   }
 
   render() {

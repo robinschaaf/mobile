@@ -275,6 +275,7 @@ export function loadUserProjects() {
             }).then(() => {
               dispatch(updateTotalClassifications())
               dispatch(fetchProjectsByParms('recent'))
+              dispatch(setState('loadingText', 'Loading...'))
               return resolve()
             })
           }).catch(() => {

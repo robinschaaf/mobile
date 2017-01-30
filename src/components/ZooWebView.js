@@ -2,14 +2,16 @@ import React from 'react'
 import {
   Alert,
   Linking,
+  Platform,
   View
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
 import NavBar from './NavBar'
-import { setState } from '../actions/index'
+import { setState, setIsFetching } from '../actions/index'
 import { connect } from 'react-redux'
 import {Actions} from 'react-native-router-flux'
-import WebViewBridge from 'react-native-webview-bridge';
+import WebViewBridge from 'react-native-webview-bridge'
+import OverlaySpinner from './OverlaySpinner'
 
 const WEBVIEW_REF = 'WEBVIEW_REF'
 const zooniverseURL = 'https://www.zooniverse.org/projects/'
@@ -22,13 +24,20 @@ const mapDispatchToProps = (dispatch) => ({
   updateNavCounter(newVal) {
     dispatch(setState('webViewNavCounter', newVal))
   },
+  setIsFetching(isFetching) {
+    dispatch(setIsFetching(isFetching))
+  },
 })
 
 
 class ZooWebView extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { canGoBack: false };
+    this.state = { canGoBack: false }
+  }
+
+  componentWillMount() {
+    this.props.setIsFetching(true)
   }
 
   handleExternalLink(url) {
@@ -50,14 +59,13 @@ class ZooWebView extends React.Component {
         if (WebViewBridge) {
           WebViewBridge.onMessage = function (message) {
             if (message === "get-links") {
-              updateColors();
+              tagLinks();
             }
           };
 
-          function updateColors(){
+          function tagLinks(){
             var links = document.querySelectorAll('a');
             for (i = 0; i < links.length; i++) {
-              //links[i].style.color='blue';
               links[i].addEventListener('click', function() {
                 WebViewBridge.send('{"link":"' + this + '"}');
               });
@@ -79,12 +87,19 @@ class ZooWebView extends React.Component {
           dataDetectorTypes='all'
           startInLoadingState={true}
           javaScriptEnabled={true}
+          domStorageEnabled={true}
+          renderLoading={this.renderLoading}
           onShouldStartLoadWithRequest={this.onShouldStartLoadWithRequest}
           onNavigationStateChange={this.onNavigationStateChange}
         />
       </View>
     )
   }
+
+  renderLoading = () => {
+    return <OverlaySpinner />
+  }
+
   onBack() {
     this.props.updateNavCounter(this.props.webViewNavCounter - 1)
 
@@ -109,6 +124,10 @@ class ZooWebView extends React.Component {
       this.props.updateNavCounter(this.props.webViewNavCounter + 1)
       return true
     } else {
+      if (Platform.OS === 'android') {
+        this.refs[WEBVIEW_REF].stopLoading()
+      }
+
       this.handleExternalLink(event.url)
       return false
     }
@@ -119,13 +138,16 @@ class ZooWebView extends React.Component {
   }
 
   onNavigationStateChange = (navState) => {
+    if (Platform.OS === 'android') {
+      this.onShouldStartLoadWithRequest(navState)
+    }
     this.setState({
       canGoBack: navState.canGoBack
     })
   }
 
-
   onLoadEnd  = () => {
+    this.props.setIsFetching(false)
     setTimeout(() => { this.refs[WEBVIEW_REF].sendToBridge('get-links') }, 1500)
   }
 
@@ -134,7 +156,7 @@ class ZooWebView extends React.Component {
 const styles = EStyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 70,
+    paddingTop: (Platform.OS === 'ios') ? 70 : 58,
   },
 })
 
@@ -143,7 +165,8 @@ ZooWebView.propTypes = {
   webViewNavCounter: React.PropTypes.number,
   displayName: React.PropTypes.string.isRequired,
   slug: React.PropTypes.string,
-  updateNavCounter: React.PropTypes.func
+  updateNavCounter: React.PropTypes.func,
+  setIsFetching: React.PropTypes.func,
 }
 
 
