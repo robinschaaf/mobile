@@ -6,6 +6,7 @@ import { add, addIndex, filter, head, keys, map, reduce } from 'ramda'
 
 import { fetchProjectsByParms, loadNotificationSettings, setState } from '../actions/index'
 import { getAuthUser } from '../actions/auth'
+let CryptoJS = require('crypto-js');
 
 export function syncUserStore() {
   return (dispatch, getState) => {
@@ -31,6 +32,8 @@ export function setUserFromStore() {
 
 export function loadUserData() {
   return (dispatch, getState) => {
+    const sessionID = CryptoJS.SHA256('#{Math.random() * 10000 }#{Date.now()}#{Math.random() * 1000}').toString(CryptoJS.enc.Hex)
+    dispatch(setState('user.sessionID', sessionID))
     dispatch(setUserFromStore()).then(() => {
       if (getState().user.isGuestUser) {
         return Promise.all([
