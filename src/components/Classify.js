@@ -12,7 +12,6 @@
 
 //TODO: Add proptypes Shapes
 
-//TODO??? persist_annotations (looks like workflow configuration - probably can ignore)
 //TODO??? nonloadedsubjcts
 
 
@@ -25,6 +24,7 @@
 //ignoring grouped workflow (for now)
 //ignoring promptWorkflowAssignmentDialog (for now - for gravity spy only)
 //ignoring SKIP_CELLECT (for now - for gravity spy only)
+//ignoring persist_annotations (looks like for multi steps)
 
 
 import React from 'react'
@@ -119,7 +119,6 @@ class Classify extends React.Component {
 
     const classifierOrTutorial = this.state.isQuestionVisible ? classifier : tutorial
 
-    console.log('>>>items???', this.props.guide.items !== undefined)
     return (
       <View style={styles.container} onLayout={this.onLayout}>
         <View style={styles.panelContainer}>
@@ -186,7 +185,8 @@ Classify.propTypes = {
   subject: React.PropTypes.object,
   startNewClassification: React.PropTypes.func,
   saveThenStartNewClassification: React.PropTypes.func,
-  setImageSizes: React.PropTypes.func
+  setImageSizes: React.PropTypes.func,
+  seenThisSession: React.proptypes.array,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Classify)

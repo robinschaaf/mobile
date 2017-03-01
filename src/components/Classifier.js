@@ -10,8 +10,7 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 import StyledText from './StyledText'
 import StyledMarkdown from './StyledMarkdown'
 import TaskHelp from './TaskHelp'
-import ClassifierTabs from './ClassifierTabs'
-import { addIndex, map, find, indexOf, isEmpty, reverse } from 'ramda'
+import { addIndex, map, indexOf, reverse } from 'ramda'
 import clamp from 'clamp'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
@@ -84,9 +83,8 @@ class Classifier extends Component {
   }
 
   render() {
-    //console.log('this subject', this.props.subject)
-    // or seenThisSession.check @props.workflow, @props.subject
-    const alreadySeen = this.props.subject.already_seen || indexOf(this.props.subject.id, this.props.seenThisSession) >= 0
+    const alreadySeenThisSession = indexOf(this.props.subject.id, this.props.seenThisSession) >= 0
+    const alreadySeen = this.props.subject.already_seen || alreadySeenThisSession
 
     const key = this.props.workflow.first_task
     const helpText = this.props.workflow.tasks[key].help
@@ -198,7 +196,6 @@ class Classifier extends Component {
     )
   }
 }
-//<ClassifierTabs projectTutorialText={head(this.props.tutorial)} />
 const styles = EStyleSheet.create({
   viewContainer: {
     flex: 1,

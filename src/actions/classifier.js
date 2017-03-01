@@ -6,7 +6,6 @@ import { getAuthUser } from '../actions/auth'
 import getSubjectLocation from '../utils/get-subject-location'
 
 export function startNewClassification(workflowID) {
-  //NEED TO FIND PROJECT ID!!!
   return (dispatch, getState) => {
     dispatch(setIsFetching(true))
     dispatch(setState('classifier.currentWorkflowID', workflowID))
@@ -14,7 +13,6 @@ export function startNewClassification(workflowID) {
       return dispatch(fetchWorkflow(workflowID))
     }).then(() => {
       if (getState().classifier.tutorial[workflowID] !== undefined) {
-        console.log('TUTORIAL EXISTS')
         return
       }
       return dispatch(fetchTutorials(workflowID))
@@ -141,7 +139,7 @@ export function getCurrentSubject() {
 
 export function setImageSizes(subject) {
   return (dispatch, getState) => {
-    return new Promise ((resolve, reject) => {
+    return new Promise ((resolve) => {
       console.log('fetching image sizes for subject: ', subject.display.src)
       let workflowID = getState().classifier.currentWorkflowID
       var start = Date.now();
@@ -163,9 +161,8 @@ export function setImageSizes(subject) {
         dispatch(setState(`classifier.subject.${workflowID}.sizes`, subjectSizes))
         return resolve()
       }, (error) => {
-        console.log('Got an error fetching image!!!')
         dispatch(setState(`classifier.subject.${workflowID}.sizes`, {}))
-        //dispatch(setState('error', error))
+        dispatch(setState('error', error))
         return resolve()
       })
     })
@@ -178,7 +175,7 @@ export function fetchUpcomingSubjects(workflowID) {
   return dispatch => {
     return new Promise ((resolve, reject) => {
       apiClient.type('subjects').get({workflow_id: workflowID, sort: 'queued'}).then((subjects) => {
-        //TODO: need to figure out nonLoadedSubjects
+        //TODO: need to test if we need nonLoadedSubjects - I think it's to avoid duplicates
         dispatch(setState(`classifier.upcomingSubjects.${workflowID}`, subjects))
         return resolve()
       }).catch((error) => {

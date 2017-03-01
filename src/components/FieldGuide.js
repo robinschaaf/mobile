@@ -13,7 +13,7 @@ import StyledMarkdown from './StyledMarkdown'
 import StyledText from './StyledText'
 import SizedImage from './SizedImage'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { addIndex, isEmpty, length, map } from 'ramda'
+import { addIndex, isEmpty, map } from 'ramda'
 
 export class FieldGuide extends Component {
   constructor(props) {
