@@ -43,9 +43,11 @@ import FieldGuide from './FieldGuide'
 import OverlaySpinner from './OverlaySpinner'
 import StyledText from './StyledText'
 import {
+  saveAnnotation,
   startNewClassification,
   saveThenStartNewClassification,
   setImageSizes,
+  setTutorialCompleted,
 } from '../actions/classifier'
 
 //GoogleAnalytics.setTrackerId(GLOBALS.GOOGLE_ANALYTICS_TRACKING)
@@ -55,21 +57,30 @@ const mapStateToProps = (state, ownProps) => ({
   isFetching: state.isFetching,
   workflow: state.classifier.workflow[ownProps.workflowID] || {},
   classification: state.classifier.classification[ownProps.workflowID] || {},
+  annotations: state.classifier.annotations[ownProps.workflowID] || [],
   tutorial: state.classifier.tutorial[ownProps.workflowID] || {},
   guide: state.classifier.guide[ownProps.workflowID] || {},
   subject: state.classifier.subject[ownProps.workflowID] || {},
   seenThisSession: state.classifier.seenThisSession[ownProps.workflowID] || [],
+  needsTutorial: state.classifier.needsTutorial[ownProps.workflowID] || false,
 })
 
 const mapDispatchToProps = (dispatch) => ({
   startNewClassification(workflowID) {
     dispatch(startNewClassification(workflowID))
   },
+  saveAnnotation(task, value) {
+    console.log('Annotation To be Saved in Redux: ', task, value)
+    dispatch(saveAnnotation(task, value))
+  },
   saveThenStartNewClassification(answerIndex) {
     dispatch(saveThenStartNewClassification(answerIndex))
   },
   setImageSizes() {
     dispatch(setImageSizes())
+  },
+  setTutorialCompleted() {
+    dispatch(setTutorialCompleted())
   },
 })
 
@@ -96,47 +107,64 @@ class Classify extends React.Component {
     return <NavBar title={'Classify!'} showBack={true} />;
   }
 
-  //onLayout = () => this.props.setImageSizes()
-  onLayout = () => {}
+  finishTutorial() {
+    if (this.props.needsTutorial) {
+      this.props.setTutorialCompleted()
+    } else {
+      this.setQuestionVisibility(true)
+    }
+  }
 
-  onAnswered = (answerIndex) => {
-    this.props.saveThenStartNewClassification(answerIndex)
+  onAnswered = (task, value) => {
+    this.props.saveAnnotation(task, value)
+    this.props.saveThenStartNewClassification()
+  }
+  onUnlinkedTaskAnswered = (task, value) => {
+    console.log('Unlinked Task Answered!!', task, value)
+    this.props.saveAnnotation(task, value)
   }
 
   render() {
+    console.log('this.props.needsTutorial', this.props.needsTutorial)
     const classifier =
       <Classifier
+        seenThisSession={this.props.seenThisSession}
         subject={this.props.subject}
         workflow={this.props.workflow}
         onAnswered={this.onAnswered}
-        seenThisSession={this.props.seenThisSession}
+        onUnlinkedTaskAnswered={this.onUnlinkedTaskAnswered}
+        annotations={this.props.annotations}
       />
 
     const tutorial =
       <Tutorial
         tutorial={this.props.tutorial}
-        switchToQuestion={() => this.setQuestionVisibility(true)} />
+        finishTutorial={() => this.finishTutorial()} />
 
     const classifierOrTutorial = this.state.isQuestionVisible ? classifier : tutorial
 
+    const classificationPanel =
+      <View style={styles.panelContainer}>
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            onPress={ () => { this.setQuestionVisibility(true) } }
+            style={ this.state.isQuestionVisible ? [styles.tab] : [styles.tab, styles.deselectedTab] }>
+            <StyledText text={ 'QUESTION' } />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={ () => { this.setQuestionVisibility(false) } }
+            style={ this.state.isQuestionVisible ? [styles.tab, styles.deselectedTab] : [styles.tab] }>
+            <StyledText text={ 'TUTORIAL' } />
+          </TouchableOpacity>
+        </View>
+        { this.props.isFetching || isEmpty(this.props.classification) ? <OverlaySpinner /> : classifierOrTutorial }
+      </View>
+
+
     return (
       <View style={styles.container} onLayout={this.onLayout}>
-        <View style={styles.panelContainer}>
-          <View style={styles.tabContainer}>
-            <TouchableOpacity
-              onPress={ () => { this.setQuestionVisibility(true) } }
-              style={ this.state.isQuestionVisible ? [styles.tab] : [styles.tab, styles.deselectedTab] }>
-              <StyledText text={ 'QUESTION' } />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={ () => { this.setQuestionVisibility(false) } }
-              style={ this.state.isQuestionVisible ? [styles.tab, styles.deselectedTab] : [styles.tab] }>
-              <StyledText text={ 'TUTORIAL' } />
-            </TouchableOpacity>
-          </View>
-          { this.props.isFetching || isEmpty(this.props.classification) ? <OverlaySpinner /> : classifierOrTutorial }
-        </View>
-        { this.props.guide.icons !== undefined ? <FieldGuide guide={this.props.guide} /> : null }
+        { this.props.needsTutorial ? tutorial : classificationPanel}
+        { this.props.guide.icons !== undefined && !this.props.needsTutorial ? <FieldGuide guide={this.props.guide} /> : null }
       </View>
     )
   }
@@ -186,7 +214,8 @@ Classify.propTypes = {
   startNewClassification: React.PropTypes.func,
   saveThenStartNewClassification: React.PropTypes.func,
   setImageSizes: React.PropTypes.func,
-  seenThisSession: React.proptypes.array,
+  needsTutorial: React.PropTypes.bool,
+  setTutorialCompleted: React.PropTypes.func,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Classify)

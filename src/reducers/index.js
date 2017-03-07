@@ -22,8 +22,10 @@ export const InitialState = {
     classification: {},
     subject: {},
     workflow: {},
+    annotations: [],
     upcomingSubjects: {},
     seenThisSession: {},
+    needsTutorial: {},
   },
   device: {width: 0, height: 0}
 }

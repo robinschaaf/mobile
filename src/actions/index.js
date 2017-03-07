@@ -31,7 +31,6 @@ export function setUser(user) {
 }
 
 export function setIsFetching(isFetching) {
-  console.log('Setting ISFETCHING', isFetching)
   return { type: SET_IS_FETCHING, isFetching }
 }
 
@@ -148,6 +147,21 @@ export function fetchPublications() {
         PUBLICATIONS[key]
       )
     }, keys(PUBLICATIONS))
+  }
+}
+
+export function fetchProjectWorkflows(projectID) {
+  return dispatch => {
+    apiClient.type('projects').get({id: projectID}).then((projects) => {
+      const project = head(projects)
+      project.get('workflows', {page_size: 100}).then((workflows) => {
+        console.log('this projects workflows', workflows)
+        dispatch(setState('projectWorkflows', workflows))
+      }).catch((error) => {
+        dispatch(setError('The following error occurred.  Please close down Zooniverse and try again.  If it persists please notify us.  \n\n' + error,))
+      })
+
+    })
   }
 }
 

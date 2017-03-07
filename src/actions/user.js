@@ -2,7 +2,7 @@
 import apiClient from 'panoptes-client/lib/api-client'
 import store from 'react-native-simple-store'
 import { Actions } from 'react-native-router-flux'
-import { add, addIndex, filter, head, keys, map, reduce } from 'ramda'
+import { add, addIndex, filter, forEach, fromPairs, head, isNil, keys, map, reduce } from 'ramda'
 
 import { fetchProjectsByParms, loadNotificationSettings, setIsFetching, setState } from '../actions/index'
 import { getAuthUser } from '../actions/auth'
@@ -32,7 +32,6 @@ export function setUserFromStore() {
 
 export function loadUserData() {
   return (dispatch, getState) => {
-    //dispatch(setIsFetching(true))
     dispatch(setUserFromStore()).then(() => {
       dispatch(setSession())
       if (getState().user.isGuestUser) {
@@ -48,7 +47,6 @@ export function loadUserData() {
       }
     }).then(() => {
       dispatch(syncUserStore())
-      //dispatch(setIsFetching(false))
       console.log('>>>>loadUserData fetch done<<<<')
     }).catch(() => {
       Actions.Onboarding()
@@ -88,6 +86,7 @@ export function loadUserProjects() {
           const projectIDs = map((pref) => { return pref.links.project }, activePreferences)
           const classifications = classificationCounts(activePreferences)
           const sortOrders = orderProjects(activePreferences)
+          const completedTutorials = getCompletedTutorials(activePreferences)
 
           return apiClient.type('projects').get({ id: projectIDs, page_size: activePreferences.length }).catch(() => {
             return null
@@ -97,7 +96,8 @@ export function loadUserProjects() {
                   name: project.display_name,
                   slug: project.slug,
                   activity_count: classifications[project.id],
-                  sort_order: sortOrders[project.id]
+                  sort_order: sortOrders[project.id],
+                  tutorials_completed_at: completedTutorials[project.id]
                 }
               ))
             }, projects)
@@ -125,12 +125,17 @@ export function calculateTotalClassifications() {
 }
 
 function filterActivePreferences(projectPreferences){
-    let activePreferences = filter((pref) => { return pref.activity_count > 0 }, projectPreferences)
-    activePreferences = addIndex(map)((preference, i) => {
+    const activePreferences = filter((pref) => { return pref.activity_count > 0 }, projectPreferences)
+    return addIndex(map)((preference, i) => {
       preference.sort_order = i
       return preference
     }, activePreferences)
-    return activePreferences
+}
+
+function getCompletedTutorials(projectPreferences){
+  const preferencesWithTutorials = filter((pref) => { return !isNil(pref.preferences.tutorials_completed_at) }, projectPreferences)
+  const extractPreference = (pref) => { return [ pref.links.project, pref.preferences.tutorials_completed_at ] }
+  return fromPairs(map(extractPreference, preferencesWithTutorials))
 }
 
 function classificationCounts(projectPreferences) {

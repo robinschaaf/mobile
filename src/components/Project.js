@@ -12,6 +12,8 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 import {Actions} from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import { find, propEq } from 'ramda'
+import { SWIPE_WORKFLOWS } from '../constants/mobile_projects'
 
 class Project extends Component {
   constructor(props) {
@@ -35,16 +37,25 @@ class Project extends Component {
 
 
   handleClick() {
-    Actions.Classify({ projectID: '3321', workflowID: '2725' })
+    GoogleAnalytics.trackEvent('view', this.props.project.display_name)
+    const projectID = this.props.project.id
+    const swipeProject = find(propEq('projectID', projectID), SWIPE_WORKFLOWS)
 
-    //GoogleAnalytics.trackEvent('view', this.props.project.display_name)
+    if (swipeProject) {
+      Actions.Classify({ projectID: projectID, workflowID: swipeProject.workflowID })
+    } else {
+      this.openExternalProject()
+    }
 
-    //if (this.props.project.redirect) {
-    //  this.openURL(this.props.project.redirect)
-    //} else {
-    //  Actions.ZooWebView({project: this.props.project})
-    //}
 
+  }
+
+  openExternalProject() {
+    if (this.props.project.redirect) {
+      this.openURL(this.props.project.redirect)
+    } else {
+      Actions.ZooWebView({project: this.props.project})
+    }
   }
 
   openURL(url){
@@ -61,11 +72,17 @@ class Project extends Component {
   }
 
   render() {
+    const projectID = this.props.project.id
+    const swipeProject = find(propEq('projectID', projectID), SWIPE_WORKFLOWS)
+
     const avatar =
       <Image source={{uri: `https://${this.props.project.avatar_src}`}} style={styles.avatar} onLoadEnd={ ()=>{ this.imageLoadEnd() } } />
 
     const defaultAvatar =
       <Image source={require('../../images/teal-wallpaper.png')} style={[styles.avatar, styles.defaultAvatar]} onLoadEnd={ ()=>{ this.imageLoadEnd() } } />
+
+    const mobileIcon =
+        <Image source={require('../../images/mobile-friendly.png')} style={styles.mobileIcon} resizeMode={'cover'} />
 
     return (
       <Animated.View style={{ opacity: this.state.fadeAnim }}>
@@ -76,8 +93,13 @@ class Project extends Component {
           { this.props.project.avatar_src ? avatar : defaultAvatar }
             <View style={styles.forBorderRadius} />
             <View style={styles.textContainer}>
+              {swipeProject ? mobileIcon : null}
               <View style={styles.titleContainer}>
-                <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>{this.props.project.display_name}</Text>
+                <View style={styles.titleIconContainer}>
+                  <Text style={styles.title} numberOfLines={1} ellipsizeMode={'tail'}>
+                    {this.props.project.display_name}
+                  </Text>
+                </View>
                 <Text style={styles.description} numberOfLines={2} ellipsizeMode={'tail'}>{this.props.project.description}</Text>
               </View>
               <View style={[styles.iconContainer, { backgroundColor: this.props.color }]}>
@@ -97,7 +119,7 @@ const styles = EStyleSheet.create({
   $iconSize: 40,
   $sidePadding: 15,
   $totalSidePadding: '$sidePadding * 2',
-  $subtractTextWidth: '48 + $iconSize',
+  $subtractTextWidth: '88 + $iconSize',
   container: {
     height: '$boxHeight + 12',
     marginHorizontal: 10,
@@ -139,6 +161,7 @@ const styles = EStyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     height: '$titleHeight',
+    width: '100% - 17'
   },
   titleContainer: {
     justifyContent: 'flex-start',
@@ -171,6 +194,14 @@ const styles = EStyleSheet.create({
     fontSize: 36,
     lineHeight: 37,
     paddingLeft: 4
+  },
+  titleIconContainer: {
+    flexDirection: 'row'
+  },
+  mobileIcon: {
+    height: 52,
+    width: 31,
+    marginRight: 10
   }
 });
 

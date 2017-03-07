@@ -2,9 +2,11 @@ import React from 'react'
 import EStyleSheet from 'react-native-extended-stylesheet'
 import { CheckboxField } from 'react-native-checkbox-field'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import { append } from 'ramda'
 
 const Checkbox = (props) => {
-  const containerStyle = ( props.leftAligned ? [styles.checkboxContainerStyle, styles.leftAligned] : styles.checkboxContainerStyle )
+  let containerStyle = ( props.leftAligned ? [styles.checkboxContainerStyle, styles.leftAligned] : styles.checkboxContainerStyle )
+  containerStyle = (props.additionalStyles ? append(props.additionalStyles, containerStyle) : containerStyle)
 
   return (
     <CheckboxField
@@ -47,6 +49,7 @@ Checkbox.propTypes = {
   onSelect: React.PropTypes.func,
   selected: React.PropTypes.bool,
   leftAligned: React.PropTypes.bool,
+  additionalStyles: React.PropTypes.array
 }
 
 export default Checkbox

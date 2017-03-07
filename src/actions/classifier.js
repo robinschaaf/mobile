@@ -1,6 +1,6 @@
 import apiClient from 'panoptes-client/lib/api-client'
 import { Image } from 'react-native'
-import { isEmpty, forEach, head, length, remove } from 'ramda'
+import { isEmpty, forEach, head, length, map, remove, toPairs } from 'ramda'
 import { addState, setState, setIsFetching } from '../actions/index'
 import { getAuthUser } from '../actions/auth'
 import getSubjectLocation from '../utils/get-subject-location'
@@ -17,11 +17,12 @@ export function startNewClassification(workflowID) {
       }
       return dispatch(fetchTutorials(workflowID))
     }).then(() => {
+      return dispatch(setNeedsTutorial())
+    }).then(() => {
       if (getState().classifier.guide[workflowID] !== undefined) {
         return
       }
-      const projectID = getState().classifier.workflow[workflowID].links.project
-      return dispatch(fetchFieldGuide(projectID))
+      return dispatch(fetchFieldGuide())
     }).then(() => {
       console.log('>>>>loading subjects')
       return dispatch(loadSubjects())
@@ -186,18 +187,22 @@ export function fetchUpcomingSubjects(workflowID) {
   }
 }
 
-export function saveThenStartNewClassification(answerIndex) {
+export function saveAnnotation(task, value) {
+  return (dispatch, getState) => {
+    const workflowID = getState().classifier.currentWorkflowID
+    dispatch(setState(`classifier.annotations.${workflowID}.${task}`, value))
+  }
+}
+
+export function saveThenStartNewClassification() {
   return (dispatch, getState) => {
     const classifier = getState().classifier
     const workflowID = classifier.currentWorkflowID
     const classification = classifier.classification[workflowID]
     const subject = classifier.subject[workflowID]
-    const workflow = classifier.workflow[workflowID]
 
-    const annotations = [{
-      value: answerIndex,
-      task: workflow.first_task //hardcoded for "single" task types
-    }]
+    const structureAnnotation = (a) => { return { task: a[0], value: a[1] } }
+    const annotations = map(structureAnnotation, toPairs(classifier.annotations[workflowID]))
 
     const subjectDimensions = {
       naturalWidth: subject.sizes.actualWidth,
@@ -225,6 +230,8 @@ export function saveThenStartNewClassification(answerIndex) {
       //Mark this subject as seen
       dispatch(addState(`classifier.seenThisSession.${workflowID}`, subject.id))
       dispatch(startNewClassification(workflowID))
+
+      dispatch(setState(`classifier.annotations.${workflowID}`, {}))
     })
 
   }
@@ -249,16 +256,17 @@ export function fetchTutorials(workflowID) {
         } else {
           return resolve()
         }
-      }).catch(() => { //does not exist for this project
+      }).catch(() => { //does not exist for this project, that is OK
         return resolve()
       })
     })
   }
 }
 
-export function fetchFieldGuide(projectID) {
+export function fetchFieldGuide() {
   return (dispatch, getState) => {
     const workflowID = getState().classifier.currentWorkflowID
+    const projectID = getState().classifier.workflow[workflowID].links.project
     return new Promise ((resolve) => {
       apiClient.type('field_guides').get({project_id: projectID}).then((guide) => {
         const guideResource = head(guide)
@@ -281,4 +289,39 @@ export function fetchFieldGuide(projectID) {
       })
     })
   }
+}
+
+export function setNeedsTutorial() {
+  return (dispatch, getState) => {
+    const workflowID = getState().classifier.currentWorkflowID
+    const projectID = getState().classifier.workflow[workflowID].links.project
+    //const tutorialID = getState().classifier.tutorial[workflowID].id
+    const tutorialID = 989898989898
+    return new Promise ((resolve) => {
+      if (getState().user.isGuestUser) {
+        dispatch(setState(`classifier.needsTutorial.${workflowID}`, true))
+        return resolve()
+      } else {
+        dispatch(setState(`classifier.needsTutorial.${workflowID}`, !getState().user.projects[projectID]['tutorials_completed_at'][tutorialID]))
+        return resolve()
+      }
+    })
+  }
+}
+
+export function setTutorialCompleted() {
+  return (dispatch, getState) => {
+    const workflowID = getState().classifier.currentWorkflowID
+    dispatch(setState(`classifier.needsTutorial.${workflowID}`, false))
+
+    if (getState().user.isGuestUser) {
+      return
+    }
+
+    console.log('Marking tutorial as completed!!', getState().classifier.needsTutorial)
+
+
+
+  }
+
 }

@@ -27,7 +27,7 @@ export class FieldGuide extends Component {
 
   open() {
     this.setState({isVisible: true})
-    this.state.slideAnim.setValue(0);
+    this.state.slideAnim.setValue(0)
     Animated.timing(
       this.state.slideAnim,
       {

@@ -17,13 +17,11 @@ class SizedImage extends React.Component {
   }
 
   componentWillMount() {
-    const deviceWidth = Dimensions.get('window').width
+    const deviceWidth = Dimensions.get('window').width - 60
     const deviceHeight = Dimensions.get('window').height
 
     const imageDisplayWidth = this.props.maxWidth ? this.props.maxWidth : deviceWidth
     const imageDisplayHeight = this.props.maxHeight ? this.props.maxHeight : deviceHeight
-
-    console.log('width, height: ', imageDisplayWidth, imageDisplayHeight)
 
     Image.getSize(this.props.source, (width, height) => {
 
@@ -48,9 +46,14 @@ class SizedImage extends React.Component {
           duration: 50,
         }
       ).start()
-
-
     })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.source !== nextProps.source) {
+      //console.log('componentWillReceiveProps source change triggered')
+
+    }
   }
 
   imageLoadEnd() {
@@ -68,6 +71,7 @@ class SizedImage extends React.Component {
     return (
       <Animated.Image
         source={ this.props.source }
+        defaultSource={require('../../images/teal-wallpaper.png')}
         style={{width: this.state.widthAnim, height: this.state.heightAnim, opacity: this.state.fadeAnim}}
         onLoadEnd={ ()=>{ this.imageLoadEnd() } }
       />
@@ -78,6 +82,8 @@ class SizedImage extends React.Component {
 
 SizedImage.propTypes = {
   source: React.PropTypes.object,
+  maxWidth: React.PropTypes.number,
+  maxHeight: React.PropTypes.number,
 }
 
 export default SizedImage

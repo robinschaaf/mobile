@@ -85,7 +85,7 @@ export class Tutorial extends Component {
 
       const finishedButton =
         <Button
-          handlePress={this.props.switchToQuestion}
+          handlePress={this.props.finishTutorial}
           additionalStyles={[styles.orangeButton]}
           text={'Let\s Go!'} />
 
@@ -96,7 +96,7 @@ export class Tutorial extends Component {
           <StyledMarkdown markdown={steps[this.state.step].content} />
         </ScrollView>
         <View style={styles.footer}>
-          <View style={styles.lineThrough} />
+          <View style={styles.line} />
           { hasNextStep ? continueButton : finishedButton }
           { totalSteps > 0 ? navigation : null }
         </View>
@@ -115,7 +115,7 @@ const styles = EStyleSheet.create({
     marginBottom: 0
   },
   footer: {
-    height: 95,
+    height: 100,
     paddingVertical: 10,
     paddingHorizontal: 20
   },
@@ -125,7 +125,7 @@ const styles = EStyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 5,
+    marginTop: 10,
   },
   circleIcon: {
     fontSize: 12,
@@ -154,7 +154,7 @@ const styles = EStyleSheet.create({
   orangeButton: {
     backgroundColor: '$beckyOrange'
   },
-  lineThrough: {
+  line: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: '$beckyLightGray',
   },
@@ -162,7 +162,7 @@ const styles = EStyleSheet.create({
 
 Tutorial.propTypes = {
   tutorial: React.PropTypes.object,
-  switchToQuestion: React.PropTypes.func,
+  finishTutorial: React.PropTypes.func,
 }
 
 export default Tutorial

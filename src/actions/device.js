@@ -8,7 +8,7 @@ export function setDimensions() {
     dispatch(setState('device.width', deviceWidth))
     dispatch(setState('device.height', deviceHeight))
     dispatch(setState('device.subjectDisplayWidth', deviceWidth - 70))
-    dispatch(setState('device.subjectDisplayHeight', deviceHeight - 220))
+    dispatch(setState('device.subjectDisplayHeight', deviceHeight - 370))
   }
 
 }
