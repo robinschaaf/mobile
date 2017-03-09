@@ -1,6 +1,6 @@
 import apiClient from 'panoptes-client/lib/api-client'
 import { Image } from 'react-native'
-import { isEmpty, forEach, head, length, map, remove, toPairs } from 'ramda'
+import { isEmpty, forEach, head, isNil, length, map, remove, toPairs } from 'ramda'
 import { addState, setState, setIsFetching } from '../actions/index'
 import { getAuthUser } from '../actions/auth'
 import getSubjectLocation from '../utils/get-subject-location'
@@ -190,7 +190,19 @@ export function fetchUpcomingSubjects(workflowID) {
 export function saveAnnotation(task, value) {
   return (dispatch, getState) => {
     const workflowID = getState().classifier.currentWorkflowID
-    dispatch(setState(`classifier.annotations.${workflowID}.${task}`, value))
+    let currentAnswer = null;
+    if (getState().classifier.annotations[workflowID] !== undefined) {
+      currentAnswer = getState().classifier.annotations[workflowID][task]
+    }
+    console.log('Current Answer', currentAnswer)
+    if (currentAnswer !== value) {
+      console.log('Answered new value')
+      dispatch(setState(`classifier.annotations.${workflowID}.${task}`, value))
+    } else {
+      console.log('Did NOT answer new value')
+      dispatch(setState(`classifier.annotations.${workflowID}.${task}`, null))
+    }
+
   }
 }
 
@@ -242,6 +254,7 @@ export function fetchTutorials(workflowID) {
   return dispatch => {
     return new Promise ((resolve) => {
       apiClient.type('tutorials').get({workflow_id: workflowID}).then((tutorials) => {
+        console.log('tutorial', head(tutorials).display_name)
         const tutorialResource = head(tutorials)
         dispatch(setState(`classifier.tutorial.${workflowID}`, tutorialResource))
         if (!isEmpty(tutorials)) {
@@ -257,6 +270,7 @@ export function fetchTutorials(workflowID) {
           return resolve()
         }
       }).catch(() => { //does not exist for this project, that is OK
+        dispatch(setState(`classifier.tutorial.${workflowID}`, {}))
         return resolve()
       })
     })
@@ -295,10 +309,14 @@ export function setNeedsTutorial() {
   return (dispatch, getState) => {
     const workflowID = getState().classifier.currentWorkflowID
     const projectID = getState().classifier.workflow[workflowID].links.project
-    //const tutorialID = getState().classifier.tutorial[workflowID].id
-    const tutorialID = 989898989898
+    const tutorialID = getState().classifier.tutorial[workflowID].id
+    //const tutorialID = 9809879879
     return new Promise ((resolve) => {
-      if (getState().user.isGuestUser) {
+      if (!tutorialID) {
+        return resolve()
+      }
+
+      if (getState().user.isGuestUser){
         dispatch(setState(`classifier.needsTutorial.${workflowID}`, true))
         return resolve()
       } else {
@@ -317,8 +335,41 @@ export function setTutorialCompleted() {
     if (getState().user.isGuestUser) {
       return
     }
+    const now = new Date().toISOString()
+    const tutorialID = getState().classifier.tutorial[workflowID].id
+    const projectID = getState().classifier.workflow[workflowID].links.project
 
-    console.log('Marking tutorial as completed!!', getState().classifier.needsTutorial)
+    dispatch(getAuthUser()).then((userResourse) => {
+      userResourse.get('project_preferences', {project_id: projectID}).then (([projectPreferences]) => {
+        if (!projectPreferences) {
+          const projectPreference = {
+            links: { project: projectID },
+            preferences: {}
+          }
+          projectPreferences = apiClient.type('project_preferences').create(projectPreference)
+        }
+        if (!projectPreferences.preferences) {
+          projectPreferences.preferences = {}
+        }
+        if (!projectPreferences.preferences.tutorials_completed_at) {
+          projectPreferences.preferences.tutorials_completed_at = {}
+        }
+        projectPreferences.update({
+          preferences: {
+            tutorials_completed_at: {
+              [tutorialID]: now
+            }
+          }
+        }).save()
+      })
+    })
+
+
+
+
+
+
+    console.log('Marking tutorial as completed!!', getState().classifier.needsTutorial[workflowID])
 
 
 

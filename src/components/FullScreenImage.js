@@ -1,7 +1,5 @@
 import React from 'react'
 import {
-  Dimensions,
-  Image,
   Modal,
   TouchableOpacity,
   View
@@ -11,42 +9,7 @@ import ZoomableImage from './ZoomableImage'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 class FullScreenImage extends React.Component {
-  constructor(props) {
-    super(props)
-     this.state = {
-       height: 0,
-       width: 0
-     }
-  }
-
-  componentWillMount() {
-    const deviceWidth = Dimensions.get('window').width
-    const deviceHeight = Dimensions.get('window').height
-
-    Image.getSize(this.props.source, (width, height) => {
-      const aspectRatio = Math.min(deviceWidth / width, deviceHeight / height)
-      const resizedHeight = height * aspectRatio
-      const resizedWidth = width * aspectRatio
-      this.setState({ height: resizedHeight, width: resizedWidth })
-    })
-  }
-
-
   render() {
-    console.log('allowpan and zoom on FullScreenImage', this.props.allowPanAndZoom)
-
-    const zoomable =
-      <ZoomableImage
-        source={this.props.source}
-        handlePress={this.props.handlePress}
-        imageWidth={this.state.width}
-        imageHeight={this.state.height} />
-
-    const staticImage =
-      <Image
-        source={this.props.source}
-        style={{width: this.state.width, height: this.state.height}} />
-
     return (
       <Modal
         animationType={'fade'}
@@ -54,7 +17,11 @@ class FullScreenImage extends React.Component {
         onRequestClose={() => {}}
         visible={this.props.isVisible}>
         <View style={styles.container}>
-          { this.props.allowPanAndZoom ? zoomable : staticImage }
+          <ZoomableImage
+            source={this.props.source}
+            handlePress={this.props.handlePress}
+            allowPanAndZoom={!!this.props.allowPanAndZoom} />
+
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={this.props.handlePress}

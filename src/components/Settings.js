@@ -12,7 +12,13 @@ import NavBar from './NavBar'
 import OverlaySpinner from './OverlaySpinner'
 import ProjectNotification from './ProjectNotification'
 import { connect } from 'react-redux'
-import { checkPushPermissions, setState, updateInterestSubscription, syncNotificationStore } from '../actions/index'
+import {
+  checkPushPermissions,
+  setState,
+  updateInterestSubscription,
+  updateSetting,
+  syncNotificationStore
+} from '../actions/index'
 import { addIndex, find, keys, map, flatten, propEq, without } from 'ramda'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 
@@ -20,6 +26,7 @@ GoogleAnalytics.trackEvent('view', 'Notification Settings')
 
 const mapStateToProps = (state) => ({
   notifications: state.notifications,
+  settings: state.settings,
   projectList: state.projectList,
   isFetching: state.isFetching,
   errorMessage: state.errorMessage,
@@ -37,18 +44,20 @@ const mapDispatchToProps = (dispatch) => ({
   },
   checkPushPermissions(){
     dispatch(checkPushPermissions())
+  },
+  updateSetting(key, value) {
+    dispatch(updateSetting(key, value))
   }
 })
 
-export class NotificationSettings extends React.Component {
+export class Settings extends React.Component {
   componentDidMount() {
     this.props.checkPushPermissions()
   }
 
   static renderNavigationBar() {
-    return <NavBar title={'Notification Settings'} showBack={true} />;
+    return <NavBar title={'Settings'} showBack={true} />;
   }
-
 
   render() {
     let mobileProjects = flatten(
@@ -104,7 +113,33 @@ export class NotificationSettings extends React.Component {
       </View>
 
     const pageView =
-      this.props.pushEnabled ? preferencesScrollView : noNotifications
+      <View>
+        <View style={styles.section}>
+          <StyledText
+            textStyle={'headerText'}
+            text={'General Settings'}
+          />
+          <View style={styles.switchContainer}>
+            <Switch
+              value={this.props.settings.promptForWorkflow}
+              style={styles.switchComponent}
+              onTintColor={theme.headerColor}
+              onValueChange={(checked) => this.props.updateSetting('promptForWorkflow', checked)}
+            />
+            <View>
+              <StyledText text="Prompt to see all project workflows" />
+              <StyledText
+                textStyle={'subLabelText'}
+                text="Note: This will include non-mobile workflows"
+              />
+            </View>
+          </View>
+        </View>
+        <StyledText
+          textStyle={'headerText'}
+          text={'Notification Settings'} />
+       { this.props.pushEnabled ? preferencesScrollView : noNotifications }
+      </View>
 
     return (
       <View style={styles.container}>
@@ -137,17 +172,26 @@ const styles = EStyleSheet.create({
   switchComponent: {
     marginRight: 10,
   },
+  section: {
+    borderBottomColor: '$lightGrey',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginTop: 5,
+    marginBottom: 15,
+    paddingBottom: 15,
+  }
 });
 
-NotificationSettings.propTypes = {
+Settings.propTypes = {
   notifications: React.PropTypes.object,
+  settings: React.PropTypes.object,
   projectList: React.PropTypes.object,
   isFetching: React.PropTypes.bool,
   pushEnabled: React.PropTypes.bool,
   errorMessage: React.PropTypes.string,
   setState: React.PropTypes.func,
   updateGeneralNotification: React.PropTypes.func,
+  updateSetting: React.PropTypes.func,
   checkPushPermissions: React.PropTypes.func,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(NotificationSettings)
+export default connect(mapStateToProps, mapDispatchToProps)(Settings)

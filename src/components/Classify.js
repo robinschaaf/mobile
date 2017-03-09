@@ -1,20 +1,12 @@
 //on component mount: loadAppropriateClassification
 //on swipe (answer): saveClassificationAndLoadAnother
 
-//TODO:  Code Project component to evaluate workflow
-//For now hardcode workflows for each project
-//TODO: Code tutorial completion on close, automatically open
-
-//TODO: Add "Helper question" ? like Stellar Sea Lions
 
 //TODO:  getLocale, device info needed? (in lieu of user_agent)
-//TODO: implement react-native-webview-crypto for session ID generation (requires webview-bridge)
 
 //TODO: Add proptypes Shapes
 
 //TODO??? nonloadedsubjcts
-
-
 
 //ignoring demo mode
 //ignoring experimental mode
@@ -104,7 +96,7 @@ class Classify extends React.Component {
   }
 
   static renderNavigationBar() {
-    return <NavBar title={'Classify!'} showBack={true} />;
+    return <NavBar title={'Classify'} showBack={true} />;
   }
 
   finishTutorial() {
@@ -119,13 +111,13 @@ class Classify extends React.Component {
     this.props.saveAnnotation(task, value)
     this.props.saveThenStartNewClassification()
   }
+
   onUnlinkedTaskAnswered = (task, value) => {
     console.log('Unlinked Task Answered!!', task, value)
     this.props.saveAnnotation(task, value)
   }
 
   render() {
-    console.log('this.props.needsTutorial', this.props.needsTutorial)
     const classifier =
       <Classifier
         seenThisSession={this.props.seenThisSession}
@@ -138,25 +130,29 @@ class Classify extends React.Component {
 
     const tutorial =
       <Tutorial
+        isInitialTutorial={this.props.needsTutorial}
         tutorial={this.props.tutorial}
         finishTutorial={() => this.finishTutorial()} />
 
     const classifierOrTutorial = this.state.isQuestionVisible ? classifier : tutorial
 
+    const tabs =
+      <View style={styles.tabContainer}>
+        <TouchableOpacity
+          onPress={ () => { this.setQuestionVisibility(true) } }
+          style={ this.state.isQuestionVisible ? [styles.tab] : [styles.tab, styles.deselectedTab] }>
+          <StyledText text={ 'QUESTION' } />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={ () => { this.setQuestionVisibility(false) } }
+          style={ this.state.isQuestionVisible ? [styles.tab, styles.deselectedTab] : [styles.tab] }>
+          <StyledText text={ 'TUTORIAL' } />
+        </TouchableOpacity>
+      </View>
+
     const classificationPanel =
       <View style={styles.panelContainer}>
-        <View style={styles.tabContainer}>
-          <TouchableOpacity
-            onPress={ () => { this.setQuestionVisibility(true) } }
-            style={ this.state.isQuestionVisible ? [styles.tab] : [styles.tab, styles.deselectedTab] }>
-            <StyledText text={ 'QUESTION' } />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={ () => { this.setQuestionVisibility(false) } }
-            style={ this.state.isQuestionVisible ? [styles.tab, styles.deselectedTab] : [styles.tab] }>
-            <StyledText text={ 'TUTORIAL' } />
-          </TouchableOpacity>
-        </View>
+        { !isEmpty(this.props.tutorial) ? tabs : null }
         { this.props.isFetching || isEmpty(this.props.classification) ? <OverlaySpinner /> : classifierOrTutorial }
       </View>
 
@@ -204,7 +200,6 @@ const styles = EStyleSheet.create({
 
 Classify.propTypes = {
   isFetching: React.PropTypes.bool,
-  projectID: React.PropTypes.string,
   workflowID: React.PropTypes.string,
   classification: React.PropTypes.object,
   workflow: React.PropTypes.object,

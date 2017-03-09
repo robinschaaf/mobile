@@ -7,6 +7,7 @@ import {
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
 import StyledMarkdown from './StyledMarkdown'
+import StyledText from './StyledText'
 import SizedImage from './SizedImage'
 import Button from './Button'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -27,8 +28,8 @@ export class Tutorial extends Component {
     const step = steps[this.state.step]
     const totalSteps = length(steps)
 
-    const mediaResource = this.props.tutorial.mediaResources[step.media]
-    const mediaImage = (mediaResource !== undefined ? <SizedImage source={{ uri: mediaResource.src }} /> : null)
+    const mediaResource = (step.media ? this.props.tutorial.mediaResources[step.media] : null )
+    const mediaImage = (mediaResource !== null ? <SizedImage source={{ uri: mediaResource.src }} /> : null)
 
     const hasPreviousStep = this.state.step > 0
     const previousStep =
@@ -83,15 +84,21 @@ export class Tutorial extends Component {
         additionalStyles={[styles.orangeButton]}
         text={'Continue'} />
 
-      const finishedButton =
-        <Button
-          handlePress={this.props.finishTutorial}
-          additionalStyles={[styles.orangeButton]}
-          text={'Let\s Go!'} />
+    const finishedButton =
+      <Button
+        handlePress={this.props.finishTutorial}
+        additionalStyles={[styles.orangeButton]}
+        text={'Let\s Go!'} />
+
+    const tutorialHeader =
+      <StyledText
+        text={'Project Tutorial'}
+        additionalStyles={[styles.tutorialHeader]}/>
 
     return (
       <View style={styles.container}>
         <ScrollView style={styles.content}>
+          { this.props.isInitialTutorial ? tutorialHeader : null}
           { mediaImage }
           <StyledMarkdown markdown={steps[this.state.step].content} />
         </ScrollView>
@@ -158,11 +165,16 @@ const styles = EStyleSheet.create({
     height: StyleSheet.hairlineWidth,
     backgroundColor: '$beckyLightGray',
   },
+  tutorialHeader: {
+    fontSize: 20,
+    marginBottom: 10,
+  }
 })
 
 Tutorial.propTypes = {
   tutorial: React.PropTypes.object,
   finishTutorial: React.PropTypes.func,
+  isInitialTutorial: React.PropTypes.bool,
 }
 
 export default Tutorial

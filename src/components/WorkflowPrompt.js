@@ -1,59 +1,127 @@
-import React from 'react'
+import React, { Component } from 'react'
 import {
   Text,
-  TouchableOpacity
+  View
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
 import StyledModal from './StyledModal'
-import { append } from 'ramda'
+import StyledText from './StyledText'
+import Button from './Button'
+import { addIndex, map } from 'ramda'
 
-const WorkflowPrompt = (props) => {
-  return (
-    <StyledModal
-      isVisible={props.isVisible}
-      setVisibility={this.setVisibility}>
-      Here is the workflow prompt
-    </StyledModal>
-  )
+export class WorkflowPrompt extends Component {
+
+  render() {
+    const renderButtonGroup = (workflows, isSwipe) => {
+      return (
+        <View style={styles.buttonsContainer}>
+          { addIndex(map)(
+            (workflow, idx) => {
+              return renderButton(workflow, idx, isSwipe)
+            },
+            workflows
+          ) }
+        </View>
+      )
+    }
+
+    const renderButton = (workflow, idx, isSwipe) => {
+      const chooseWorkflow = (workflow) => {
+        this.props.hideWorkflowPrompt()
+        if (isSwipe) {
+          this.props.openMobileProject(workflow.id)
+        } else {
+          this.props.openExternalProject(workflow.id)
+        }
+      }
+      return (
+        <Button
+          key={idx}
+          text={ workflow.display_name }
+          additionalStyles={[styles.button]}
+          additionalTextStyles={[styles.buttonText]}
+          handlePress={ ()=> { chooseWorkflow(workflow) }}
+        />
+      )
+    }
+
+    return (
+      <StyledModal
+        isVisible={this.props.isVisible}
+        setVisibility={this.props.hideWorkflowPrompt}>
+        <StyledText
+          additionalStyles={[styles.header]}
+          text={ 'Please Choose Workflow' } />
+
+        <StyledText
+          textStyle={'headerText'}
+          additionalStyles={[styles.prompt]}
+          text={ 'FOR MOBILE' } />
+        { renderButtonGroup(this.props.mobileWorkflows, true) }
+
+        <StyledText
+          textStyle={'headerText'}
+          additionalStyles={[styles.prompt]}
+          text={ 'OTHER WORKFLOWS' } />
+
+        { renderButtonGroup(this.props.nonMobileWorkflows, false) }
+
+        <Button
+          handlePress={ this.props.hideWorkflowPrompt }
+          additionalStyles={[styles.cancelButton]}
+          buttonStyle={'navyButton'}
+          text={'Cancel'} />
+      </StyledModal>
+    )
+  }
 }
 
 const styles = EStyleSheet.create({
-  buttonText: {
+  header: {
+    fontSize: 20,
+    fontWeight: '500',
+    color: '$beckyDarkGray',
+  },
+  subheader: {
+    color: '$grey',
+  },
+  prompt: {
+    fontWeight: '500',
     fontSize: 14,
-    color: 'white',
-    alignSelf: 'center',
-    letterSpacing: 1.3
+    marginTop: 20,
+  },
+  buttonsContainer: {
+    marginBottom: 10,
+    marginLeft: 8,
   },
   button: {
-    borderRadius: 4,
-    padding: 10,
-    flexDirection: 'row',
-    backgroundColor: '$buttonColor',
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-    marginTop: 10
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '$darkGreyTextColor'
   },
-  disabledButton: {
-    backgroundColor: '$disabledButtonColor'
+  buttonText: {
+    color: '$darkGreyTextColor'
   },
-  registerButton: {
-    backgroundColor: '$registerButtonColor'
+  link: {
+    backgroundColor: 'white',
+    borderWidth: 0,
+    padding: 5,
+    justifyContent: 'flex-start',
+
   },
-  disabledRegisterButton: {
-    backgroundColor: '$registerDisabledButtonColor'
-  },
-  navyButton: {
-    backgroundColor: '$navy',
+  cancelButton: {
+    marginTop: 20
   },
 });
 
 WorkflowPrompt.propTypes = {
-  handlePress: React.PropTypes.func.isRequired,
-  disabled: React.PropTypes.bool,
-  buttonStyle: React.PropTypes.string,
-  additionalStyles: React.PropTypes.array,
-  additionalTextStyles: React.PropTypes.array,
-  text: React.PropTypes.string
+  project: React.PropTypes.object,
+  mobileWorkflows: React.PropTypes.array,
+  nonMobileWorkflows: React.PropTypes.array,
+  isVisible: React.PropTypes.bool,
+  openMobileProject: React.PropTypes.func.isRequired,
+  openExternalProject: React.PropTypes.func.isRequired,
+  hideWorkflowPrompt: React.PropTypes.func.isRequired,
 }
 
 export default WorkflowPrompt

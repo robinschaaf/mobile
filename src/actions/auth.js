@@ -2,7 +2,7 @@ import auth from 'panoptes-client/lib/auth'
 import store from 'react-native-simple-store'
 import { Actions, ActionConst } from 'react-native-router-flux'
 
-import { checkIsConnected, loadNotificationSettings, setState, setIsFetching } from './index'
+import { checkIsConnected, loadSettings, setState, setIsFetching } from './index'
 import { loadUserAvatar, loadUserProjects, syncUserStore } from './user'
 import { setSession } from './session'
 
@@ -35,7 +35,7 @@ export function signIn(login, password) {
         return Promise.all([
           dispatch(loadUserAvatar()),
           dispatch(loadUserProjects()),
-          dispatch(loadNotificationSettings())
+          dispatch(loadSettings())
         ])
       }).then(() => {
         dispatch(syncUserStore())
@@ -94,7 +94,7 @@ export function signOut() {
 
 export function continueAsGuest() {
   return dispatch => {
-    dispatch(loadNotificationSettings()).then(() => {
+    dispatch(loadSettings()).then(() => {
       dispatch(setState('user.isGuestUser', true))
       dispatch(syncUserStore())
       dispatch(setSession())

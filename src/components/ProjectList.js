@@ -9,12 +9,16 @@ import NavBar from './NavBar'
 import StyledText from './StyledText'
 import { connect } from 'react-redux'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
+import { filter, find, propEq } from 'ramda'
+import { SWIPE_WORKFLOWS } from '../constants/mobile_projects'
 
 GoogleAnalytics.trackEvent('view', 'Project')
 
 const mapStateToProps = (state) => ({
   projectList: state.projectList || {},
-  selectedProjectTag: state.selectedProjectTag || ''
+  selectedProjectTag: state.selectedProjectTag || '',
+  projectWorkflows: state.projectWorkflows || {},
+  promptForWorkflow: state.settings.promptForWorkflow || false,
 })
 
 const dataSource = new ListView.DataSource({
@@ -23,8 +27,20 @@ const dataSource = new ListView.DataSource({
 
 export class ProjectList extends React.Component {
   renderRow(project, color) {
+    const workflows = this.props.projectWorkflows[project.id] ? this.props.projectWorkflows[project.id] : []
+    const filterNonSwipe = (workflow) => { return !find(propEq('workflowID', workflow.id), SWIPE_WORKFLOWS) }
+    const filterSwipe = (workflow) => { return find(propEq('workflowID', workflow.id), SWIPE_WORKFLOWS) }
+    const nonMobileWorkflows = filter(filterNonSwipe, workflows)
+    const mobileWorkflows = filter(filterSwipe, workflows)
+
     return (
-      <Project project={project} color={color} />
+      <Project
+        project={project}
+        color={color}
+        nonMobileWorkflows={nonMobileWorkflows}
+        mobileWorkflows={mobileWorkflows}
+        promptForWorkflow={this.props.promptForWorkflow}
+      />
     );
   }
 
@@ -79,6 +95,7 @@ ProjectList.propTypes = {
   projectList: React.PropTypes.object,
   selectedProjectTag: React.PropTypes.string,
   color: React.PropTypes.string,
+  promptForWorkflow: React.PropTypes.bool
 }
 
 export default connect(mapStateToProps)(ProjectList)

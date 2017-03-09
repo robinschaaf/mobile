@@ -9,9 +9,6 @@ import StyledText from './StyledText'
 import { addIndex, map } from 'ramda'
 
 const UnlinkedTask = (props) => {
-
-  console.log('UnlinkedTaskProp annotation', props.annotation)
-
   const renderUnlinkedTask = ( answer, idx ) => {
     return (
       <View key={ idx } style={styles.rowContainer}>

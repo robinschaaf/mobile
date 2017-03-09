@@ -14,9 +14,10 @@ import store from 'react-native-simple-store'
 import apiClient from 'panoptes-client/lib/api-client'
 import { PUBLICATIONS } from '../constants/publications'
 import { MOBILE_PROJECTS } from '../constants/mobile_projects'
+import { SWIPE_WORKFLOWS } from '../constants/mobile_projects'
 import { GLOBALS } from '../constants/globals'
 import { Alert, Platform, PushNotificationIOS, NativeModules } from 'react-native'
-import { addIndex, filter, forEach, head, intersection, keys, map, propEq } from 'ramda'
+import { addIndex, filter, find, forEach, head, intersection, keys, map, propEq } from 'ramda'
 
 export function setState(stateKey, value) {
   return { type: SET_STATE, stateKey, value }
@@ -31,6 +32,7 @@ export function setUser(user) {
 }
 
 export function setIsFetching(isFetching) {
+  console.log('SETTING IS FETCHING', isFetching)
   return { type: SET_IS_FETCHING, isFetching }
 }
 
@@ -40,6 +42,30 @@ export function setError(errorMessage) {
 
 export function setProjectList(projectList) {
   return { type: SET_PROJECT_LIST, projectList }
+}
+
+
+export function syncStore(name) {
+  return (dispatch, getState) => {
+    const contents = getState()[name]
+    return store.save(`@zooniverse:${name}`, {
+        contents
+    })
+  }
+}
+
+export function setFromStore(name) {
+  return dispatch => {
+    return new Promise ((resolve) => {
+      store.get(`@zooniverse:${name}`).then(json => {
+        dispatch(setState(name, json['contents']))
+        return resolve()
+      }).catch(() => { //default to redux store defaults
+        dispatch(syncStore(name))
+        return resolve()
+      })
+    })
+  }
 }
 
 
@@ -117,6 +143,9 @@ export function fetchProjectsByParms(tag) {
     }
 
     apiClient.type('projects').get(parms).then((projects) => {
+
+      dispatch(lookAtWorkflows(projects))
+
       dispatch(setState(`projectList.${tag}`, projects))
       dispatch(syncProjectStore())
     }).catch((error) => {
@@ -150,17 +179,31 @@ export function fetchPublications() {
   }
 }
 
+export function lookAtWorkflows(projects) {
+  return (dispatch) => {
+    return new Promise((resolve) => {
+      const filterSwipeProjects = filter((proj) => { return find(propEq('projectID', proj.id), SWIPE_WORKFLOWS) }, projects)
+      const getWorkflows = (proj) => {dispatch(fetchProjectWorkflows(proj.id))}
+      forEach(getWorkflows, filterSwipeProjects)
+      return resolve()
+    })
+  }
+}
+
 export function fetchProjectWorkflows(projectID) {
   return dispatch => {
-    apiClient.type('projects').get({id: projectID}).then((projects) => {
-      const project = head(projects)
-      project.get('workflows', {page_size: 100}).then((workflows) => {
-        console.log('this projects workflows', workflows)
-        dispatch(setState('projectWorkflows', workflows))
-      }).catch((error) => {
-        dispatch(setError('The following error occurred.  Please close down Zooniverse and try again.  If it persists please notify us.  \n\n' + error,))
+    return new Promise((resolve) => {
+      apiClient.type('projects').get({id: projectID}).then((projects) => {
+        const project = head(projects)
+        project.get('workflows', {page_size: 100, active: true, fields: 'display_name'}).then((workflows) => {
+          //console.log('workflows!', workflows)
+          dispatch(setState(`projectWorkflows.${projectID}`, workflows))
+          return resolve()
+        }).catch((error) => {
+          dispatch(setError('The following error occurred.  Please close down Zooniverse and try again.  If it persists please notify us.  \n\n' + error,))
+          return resolve()
+        })
       })
-
     })
   }
 }
@@ -193,6 +236,27 @@ export function loadNotificationSettings() {
         dispatch(syncNotificationStore())
       })
       return resolve()
+    })
+  }
+}
+
+export function loadSettings() {
+  return (dispatch) => {
+    return new Promise((resolve) => {
+      dispatch(setFromStore('settings')).then(() => {
+        return resolve()
+      })
+    })
+  }
+}
+
+export function updateSetting(key, value) {
+  return (dispatch) => {
+    return new Promise((resolve) => {
+      dispatch(setState(`settings.${key}`, value))
+      dispatch(syncStore('settings'))
+      return resolve()
+
     })
   }
 }

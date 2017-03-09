@@ -17,6 +17,8 @@ import { addIndex, map, indexOf, reverse } from 'ramda'
 import clamp from 'clamp'
 
 const SWIPE_THRESHOLD = 120
+const leftOverlayColor = '#E45950'
+const rightOverlayColor = '#00979D'
 
 class Classifier extends Component {
   constructor(props) {
@@ -57,9 +59,9 @@ class Classifier extends Component {
         }
 
         if (Math.abs(this.state.pan.x._value) > SWIPE_THRESHOLD) {
-          //negative=left (no)
-          //positive=right (yes)
-          const answer = ( this.state.pan.x._value < 0 ? 0 : 1 )
+          //negative=left (no = index 1)
+          //positive=right (yes = index 0)
+          const answer = ( this.state.pan.x._value < 0 ? 1 : 0 )
           Animated.decay(this.state.pan, {
             velocity: {x: velocity, y: vy},
             deceleration: 0.98
@@ -98,7 +100,6 @@ class Classifier extends Component {
   render() {
 
     const allowPanAndZoom = this.props.workflow.configuration.pan_and_zoom
-    console.log('Allow pan and zoom?', allowPanAndZoom)
     const alreadySeenThisSession = indexOf(this.props.subject.id, this.props.seenThisSession) >= 0
     const alreadySeen = this.props.subject.already_seen || alreadySeenThisSession
 
@@ -131,8 +132,8 @@ class Classifier extends Component {
     let scale = enterAnim;
 
     let animatedCardStyles = {transform: [{translateX}, {translateY}, {rotate}, {scale}]}
-    let leftOverlayStyle = {backgroundColor: 'red', opacity: opacityLeft};
-    let rightOverlayStyle = {backgroundColor: 'green', opacity: opacityRight};
+    let leftOverlayStyle = {backgroundColor: leftOverlayColor, opacity: opacityLeft};
+    let rightOverlayStyle = {backgroundColor: rightOverlayColor, opacity: opacityRight};
     let leftOverlayTextStyle = {opacity: opacityLeftText};
     let rightOverlayTextStyle = {opacity: opacityRightText};
 
@@ -276,6 +277,7 @@ const styles = EStyleSheet.create({
     backgroundColor: '$beckyGray',
     borderColor: '$beckyDisabledIconColor',
     borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 26,
     flexDirection: 'row',

@@ -12,6 +12,7 @@ import EStyleSheet from 'react-native-extended-stylesheet'
 import StyledMarkdown from './StyledMarkdown'
 import StyledText from './StyledText'
 import SizedImage from './SizedImage'
+import Button from './Button'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { addIndex, isEmpty, map } from 'ramda'
 
@@ -21,34 +22,45 @@ export class FieldGuide extends Component {
     this.state = {
       isVisible: false,
       selectedItem: {},
-      slideAnim: new Animated.Value(0)
+      slideAnim: new Animated.Value(0),
     }
   }
 
   open() {
     this.setState({isVisible: true})
     this.state.slideAnim.setValue(0)
+    this.animateHeight(150)
+  }
+
+  close() {
+    this.animateHeight(0, 200)
+    this.setState({isVisible: false, selectedItem: {}})
+  }
+
+  openDetail(item) {
+    this.setState({selectedItem: item})
+    this.animateHeight(150)
+  }
+
+  closeDetail() {
+    this.setState({selectedItem: {}})
+    this.animateHeight(150)
+  }
+
+  animateHeight(toHeight, duration=300) {
     Animated.timing(
       this.state.slideAnim,
       {
-        toValue: 150,
+        toValue: toHeight,
         easing: Easing.linear,
-        duration: 300,
+        duration: duration,
       }
     ).start()
   }
 
-  close() {
-    this.state.slideAnim.setValue(150)
-    Animated.timing(
-      this.state.slideAnim,
-      {
-        toValue: 0,
-        easing: Easing.linear,
-        duration: 200,
-      }
-    ).start()
-    this.setState({isVisible: false, selectedItem: {}})
+  setHeight(event) {
+    const {x, y, width, height} = event.nativeEvent.layout
+    this.animateHeight(height)
   }
 
   render() {
@@ -73,12 +85,13 @@ export class FieldGuide extends Component {
         </TouchableOpacity>
       </Animated.View>
 
+
     const fieldGuide = () => {
       return (
         <View>
           <Animated.View style={[styles.guideContainer, {height: this.state.slideAnim}]}>
             <ScrollView>
-              <View>
+              <View onLayout={(event) => { this.setHeight(event) }}>
                 { addIndex (map)(
                   (item, idx) => {
                     return renderItem(item, icons, idx)
@@ -96,7 +109,7 @@ export class FieldGuide extends Component {
     const renderItem = (item = {}, icons = [], idx) => {
       return (
         <TouchableOpacity
-          onPress={() => this.setState({selectedItem: item})}
+          onPress={() => this.openDetail(item)}
           key={idx}
           style={styles.listItem}>
           { icons[item.icon] !== undefined && icons[item.icon].src ? <Image style={styles.itemIcon} source={{uri:icons[item.icon].src}} /> : null }
@@ -111,17 +124,19 @@ export class FieldGuide extends Component {
         <View>
           <Animated.View style={[styles.guideContainer, {height: this.state.slideAnim}]}>
             <ScrollView>
-              <View style={styles.itemDetailContainer}>
+              <View style={styles.itemDetailContainer} onLayout={(event) => { this.setHeight(event) }}>
                 { icons[item.icon].src
-                  ? <SizedImage source={{ uri: icons[item.icon].src }} maxHeight={ '80' } />
+                  ? <SizedImage source={{ uri: icons[item.icon].src }} maxHeight={ 150 } />
                   : null
                 }
                 <StyledText textStyle={'large'} text={ item.title } />
                 <StyledMarkdown markdown={item.content} />
-                <TouchableOpacity
-                  onPress={() => this.setState({selectedItem: {}})}>
-                  <StyledText text={'< Back'} />
-                </TouchableOpacity>
+
+
+                <Button
+                  handlePress={ () => this.closeDetail() }
+                  additionalStyles={[styles.backButton]}
+                  text={'< Back'} />
               </View>
             </ScrollView>
           </Animated.View>
@@ -184,7 +199,8 @@ const styles = EStyleSheet.create({
   listItem: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     height: 60,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '$mediumGrey',
@@ -222,6 +238,9 @@ const styles = EStyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 20,
   },
+  backButton: {
+    alignSelf: 'flex-start',
+  }
 })
 
 FieldGuide.propTypes = {
