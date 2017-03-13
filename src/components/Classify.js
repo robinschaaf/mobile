@@ -21,6 +21,7 @@
 
 import React from 'react'
 import {
+  Platform,
   TouchableOpacity,
   View
 } from 'react-native'
@@ -41,6 +42,8 @@ import {
   setImageSizes,
   setTutorialCompleted,
 } from '../actions/classifier'
+
+const topPadding = (Platform.OS === 'ios') ? 10 : 0
 
 //GoogleAnalytics.setTrackerId(GLOBALS.GOOGLE_ANALYTICS_TRACKING)
 //GoogleAnalytics.trackEvent('view', 'Home')
@@ -172,7 +175,8 @@ const styles = EStyleSheet.create({
   container: {
     backgroundColor: '$beckyGray',
     flex: 1,
-    marginTop: 70,
+    marginTop: 60,
+    paddingTop: topPadding,
     paddingBottom: 10,
   },
   panelContainer: {

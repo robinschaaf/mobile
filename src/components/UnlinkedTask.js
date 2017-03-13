@@ -1,21 +1,24 @@
 import React from 'react'
 import {
+  Switch,
   TouchableOpacity,
   View
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
-import Checkbox from './Checkbox'
 import StyledText from './StyledText'
 import { addIndex, map } from 'ramda'
+import theme from '../theme'
 
 const UnlinkedTask = (props) => {
   const renderUnlinkedTask = ( answer, idx ) => {
     return (
       <View key={ idx } style={styles.rowContainer}>
-        <Checkbox
-          additionalStyles={[styles.checkboxStyle]}
-          selected={idx === props.annotation}
-          onSelect={()=>props.onAnswered(props.unlinkedTaskKey, idx)} />
+        <Switch
+          value={idx === props.annotation}
+          style={styles.switchComponent}
+          onTintColor={theme.headerColor}
+          onValueChange={()=>props.onAnswered(props.unlinkedTaskKey, idx)}
+        />
         <TouchableOpacity
           onPress={ ()=>props.onAnswered(props.unlinkedTaskKey, idx) }
           activeOpacity={0.5}>
@@ -46,8 +49,8 @@ const styles = EStyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start'
   },
-  checkboxStyle: {
-    padding: 5
+  switchComponent: {
+    margin: 3
   }
 });
 

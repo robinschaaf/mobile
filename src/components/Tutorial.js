@@ -30,7 +30,7 @@ export class Tutorial extends Component {
 
     const mediaResource = (step.media ? this.props.tutorial.mediaResources[step.media] : null )
     const mediaImage = (mediaResource !== null ? <SizedImage source={{ uri: mediaResource.src }} /> : null)
-
+    
     const hasPreviousStep = this.state.step > 0
     const previousStep =
       <TouchableOpacity
@@ -122,7 +122,7 @@ const styles = EStyleSheet.create({
     marginBottom: 0
   },
   footer: {
-    height: 100,
+    height: 110,
     paddingVertical: 10,
     paddingHorizontal: 20
   },
@@ -132,7 +132,7 @@ const styles = EStyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: 5,
   },
   circleIcon: {
     fontSize: 12,
@@ -159,7 +159,8 @@ const styles = EStyleSheet.create({
     width: 36
   },
   orangeButton: {
-    backgroundColor: '$beckyOrange'
+    backgroundColor: '$beckyOrange',
+    marginBottom: 0,
   },
   line: {
     height: StyleSheet.hairlineWidth,

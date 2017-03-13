@@ -31,7 +31,7 @@ export class WorkflowPrompt extends Component {
         if (isSwipe) {
           this.props.openMobileProject(workflow.id)
         } else {
-          this.props.openExternalProject(workflow.id)
+          this.props.openExternalProject()
         }
       }
       return (

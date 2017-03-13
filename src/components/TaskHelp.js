@@ -49,13 +49,13 @@ export class TaskHelp extends Component {
 
 const styles = EStyleSheet.create({
   container: {
-    paddingTop: 10,
-    paddingBottom: 10,
+    flex: 1,
+    paddingVertical: 5,
   },
   helpIcon: {
     fontSize: 20,
     color: 'black',
-    padding: 13
+    padding: 15
   },
   helpText: {
     color: 'black'

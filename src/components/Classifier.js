@@ -3,6 +3,7 @@ import {
   Animated,
   Image,
   PanResponder,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View
@@ -174,7 +175,7 @@ class Classifier extends Component {
 
 
     return (
-      <View style={styles.viewContainer}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
         <View style={styles.questionContainer}>
           <View style={styles.question}>
             <StyledMarkdown markdown={question} />
@@ -188,7 +189,7 @@ class Classifier extends Component {
 
           <TouchableOpacity onPress={() => this.setState({ showFullSize: true })}>
             <Image source={{uri: this.props.subject.display.src}} style={[styles.image, imageSizeStyle]} />
-            { alreadySeen ? alreadySeenBanner : null }
+
             <Animated.View style={[styles.overlayContainer, leftOverlayStyle, imageSizeStyle]} />
             <Animated.View style={[styles.overlayContainer, leftOverlayTextStyle, imageSizeStyle]}>
               <StyledText additionalStyles={[styles.answerOverlayText]} text={ answers[0].label } />
@@ -199,6 +200,7 @@ class Classifier extends Component {
               <StyledText additionalStyles={[styles.answerOverlayText]} text={ answers[1].label } />
             </Animated.View>
           </TouchableOpacity>
+          { alreadySeen ? alreadySeenBanner : null }
         </Animated.View>
         { unlinkedTask }
         { answersContainer }
@@ -207,7 +209,7 @@ class Classifier extends Component {
           isVisible={this.state.showFullSize}
           allowPanAndZoom={allowPanAndZoom}
           handlePress={() => this.setState({ showFullSize: false })} />
-      </View>
+      </ScrollView>
     )
   }
 }
@@ -216,15 +218,14 @@ const styles = EStyleSheet.create({
   $paddingToInner: 70,
   $helpIconSize: 30,
   $helpIconAndPadding: '$paddingToInner + $helpIconSize',
-  viewContainer: {
+  container: {
     flex: 1,
     paddingVertical: 10,
     paddingHorizontal: 20,
+  },
+  contentContainer: {
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-  },
-  container: {
-    flex: 1,
   },
   questionContainer: {
     flexDirection: 'row',
@@ -235,13 +236,14 @@ const styles = EStyleSheet.create({
     width: '100% - $helpIconAndPadding',
   },
   alreadySeen: {
+    elevation: 2,
     position: 'absolute',
-    top: 0,
-    right: -10,
+    top: 16,
+    right: 0,
     backgroundColor: '$darkOrange',
     paddingVertical: 2,
     paddingHorizontal: 5,
-    transform: [{ rotate: '15deg'}]
+    transform: [{ rotate: '20deg'}]
   },
   alreadySeenText: {
     color: 'white',
@@ -249,6 +251,8 @@ const styles = EStyleSheet.create({
     fontWeight: 'bold'
   },
   imageContainer: {
+    elevation: 1,
+    backgroundColor: 'white',
     borderRadius: 2,
     marginVertical: 10,
     justifyContent: 'center',

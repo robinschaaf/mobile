@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {
   Animated,
+  Dimensions,
   Easing,
   Image,
   ScrollView,
@@ -15,6 +16,8 @@ import SizedImage from './SizedImage'
 import Button from './Button'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { addIndex, isEmpty, map } from 'ramda'
+
+const MAX_HEIGHT = Dimensions.get('window').height * .6
 
 export class FieldGuide extends Component {
   constructor(props) {
@@ -123,8 +126,7 @@ export class FieldGuide extends Component {
       return (
         <View>
           <Animated.View style={[styles.guideContainer, {height: this.state.slideAnim}]}>
-            <ScrollView>
-              <View style={styles.itemDetailContainer} onLayout={(event) => { this.setHeight(event) }}>
+              <ScrollView style={styles.itemDetailContainer} onLayout={(event) => { this.setHeight(event) }}>
                 { icons[item.icon].src
                   ? <SizedImage source={{ uri: icons[item.icon].src }} maxHeight={ 150 } />
                   : null
@@ -137,7 +139,6 @@ export class FieldGuide extends Component {
                   handlePress={ () => this.closeDetail() }
                   additionalStyles={[styles.backButton]}
                   text={'< Back'} />
-              </View>
             </ScrollView>
           </Animated.View>
           { closeIcon }
@@ -182,6 +183,7 @@ const styles = EStyleSheet.create({
     left: 0,
     right: 0,
     height: 0,
+    maxHeight: MAX_HEIGHT,
     shadowColor: 'rgba(0, 0, 0, 0.24)',
     shadowOpacity: 0.8,
     shadowRadius: 5,
@@ -190,6 +192,7 @@ const styles = EStyleSheet.create({
     },
   },
   itemDetailContainer: {
+    maxHeight: MAX_HEIGHT,
     padding: 10,
   },
   itemDetailsIcon: {

@@ -16,6 +16,7 @@ import {Actions} from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import WorkflowPrompt from './WorkflowPrompt'
 import StyledText from './StyledText'
+import PopupMessage from './PopupMessage'
 import { addIndex, filter, find, forEach, head, length, map, propEq } from 'ramda'
 import { SWIPE_WORKFLOWS } from '../constants/mobile_projects'
 
@@ -24,13 +25,14 @@ const DEFAULT_BOX_HEIGHT = 269
 class Project extends Component {
   constructor(props) {
     super(props)
-    this.handleClick = this.handleClick.bind(this)
     this.state = {
       loading: true,
+      popupVisibility: false,
       fadeAnim: new Animated.Value(0),
       showWorkflowPrompt: false,
       slideAnim: new Animated.Value(DEFAULT_BOX_HEIGHT),
-      boxHeight: DEFAULT_BOX_HEIGHT
+      boxHeight: DEFAULT_BOX_HEIGHT,
+      workflowSelectionHeight: 0,
     }
   }
 
@@ -56,16 +58,19 @@ class Project extends Component {
     ).start()
   }
 
-  handleClick() {
+  handlePress() {
     GoogleAnalytics.trackEvent('view', this.props.project.display_name)
 
-    const hasSingleSwipeWorkflow = length(this.props.mobileWorkflows) === 1
+    const hasSingleMobileWorkflow = length(this.props.mobileWorkflows) === 1
     const hasMixedWorkflows = length(this.props.mobileWorkflows) > 0 && length(this.props.nonMobileWorkflows) > 0
+    //this.setState({ popupVisibility: false })
 
     if ((hasMixedWorkflows && this.props.promptForWorkflow)) {
       this.setState({showWorkflowPrompt: true})
-    } else if (hasSingleSwipeWorkflow) {
+    } else if (hasSingleMobileWorkflow) {
       Actions.Classify({ workflowID: head(this.props.mobileWorkflows).id })
+    } else if (length(this.props.mobileWorkflows) > 0) {
+      this.setState({ popupVisibility: true })
     } else {
       this.openExternalProject()
     }
@@ -101,7 +106,7 @@ class Project extends Component {
   setHeight(event) {
     const {x, y, width, height} = event.nativeEvent.layout
     const newHeight = height + DEFAULT_BOX_HEIGHT
-    this.setState({ boxHeight: newHeight })
+    this.setState({ boxHeight: newHeight, workflowSelectionHeight: height })
     console.log('new height', newHeight)
     this.animateHeight(newHeight)
   }
@@ -166,7 +171,7 @@ class Project extends Component {
         {this.state.showWorkflowPrompt ? workflowPrompt : null }
         <TouchableOpacity
           activeOpacity={0.9}
-          onPress={this.handleClick}
+          onPress={(e) => this.handlePress(e) }
           style={[styles.container, { height: this.state.boxHeight-25 }]}>
           { this.props.project.avatar_src ? avatar : defaultAvatar }
           <View style={styles.forBorderRadius} />
@@ -183,8 +188,17 @@ class Project extends Component {
               </View>
               { length(this.props.mobileWorkflows) > 1 ? emptyRightArrow : rightArrow}
             </View>
+
             { length(this.props.mobileWorkflows) > 1 ? mobileWorkflowContainer : null}
           </View>
+
+          <PopupMessage
+            key={this.props.project.id}
+            isVisible={this.state.popupVisibility}
+            setHidden={() => {this.setState({popupVisibility: false})}}
+            workflowSelectionHeight={this.state.workflowSelectionHeight}
+          />
+
         </TouchableOpacity>
       </Animated.View>
     )

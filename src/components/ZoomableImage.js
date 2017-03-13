@@ -18,7 +18,7 @@ class ZoomableImage extends React.Component {
     const deviceWidth = Dimensions.get('window').width
     const deviceHeight = Dimensions.get('window').height
 
-    Image.getSize(this.props.source, (width, height) => {
+    Image.getSize(this.props.source.uri, (width, height) => {
       const aspectRatio = Math.min(deviceWidth / width, deviceHeight / height)
       const resizedHeight = height * aspectRatio
       const resizedWidth = width * aspectRatio

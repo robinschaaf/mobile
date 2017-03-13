@@ -46,8 +46,8 @@ const styles = EStyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: 'white',
     borderRadius: 4,
-    marginTop: 40,
-    padding: 24,
+    marginTop: 30,
+    padding: 20,
   },
   icon: {
     backgroundColor: 'transparent',

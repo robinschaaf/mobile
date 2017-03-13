@@ -12,7 +12,7 @@ class SizedImage extends React.Component {
      this.state = {
        heightAnim: new Animated.Value(0),
        widthAnim: new Animated.Value(0),
-       fadeAnim: new Animated.Value(0)
+       fadeAnim: new Animated.Value(0),
      }
   }
 
@@ -23,8 +23,8 @@ class SizedImage extends React.Component {
     const imageDisplayWidth = this.props.maxWidth ? this.props.maxWidth : deviceWidth
     const imageDisplayHeight = this.props.maxHeight ? this.props.maxHeight : deviceHeight
 
-    Image.getSize(this.props.source, (width, height) => {
-
+    console.log('ABOUT TO GET SIZE FOR ', this.props.source)
+    Image.getSize(this.props.source.uri, (width, height) => {
       const aspectRatio = Math.min(imageDisplayWidth / width, imageDisplayHeight / height)
       const resizedHeight = height * aspectRatio
       const resizedWidth = width * aspectRatio
@@ -49,14 +49,8 @@ class SizedImage extends React.Component {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.source !== nextProps.source) {
-      //console.log('componentWillReceiveProps source change triggered')
-
-    }
-  }
-
   imageLoadEnd() {
+    console.log('IMAGE LOADED!!')
     this.setState({ loading: false })
     Animated.timing(
       this.state.fadeAnim,
@@ -78,7 +72,6 @@ class SizedImage extends React.Component {
     )
   }
 }
-
 
 SizedImage.propTypes = {
   source: React.PropTypes.object,

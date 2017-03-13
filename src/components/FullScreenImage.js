@@ -7,9 +7,16 @@ import {
 import EStyleSheet from 'react-native-extended-stylesheet'
 import ZoomableImage from './ZoomableImage'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import StyledText from './StyledText'
 
 class FullScreenImage extends React.Component {
   render() {
+    const zoomMessage =
+      <View style={styles.rowContainer}>
+        <Icon name="info-circle" style={styles.infoIcon} />
+        <StyledText additionalStyles={[styles.message]} text='You can zoom into this image' />
+      </View>
+
     return (
       <Modal
         animationType={'fade'}
@@ -21,7 +28,7 @@ class FullScreenImage extends React.Component {
             source={this.props.source}
             handlePress={this.props.handlePress}
             allowPanAndZoom={!!this.props.allowPanAndZoom} />
-
+          {this.props.allowPanAndZoom ? zoomMessage : null}
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={this.props.handlePress}
@@ -38,7 +45,8 @@ const styles = EStyleSheet.create({
   container: {
     backgroundColor: 'rgba(0, 0, 0, 0.9)',
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
   },
   closeIcon: {
     backgroundColor: 'transparent',
@@ -52,6 +60,23 @@ const styles = EStyleSheet.create({
     fontSize: 24,
     padding: 15,
   },
+  rowContainer: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  message: {
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    color: 'white',
+  },
+  infoIcon: {
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    color: '$transluscentWhite',
+    fontSize: 20,
+    padding: 5,
+  }
 })
 
 FullScreenImage.propTypes = {
