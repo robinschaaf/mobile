@@ -61,6 +61,7 @@ const styles = EStyleSheet.create({
     padding: 15,
   },
   rowContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
     position: 'absolute',
     bottom: 10,
     left: 10,
@@ -68,11 +69,9 @@ const styles = EStyleSheet.create({
     alignItems: 'center'
   },
   message: {
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
     color: 'white',
   },
   infoIcon: {
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
     color: '$transluscentWhite',
     fontSize: 20,
     padding: 5,

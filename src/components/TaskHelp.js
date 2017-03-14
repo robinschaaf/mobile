@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import {
+  Dimensions,
   View
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
@@ -27,13 +28,18 @@ export class TaskHelp extends Component {
       <View>
         <Icon name='question-circle'
           style={styles.helpIcon}
-          onPress={() => this.setVisibility(true)} />
+          onPress={() => this.setVisibility(true)}
+          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}} />
         <StyledModal
           isVisible={this.state.isVisible}
           setVisibility={this.setVisibility}>
 
           <View style={styles.container}>
-            <StyledMarkdown markdown={this.props.text} />
+            <StyledMarkdown
+              extraCSS={'p{margin-top: 10px;}'}
+              markdown={this.props.text}
+              width={Dimensions.get('window').width - 80}
+            />
           </View>
 
           <Button
@@ -55,7 +61,7 @@ const styles = EStyleSheet.create({
   helpIcon: {
     fontSize: 20,
     color: 'black',
-    padding: 15
+    paddingTop: 5
   },
   helpText: {
     color: 'black'

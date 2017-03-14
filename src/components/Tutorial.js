@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import {
+  Dimensions,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -30,7 +31,7 @@ export class Tutorial extends Component {
 
     const mediaResource = (step.media ? this.props.tutorial.mediaResources[step.media] : null )
     const mediaImage = (mediaResource !== null ? <SizedImage source={{ uri: mediaResource.src }} /> : null)
-    
+
     const hasPreviousStep = this.state.step > 0
     const previousStep =
       <TouchableOpacity
@@ -100,7 +101,10 @@ export class Tutorial extends Component {
         <ScrollView style={styles.content}>
           { this.props.isInitialTutorial ? tutorialHeader : null}
           { mediaImage }
-          <StyledMarkdown markdown={steps[this.state.step].content} />
+          <StyledMarkdown
+            width={ Dimensions.get('window').width - 80 }
+            markdown={steps[this.state.step].content}
+          />
         </ScrollView>
         <View style={styles.footer}>
           <View style={styles.line} />

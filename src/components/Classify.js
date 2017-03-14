@@ -1,7 +1,3 @@
-//on component mount: loadAppropriateClassification
-//on swipe (answer): saveClassificationAndLoadAnother
-
-
 //TODO:  getLocale, device info needed? (in lieu of user_agent)
 
 //TODO: Add proptypes Shapes
@@ -26,7 +22,7 @@ import {
   View
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
-import { isEmpty } from 'ramda'
+import { append, contains, isEmpty, uniq } from 'ramda'
 import { connect } from 'react-redux'
 import GoogleAnalytics from 'react-native-google-analytics-bridge'
 import Classifier from './Classifier'
@@ -36,6 +32,7 @@ import FieldGuide from './FieldGuide'
 import OverlaySpinner from './OverlaySpinner'
 import StyledText from './StyledText'
 import {
+  removeAnnotationValue,
   saveAnnotation,
   startNewClassification,
   saveThenStartNewClassification,
@@ -52,7 +49,7 @@ const mapStateToProps = (state, ownProps) => ({
   isFetching: state.isFetching,
   workflow: state.classifier.workflow[ownProps.workflowID] || {},
   classification: state.classifier.classification[ownProps.workflowID] || {},
-  annotations: state.classifier.annotations[ownProps.workflowID] || [],
+  annotations: state.classifier.annotations[ownProps.workflowID] || {},
   tutorial: state.classifier.tutorial[ownProps.workflowID] || {},
   guide: state.classifier.guide[ownProps.workflowID] || {},
   subject: state.classifier.subject[ownProps.workflowID] || {},
@@ -65,7 +62,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(startNewClassification(workflowID))
   },
   saveAnnotation(task, value) {
-    console.log('Annotation To be Saved in Redux: ', task, value)
     dispatch(saveAnnotation(task, value))
   },
   saveThenStartNewClassification(answerIndex) {
@@ -76,6 +72,9 @@ const mapDispatchToProps = (dispatch) => ({
   },
   setTutorialCompleted() {
     dispatch(setTutorialCompleted())
+  },
+  removeAnnotationValue(task, value) {
+    dispatch(removeAnnotationValue(task, value))
   },
 })
 
@@ -116,8 +115,12 @@ class Classify extends React.Component {
   }
 
   onUnlinkedTaskAnswered = (task, value) => {
-    console.log('Unlinked Task Answered!!', task, value)
-    this.props.saveAnnotation(task, value)
+    const taskAnnotations = this.props.annotations[task] || []
+    if (contains(value, taskAnnotations)) {
+      this.props.removeAnnotationValue(task, value)
+    } else {
+      this.props.saveAnnotation(task, uniq(append(value, taskAnnotations)))
+    }
   }
 
   render() {
@@ -159,7 +162,6 @@ class Classify extends React.Component {
         { this.props.isFetching || isEmpty(this.props.classification) ? <OverlaySpinner /> : classifierOrTutorial }
       </View>
 
-
     return (
       <View style={styles.container} onLayout={this.onLayout}>
         { this.props.needsTutorial ? tutorial : classificationPanel}
@@ -170,14 +172,14 @@ class Classify extends React.Component {
 }
 
 const styles = EStyleSheet.create({
-  $tabHeight: 40,
-  $panelMargin: 15,
+  $tabHeight: 32,
+  $panelMargin: 13,
   container: {
     backgroundColor: '$beckyGray',
     flex: 1,
     marginTop: 60,
     paddingTop: topPadding,
-    paddingBottom: 10,
+    paddingBottom: 3,
   },
   panelContainer: {
     flex: 1,
@@ -206,15 +208,19 @@ Classify.propTypes = {
   isFetching: React.PropTypes.bool,
   workflowID: React.PropTypes.string,
   classification: React.PropTypes.object,
+  annotations: React.PropTypes.object,
+  seenThisSession: React.PropTypes.array,
   workflow: React.PropTypes.object,
   guide: React.PropTypes.object,
   tutorial: React.PropTypes.object,
+  needsTutorial: React.PropTypes.bool,
   subject: React.PropTypes.object,
   startNewClassification: React.PropTypes.func,
   saveThenStartNewClassification: React.PropTypes.func,
   setImageSizes: React.PropTypes.func,
-  needsTutorial: React.PropTypes.bool,
   setTutorialCompleted: React.PropTypes.func,
+  saveAnnotation: React.PropTypes.func,
+  removeAnnotationValue: React.PropTypes.func,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Classify)

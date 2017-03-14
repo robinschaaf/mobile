@@ -23,7 +23,6 @@ class SizedImage extends React.Component {
     const imageDisplayWidth = this.props.maxWidth ? this.props.maxWidth : deviceWidth
     const imageDisplayHeight = this.props.maxHeight ? this.props.maxHeight : deviceHeight
 
-    console.log('ABOUT TO GET SIZE FOR ', this.props.source)
     Image.getSize(this.props.source.uri, (width, height) => {
       const aspectRatio = Math.min(imageDisplayWidth / width, imageDisplayHeight / height)
       const resizedHeight = height * aspectRatio
@@ -50,7 +49,6 @@ class SizedImage extends React.Component {
   }
 
   imageLoadEnd() {
-    console.log('IMAGE LOADED!!')
     this.setState({ loading: false })
     Animated.timing(
       this.state.fadeAnim,
@@ -66,7 +64,7 @@ class SizedImage extends React.Component {
       <Animated.Image
         source={ this.props.source }
         defaultSource={require('../../images/teal-wallpaper.png')}
-        style={{width: this.state.widthAnim, height: this.state.heightAnim, opacity: this.state.fadeAnim}}
+        style={ [this.props.additionalStyles, {width: this.state.widthAnim, height: this.state.heightAnim, opacity: this.state.fadeAnim}] }
         onLoadEnd={ ()=>{ this.imageLoadEnd() } }
       />
     )
@@ -77,6 +75,7 @@ SizedImage.propTypes = {
   source: React.PropTypes.object,
   maxWidth: React.PropTypes.number,
   maxHeight: React.PropTypes.number,
+  additionalStyles: React.PropTypes.array
 }
 
 export default SizedImage

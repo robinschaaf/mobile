@@ -9,37 +9,69 @@ module.exports = `<!DOCTYPE html>
         <meta name="format-detection" content="address=no">
         <meta name="format-detection" content="email=no">
 
-        <title>$title</title>
+        <title></title>
 
 
         <style type="text/css">
-            body, html, #height-calculator {
+            body, html, #height-wrapper {
                 margin: 0;
                 padding: 0;
             }
-            #height-calculator {
+            #height-wrapper {
                 position: absolute;
                 top: 0;
                 left: 0;
                 right: 0;
             }
-
-
             body {
-                font-family: Roboto, '-apple-system', Helvetica Neue, Arial;
+                font-family: "Open Sans", "Gill Sans", Arial, sans-serif;
             }
             b, strong {
-                font-family: Roboto, '-apple-system', Helvetica Neue, Arial;
+                font-family: "Open Sans", "Gill Sans", Arial, sans-serif;
                 font-weight: bold;
             }
             h1, h2, h3, h4, h5, h6 {
-                font-family: Roboto, '-apple-system', Helvetica Neue, Arial;
-                font-weight: bold;
+                margin-top: 10px;
+                font-family: "Open Sans", "Gill Sans", Arial, sans-serif;
+                font-weight: 500;
             }
-            $pureCSS
+            img {
+              height: auto;
+              width: auto;
+              max-width: 300px;
+              max-height: 300px;
+            }
+            p {
+              margin: 0;
+            }
+            $extraCSS
         </style>
     </head>
     <body>
         $body
+
+    <script>
+
+    ;(function() {
+    var wrapper = document.createElement("div");
+    wrapper.id = "height-wrapper";
+    while (document.body.firstChild) {
+        wrapper.appendChild(document.body.firstChild);
+    }
+    document.body.appendChild(wrapper);
+    var i = 0;
+    function updateHeight() {
+        document.title = wrapper.clientHeight;
+        window.location.hash = ++i;
+    }
+    updateHeight();
+    window.addEventListener("load", function() {
+        updateHeight();
+        setTimeout(updateHeight, 1000);
+    });
+    window.addEventListener("resize", updateHeight);
+    }());
+
+    </script>
     </body>
 </html>`

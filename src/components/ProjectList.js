@@ -95,7 +95,8 @@ ProjectList.propTypes = {
   projectList: React.PropTypes.object,
   selectedProjectTag: React.PropTypes.string,
   color: React.PropTypes.string,
-  promptForWorkflow: React.PropTypes.bool
+  promptForWorkflow: React.PropTypes.bool,
+  projectWorkflows: React.PropTypes.object,
 }
 
 export default connect(mapStateToProps)(ProjectList)

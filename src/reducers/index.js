@@ -1,4 +1,4 @@
-import { append, merge, lensPath, set, view } from 'ramda'
+import { append, equals, merge, lensPath, reject, set, view } from 'ramda'
 
 export const InitialState = {
   user: {},
@@ -39,10 +39,15 @@ export default function(state=InitialState, action) {
     case 'ADD_STATE':
       return set(lensPath(action.stateKey.split('.')),
         append(
-          action.value,
-          view(lensPath(action.stateKey.split('.')),
+          action.value, view(lensPath(action.stateKey.split('.')),
           state)
-        ),state)
+        ), state)
+    case 'REMOVE_STATE':
+      return set(lensPath(action.stateKey.split('.')),
+        reject(
+          equals(action.value), view(lensPath(action.stateKey.split('.')),
+          state)
+        ), state)
     case 'SET_USER':
       return merge(state, {
         user: action.user

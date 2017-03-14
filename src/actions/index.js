@@ -1,5 +1,6 @@
 export const SET_STATE = 'SET_STATE'
 export const ADD_STATE = 'ADD_STATE'
+export const REMOVE_STATE = 'REMOVE_STATE'
 export const SET_USER = 'SET_USER'
 export const SET_ERROR = 'SET_ERROR'
 export const SET_IS_FETCHING = 'SET_IS_FETCHING'
@@ -27,12 +28,15 @@ export function addState(stateKey, value) {
   return { type: ADD_STATE, stateKey, value }
 }
 
+export function removeState(stateKey, value) {
+  return { type: REMOVE_STATE, stateKey, value }
+}
+
 export function setUser(user) {
   return { type: SET_USER, user }
 }
 
 export function setIsFetching(isFetching) {
-  console.log('SETTING IS FETCHING', isFetching)
   return { type: SET_IS_FETCHING, isFetching }
 }
 
@@ -196,7 +200,6 @@ export function fetchProjectWorkflows(projectID) {
       apiClient.type('projects').get({id: projectID}).then((projects) => {
         const project = head(projects)
         project.get('workflows', {page_size: 100, active: true, fields: 'display_name'}).then((workflows) => {
-          //console.log('workflows!', workflows)
           dispatch(setState(`projectWorkflows.${projectID}`, workflows))
           return resolve()
         }).catch((error) => {

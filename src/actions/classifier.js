@@ -1,7 +1,7 @@
 import apiClient from 'panoptes-client/lib/api-client'
-import { Image } from 'react-native'
-import { isEmpty, forEach, head, isNil, length, map, remove, toPairs } from 'ramda'
-import { addState, setState, setIsFetching } from '../actions/index'
+import { Image, Platform } from 'react-native'
+import { isEmpty, forEach, head, length, map, remove, toPairs } from 'ramda'
+import { addState, removeState, setState, setIsFetching } from '../actions/index'
 import { getAuthUser } from '../actions/auth'
 import getSubjectLocation from '../utils/get-subject-location'
 
@@ -24,13 +24,10 @@ export function startNewClassification(workflowID) {
       }
       return dispatch(fetchFieldGuide())
     }).then(() => {
-      console.log('>>>>loading subjects')
       return dispatch(loadSubjects())
     }).then(() => {
-      console.log('>>>>getting current subject')
       return dispatch(getCurrentSubject())
     }).then(() => {
-      console.log('>>>>creating current classification')
       //now we can create the classification!!
       let subject = getState().classifier.subject[workflowID]
       let workflow = getState().classifier.workflow[workflowID]
@@ -39,7 +36,7 @@ export function startNewClassification(workflowID) {
         metadata: {
           workflow_version: workflow.version,
           started_at: (new Date).toISOString(),
-          user_agent: 'iOS',
+          user_agent: `${Platform.OS} Mobile App`,
           user_language: 'en',
           utc_offset: ((new Date).getTimezoneOffset() * 60).toString(),
           subject_dimensions: []
@@ -58,15 +55,13 @@ export function startNewClassification(workflowID) {
 }
 
 export function fetchWorkflow(workflowID) {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     return new Promise ((resolve, reject) => {
       //apiClient.type('projects').get(projectID).then((project) => {
       //  project.get('workflows',  {active: true, page_size: 100}).then((workflows) => {
 
       //    const isFriendly = (workflow) => {
       //      const firstTask = workflow.tasks[workflow.first_task]
-      //      console.log('answers count', length(firstTask.answers))
-      //      console.log('tasks length', length(keys(workflow.tasks)))
 
       //      const isTaskOfTypeSingle = () => firstTask.type === 'single'
       //      const hasTwoAnswers = () => equals(length(firstTask.answers), 2)
@@ -77,8 +72,6 @@ export function fetchWorkflow(workflowID) {
       //      }
       //    }
       //    const friendlyWorkflows = filter(isFriendly, workflows)
-      //    console.log('workflowcount', length(workflows))
-      //    console.log('friendlyworkflowcount', length(friendlyWorkflows))
       //  })
       //})
 
@@ -99,7 +92,6 @@ export function loadSubjects() {
       const upcomingSubjects = getState().classifier.upcomingSubjects[workflowID] || []
       let retrieveSubjects = Promise.resolve()
 
-      console.log('IN LOADING SUBJECTS:  Current length! ', length(upcomingSubjects))
       if (length(upcomingSubjects) <= 1){
         retrieveSubjects = dispatch(fetchUpcomingSubjects(workflowID))
       }
@@ -141,9 +133,7 @@ export function getCurrentSubject() {
 export function setImageSizes(subject) {
   return (dispatch, getState) => {
     return new Promise ((resolve) => {
-      console.log('fetching image sizes for subject: ', subject.display.src)
       let workflowID = getState().classifier.currentWorkflowID
-      var start = Date.now();
       Image.getSize(subject.display.src, (width, height) => {
         const subjectDisplayWidth = getState().device.subjectDisplayWidth
         const subjectDisplayHeight = getState().device.subjectDisplayHeight
@@ -156,9 +146,6 @@ export function setImageSizes(subject) {
           resizedHeight: height * aspectRatio
         }
 
-        var end = Date.now();
-        var elapsed = end - start;
-        console.log('Calculated time to load image Info', elapsed)
         dispatch(setState(`classifier.subject.${workflowID}.sizes`, subjectSizes))
         return resolve()
       }, (error) => {
@@ -172,7 +159,6 @@ export function setImageSizes(subject) {
 }
 
 export function fetchUpcomingSubjects(workflowID) {
-  console.log('FETCHING NEW UPCOMING SUBJECTS!!')
   return dispatch => {
     return new Promise ((resolve, reject) => {
       apiClient.type('subjects').get({workflow_id: workflowID, sort: 'queued'}).then((subjects) => {
@@ -190,19 +176,14 @@ export function fetchUpcomingSubjects(workflowID) {
 export function saveAnnotation(task, value) {
   return (dispatch, getState) => {
     const workflowID = getState().classifier.currentWorkflowID
-    let currentAnswer = null;
-    if (getState().classifier.annotations[workflowID] !== undefined) {
-      currentAnswer = getState().classifier.annotations[workflowID][task]
-    }
-    console.log('Current Answer', currentAnswer)
-    if (currentAnswer !== value) {
-      console.log('Answered new value')
-      dispatch(setState(`classifier.annotations.${workflowID}.${task}`, value))
-    } else {
-      console.log('Did NOT answer new value')
-      dispatch(setState(`classifier.annotations.${workflowID}.${task}`, null))
-    }
+    dispatch(setState(`classifier.annotations.${workflowID}.${task}`, value))
+  }
+}
 
+export function removeAnnotationValue(task, value) {
+  return (dispatch, getState) => {
+    const workflowID = getState().classifier.currentWorkflowID
+    dispatch(removeState(`classifier.annotations.${workflowID}.${task}`, value))
   }
 }
 
@@ -254,7 +235,6 @@ export function fetchTutorials(workflowID) {
   return dispatch => {
     return new Promise ((resolve) => {
       apiClient.type('tutorials').get({workflow_id: workflowID}).then((tutorials) => {
-        console.log('tutorial', head(tutorials).display_name)
         const tutorialResource = head(tutorials)
         dispatch(setState(`classifier.tutorial.${workflowID}`, tutorialResource))
         if (!isEmpty(tutorials)) {
@@ -290,7 +270,6 @@ export function fetchFieldGuide() {
           guideResource.get('attached_images').then((images) => {
             forEach((image) => icons[image.id] = image, images)
             dispatch(setState(`classifier.guide.${workflowID}.icons`, icons))
-            console.log('FINISHED GETTING ICONS FOR FIELD GUIDE')
             return resolve()
           }).catch(() => {
             return resolve()
@@ -363,16 +342,6 @@ export function setTutorialCompleted() {
         }).save()
       })
     })
-
-
-
-
-
-
-    console.log('Marking tutorial as completed!!', getState().classifier.needsTutorial[workflowID])
-
-
-
   }
 
 }

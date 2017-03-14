@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import {
   Animated,
+  Dimensions,
   Image,
   PanResponder,
-  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View
@@ -14,10 +14,9 @@ import StyledMarkdown from './StyledMarkdown'
 import FullScreenImage from './FullScreenImage'
 import UnlinkedTask from './UnlinkedTask'
 import TaskHelp from './TaskHelp'
-import { addIndex, map, indexOf, reverse } from 'ramda'
-import clamp from 'clamp'
+import { addIndex, clamp, map, indexOf, reverse } from 'ramda'
 
-const SWIPE_THRESHOLD = 120
+const SWIPE_THRESHOLD = 140
 const leftOverlayColor = '#E45950'
 const rightOverlayColor = '#00979D'
 
@@ -28,11 +27,12 @@ class Classifier extends Component {
       pan: new Animated.ValueXY(),
       enterAnim: new Animated.Value(0.9),
       showFullSize: false,
+      questionContainerHeight: 0,
     }
   }
 
-  isSwipeGesture({ moveX, moveY, dx, dy}) {
-    return dx > 5 || dx < -5
+  isSwipeGesture(gestureState) {
+    return gestureState.dx > 5 || gestureState.dx < -5
   }
 
   componentWillMount() {
@@ -51,10 +51,10 @@ class Classifier extends Component {
 
       onPanResponderRelease: (e, {vx, vy}) => {
         this.state.pan.flattenOffset();
-        var velocity;
+        let velocity
 
         if (vx >= 0) {
-          velocity = clamp(vx, 3, 5);
+          velocity = clamp(vx, 3, 5)
         } else if (vx < 0) {
           velocity = clamp(vx * -1, 3, 5) * -1
         }
@@ -89,24 +89,25 @@ class Classifier extends Component {
   }
 
   onAnswered = (answer) => {
-    console.log('This answer: ', answer)
     this.props.onAnswered(this.props.workflow.first_task, answer)
   }
-
 
   displayFull() {
     this.setState({ showFullSize: true })
   }
 
-  render() {
+  onQuestionResize(newHeight) {
+    this.setState({ questionContainerHeight: newHeight })
+  }
 
+  render() {
     const allowPanAndZoom = this.props.workflow.configuration.pan_and_zoom
     const alreadySeenThisSession = indexOf(this.props.subject.id, this.props.seenThisSession) >= 0
     const alreadySeen = this.props.subject.already_seen || alreadySeenThisSession
 
-
-    const key = this.props.workflow.first_task
+    const key = this.props.workflow.first_task //always just one task
     const task = this.props.workflow.tasks[key]
+
     const unlinkedTask = task.unlinkedTask
       ? <UnlinkedTask
           unlinkedTaskKey={ task.unlinkedTask }
@@ -115,8 +116,6 @@ class Classifier extends Component {
           onAnswered={ this.props.onUnlinkedTaskAnswered }/>
       : null
 
-    const helpText = task.help
-    const question = task.question
     const answers = reverse(task.answers)
 
     const imageSizeStyle = { width: this.props.subject.sizes.resizedWidth, height: this.props.subject.sizes.resizedHeight }
@@ -133,10 +132,10 @@ class Classifier extends Component {
     let scale = enterAnim;
 
     let animatedCardStyles = {transform: [{translateX}, {translateY}, {rotate}, {scale}]}
-    let leftOverlayStyle = {backgroundColor: leftOverlayColor, opacity: opacityLeft};
-    let rightOverlayStyle = {backgroundColor: rightOverlayColor, opacity: opacityRight};
-    let leftOverlayTextStyle = {opacity: opacityLeftText};
-    let rightOverlayTextStyle = {opacity: opacityRightText};
+    let leftOverlayStyle = {backgroundColor: leftOverlayColor, opacity: opacityLeft}
+    let rightOverlayStyle = {backgroundColor: rightOverlayColor, opacity: opacityRight}
+    let leftOverlayTextStyle = {opacity: opacityLeftText}
+    let rightOverlayTextStyle = {opacity: opacityRightText}
 
     const alreadySeenBanner =
       <View style={styles.alreadySeen}>
@@ -173,14 +172,18 @@ class Classifier extends Component {
         ) }
       </View>
 
-
     return (
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        <View style={styles.questionContainer}>
+      <View style={styles.container}>
+        <View style={[styles.questionContainer, { height: this.state.questionContainerHeight }]}>
           <View style={styles.question}>
-            <StyledMarkdown markdown={question} />
+            <StyledMarkdown
+              extraCSS={ 'p {font-size: 14px; font-weight: 500; margin: 5px 0 0;}' }
+              markdown={task.question}
+              width={Dimensions.get('window').width - 100}
+              onResize={ (newHeight) => this.setState({ questionContainerHeight: newHeight }) }
+            />
           </View>
-          { helpText ? <TaskHelp text={helpText} /> : null }
+          { task.help ? <TaskHelp text={task.help} /> : null }
         </View>
 
         <Animated.View
@@ -209,7 +212,7 @@ class Classifier extends Component {
           isVisible={this.state.showFullSize}
           allowPanAndZoom={allowPanAndZoom}
           handlePress={() => this.setState({ showFullSize: false })} />
-      </ScrollView>
+      </View>
     )
   }
 }
@@ -222,17 +225,16 @@ const styles = EStyleSheet.create({
     flex: 1,
     paddingVertical: 10,
     paddingHorizontal: 20,
-  },
-  contentContainer: {
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
   questionContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
   },
   question: {
+    flex: 1,
     width: '100% - $helpIconAndPadding',
   },
   alreadySeen: {
@@ -282,8 +284,8 @@ const styles = EStyleSheet.create({
     borderColor: '$beckyDisabledIconColor',
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 26,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center'
@@ -318,6 +320,9 @@ Classifier.propTypes = {
   subject: React.PropTypes.object,
   workflow: React.PropTypes.object,
   onAnswered: React.PropTypes.func,
+  onUnlinkedTaskAnswered: React.PropTypes.func,
+  seenThisSession: React.PropTypes.array,
+  annotations: React.PropTypes.object,
 }
 
 export default Classifier

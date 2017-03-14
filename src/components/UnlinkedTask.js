@@ -6,23 +6,27 @@ import {
 } from 'react-native'
 import EStyleSheet from 'react-native-extended-stylesheet'
 import StyledText from './StyledText'
-import { addIndex, map } from 'ramda'
+import { addIndex, contains, map } from 'ramda'
 import theme from '../theme'
 
 const UnlinkedTask = (props) => {
+  const annotationValues = props.annotation || []
+
   const renderUnlinkedTask = ( answer, idx ) => {
     return (
       <View key={ idx } style={styles.rowContainer}>
         <Switch
-          value={idx === props.annotation}
+          value={contains(idx, annotationValues)}
           style={styles.switchComponent}
           onTintColor={theme.headerColor}
           onValueChange={()=>props.onAnswered(props.unlinkedTaskKey, idx)}
         />
+
         <TouchableOpacity
+          style={styles.answerContainer}
           onPress={ ()=>props.onAnswered(props.unlinkedTaskKey, idx) }
           activeOpacity={0.5}>
-          <StyledText additionalStyles={[styles.buttonText]} text={ answer.label } />
+          <StyledText additionalStyles={[styles.answer]} text={ answer.label } />
         </TouchableOpacity>
       </View>
     )
@@ -42,7 +46,7 @@ const UnlinkedTask = (props) => {
 
 const styles = EStyleSheet.create({
   container: {
-    alignSelf: 'center',
+    alignSelf: 'flex-start',
   },
   rowContainer: {
     flexDirection: 'row',
@@ -51,13 +55,21 @@ const styles = EStyleSheet.create({
   },
   switchComponent: {
     margin: 3
+  },
+  answerContainer: {
+  },
+  answer: {
+    alignSelf: 'center',
+    flexWrap: 'wrap',
+    textAlign: 'center',
+    fontSize: 13,
   }
 });
 
 UnlinkedTask.propTypes = {
   unlinkedTask: React.PropTypes.object.isRequired,
   onAnswered: React.PropTypes.func.isRequired,
-  annotation: React.PropTypes.number,
+  annotation: React.PropTypes.array,
   unlinkedTaskKey: React.PropTypes.string.isRequired,
 }
 

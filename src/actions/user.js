@@ -54,7 +54,6 @@ export function loadUserData() {
       }
     }).then(() => {
       dispatch(syncUserStore())
-      console.log('>>>>loadUserData fetch done<<<<')
     }).catch(() => {
       Actions.Onboarding()
     })
@@ -62,7 +61,6 @@ export function loadUserData() {
 }
 
 export function loadUserAvatar() {
-  console.log('loadUserAvatar')
   return (dispatch) => {
     return new Promise ((resolve) => {
       dispatch(getAuthUser()).then((userResource) => {
@@ -79,7 +77,6 @@ export function loadUserAvatar() {
 }
 
 export function loadUserProjects() {
-  console.log('loadUserProjects')
   return (dispatch) => {
     dispatch(setState('loadingText', 'Loading Projects...'))
     return new Promise ((resolve, reject) => {

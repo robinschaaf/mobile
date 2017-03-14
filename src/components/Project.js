@@ -63,7 +63,6 @@ class Project extends Component {
 
     const hasSingleMobileWorkflow = length(this.props.mobileWorkflows) === 1
     const hasMixedWorkflows = length(this.props.mobileWorkflows) > 0 && length(this.props.nonMobileWorkflows) > 0
-    //this.setState({ popupVisibility: false })
 
     if ((hasMixedWorkflows && this.props.promptForWorkflow)) {
       this.setState({showWorkflowPrompt: true})
@@ -98,7 +97,6 @@ class Project extends Component {
   }
 
   openMobileProject(workflowID) {
-    console.log('Setting selected workflow!! to workflowID:  ', workflowID)
     Actions.Classify({ workflowID: workflowID })
   }
 
@@ -107,13 +105,10 @@ class Project extends Component {
     const {x, y, width, height} = event.nativeEvent.layout
     const newHeight = height + DEFAULT_BOX_HEIGHT
     this.setState({ boxHeight: newHeight, workflowSelectionHeight: height })
-    console.log('new height', newHeight)
     this.animateHeight(newHeight)
   }
 
   render() {
-    //console.log('this.state.showWorkflowPrompt', this.state.showWorkflowPrompt)
-    //console.log('length of swipe workflows', length(this.props.mobileWorkflows))
     const projectID = this.props.project.id
     const swipeProject = find(propEq('projectID', projectID), SWIPE_WORKFLOWS)
 
@@ -313,8 +308,8 @@ const styles = EStyleSheet.create({
     backgroundColor: 'transparent',
     color: 'white',
     fontSize: 24,
-    lineHeight: 28,
-    paddingLeft: 4
+    lineHeight: 26,
+    marginLeft: 2
   },
   mobileIcon: {
     height: 52,
