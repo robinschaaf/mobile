@@ -13,8 +13,9 @@ import StyledText from './StyledText'
 import StyledMarkdown from './StyledMarkdown'
 import FullScreenImage from './FullScreenImage'
 import UnlinkedTask from './UnlinkedTask'
+import Subject from './Subject'
 import TaskHelp from './TaskHelp'
-import { addIndex, clamp, map, indexOf, reverse } from 'ramda'
+import { addIndex, clamp, map, reverse } from 'ramda'
 
 const SWIPE_THRESHOLD = 140
 const leftOverlayColor = '#E45950'
@@ -102,8 +103,6 @@ class Classifier extends Component {
 
   render() {
     const allowPanAndZoom = this.props.workflow.configuration.pan_and_zoom
-    const alreadySeenThisSession = indexOf(this.props.subject.id, this.props.seenThisSession) >= 0
-    const alreadySeen = this.props.subject.already_seen || alreadySeenThisSession
 
     const key = this.props.workflow.first_task //always just one task
     const task = this.props.workflow.tasks[key]
@@ -136,11 +135,6 @@ class Classifier extends Component {
     let rightOverlayStyle = {backgroundColor: rightOverlayColor, opacity: opacityRight}
     let leftOverlayTextStyle = {opacity: opacityLeftText}
     let rightOverlayTextStyle = {opacity: opacityRightText}
-
-    const alreadySeenBanner =
-      <View style={styles.alreadySeen}>
-        <StyledText additionalStyles={[styles.alreadySeenText]} text={ 'ALREADY SEEN!' } />
-      </View>
 
     const swipeLeftIcon =
         <Image source={require('../../images/swipe-left.png')} style={styles.swipeIcon} />
@@ -191,7 +185,7 @@ class Classifier extends Component {
           {...this._panResponder.panHandlers}>
 
           <TouchableOpacity onPress={() => this.setState({ showFullSize: true })}>
-            <Image source={{uri: this.props.subject.display.src}} style={[styles.image, imageSizeStyle]} />
+            <Subject subject={this.props.subject} seenThisSession={this.props.seenThisSession}/>
 
             <Animated.View style={[styles.overlayContainer, leftOverlayStyle, imageSizeStyle]} />
             <Animated.View style={[styles.overlayContainer, leftOverlayTextStyle, imageSizeStyle]}>
@@ -203,7 +197,6 @@ class Classifier extends Component {
               <StyledText additionalStyles={[styles.answerOverlayText]} text={ answers[1].label } />
             </Animated.View>
           </TouchableOpacity>
-          { alreadySeen ? alreadySeenBanner : null }
         </Animated.View>
         { unlinkedTask }
         { answersContainer }
@@ -237,21 +230,6 @@ const styles = EStyleSheet.create({
     flex: 1,
     width: '100% - $helpIconAndPadding',
   },
-  alreadySeen: {
-    elevation: 2,
-    position: 'absolute',
-    top: 16,
-    right: 0,
-    backgroundColor: '$darkOrange',
-    paddingVertical: 2,
-    paddingHorizontal: 5,
-    transform: [{ rotate: '20deg'}]
-  },
-  alreadySeenText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold'
-  },
   imageContainer: {
     elevation: 1,
     backgroundColor: 'white',
@@ -267,10 +245,6 @@ const styles = EStyleSheet.create({
       height: 1,
       width: 2,
     },
-  },
-  image: {
-    alignSelf: 'center',
-    borderRadius: 2
   },
   answerContainer: {
     width: '100% - $paddingToInner',
