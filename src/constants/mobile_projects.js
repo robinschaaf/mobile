@@ -5,6 +5,6 @@ export const SWIPE_WORKFLOWS = [
   { projectID: '3321', workflowID: '3437' },
   { projectID: '2501', workflowID: '3577' },
   { projectID: '3219', workflowID: '2627' },
-  { projectID: '14', workflowID: '427' },
+  { projectID: '14', workflowID: '433' },
   { projectID: '1558', workflowID: '3335' },
 ]

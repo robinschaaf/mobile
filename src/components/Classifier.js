@@ -13,11 +13,12 @@ import StyledText from './StyledText'
 import StyledMarkdown from './StyledMarkdown'
 import FullScreenImage from './FullScreenImage'
 import UnlinkedTask from './UnlinkedTask'
+import SwipeTabs from './SwipeTabs'
 import Subject from './Subject'
 import TaskHelp from './TaskHelp'
 import { addIndex, clamp, map, reverse } from 'ramda'
 
-const SWIPE_THRESHOLD = 140
+const SWIPE_THRESHOLD = 120
 const leftOverlayColor = '#E45950'
 const rightOverlayColor = '#00979D'
 
@@ -55,9 +56,9 @@ class Classifier extends Component {
         let velocity
 
         if (vx >= 0) {
-          velocity = clamp(vx, 3, 5)
+          velocity = clamp(3, 5, vx)
         } else if (vx < 0) {
-          velocity = clamp(vx * -1, 3, 5) * -1
+          velocity = clamp(3, 5, vx * -1) * -1
         }
 
         if (Math.abs(this.state.pan.x._value) > SWIPE_THRESHOLD) {
@@ -136,36 +137,6 @@ class Classifier extends Component {
     let leftOverlayTextStyle = {opacity: opacityLeftText}
     let rightOverlayTextStyle = {opacity: opacityRightText}
 
-    const swipeLeftIcon =
-        <Image source={require('../../images/swipe-left.png')} style={styles.swipeIcon} />
-
-    const swipeRightIcon =
-        <Image source={require('../../images/swipe-right.png')} style={styles.swipeIcon} />
-
-    const renderAnswer = (answer, idx) => {
-      const side = (idx === 0 ? 'left' : 'right')
-      return (
-        <TouchableOpacity
-          key={idx}
-          onPress={ this.onAnswered.bind(this, idx) }
-          activeOpacity={0.5}
-          style={styles.button}>
-          { side === 'left' ? swipeLeftIcon: swipeRightIcon }
-          <StyledText additionalStyles={[styles.buttonText]} text={ answer.label } />
-        </TouchableOpacity>
-      )
-    }
-
-    const answersContainer =
-      <View style={styles.answerContainer}>
-        { addIndex(map)(
-          (answer, idx) => {
-            return renderAnswer(answer, idx)
-          },
-          answers
-        ) }
-      </View>
-
     return (
       <View style={styles.container}>
         <View style={[styles.questionContainer, { height: this.state.questionContainerHeight }]}>
@@ -199,7 +170,11 @@ class Classifier extends Component {
           </TouchableOpacity>
         </Animated.View>
         { unlinkedTask }
-        { answersContainer }
+        <SwipeTabs
+          guide={this.props.guide}
+          answers={answers}
+          onAnswered={this.onAnswered}
+          />
         <FullScreenImage
           source={{uri: this.props.subject.display.src}}
           isVisible={this.state.showFullSize}

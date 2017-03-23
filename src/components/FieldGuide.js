@@ -27,7 +27,6 @@ export class FieldGuide extends Component {
     super(props)
 
     this.state = {
-      isVisible: false,
       selectedItem: {},
       heightAnim: new Animated.Value(0),
       height: 0,
@@ -78,9 +77,13 @@ export class FieldGuide extends Component {
     })
   }
 
+  componentWillReceiveProps(nextProps){
+    if (nextProps.isVisible === true){
+      this.open()
+    }
+  }
 
   open() {
-    this.setState({isVisible: true})
     this.state.heightAnim.setValue(0)
     this.animateHeight(150)
   }
@@ -88,7 +91,8 @@ export class FieldGuide extends Component {
   close() {
     this.animateHeight(0, 200)
     setTimeout(()=> {
-      this.setState({isVisible: false, selectedItem: {}, markdownHeight: 0})
+      this.setState({selectedItem: {}, markdownHeight: 0})
+      this.props.onClose()
     }, 200)
 
   }
@@ -124,15 +128,13 @@ export class FieldGuide extends Component {
   render() {
     const { items, icons } = this.props.guide
     const fieldGuideButton =
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          onPress={() => this.open()}
-          activeOpacity={0.5}
-          style={ styles.button }>
-          <Icon name='map-o' style={styles.icon} />
-          <StyledText additionalStyles={[styles.text]} text={ 'FIELD GUIDE' } />
-        </TouchableOpacity>
-      </View>
+    <TouchableOpacity
+      onPress={() => this.open()}
+      activeOpacity={0.5}
+      style={ styles.button }>
+      <Icon name='map-o' style={styles.icon} />
+      <StyledText additionalStyles={[styles.buttonText]} text={ 'Field Guide' } />
+    </TouchableOpacity>
 
     const closeIcon =
       <Animated.View style={[styles.close, {paddingBottom: this.state.heightAnim}]}>
@@ -171,7 +173,7 @@ export class FieldGuide extends Component {
 
     const fieldGuide = () => {
       return (
-        <View>
+        <View style={styles.container}>
           <Animated.View style={[styles.guideContainer, {height: this.state.heightAnim}]}>
             <ScrollView>
               <View onLayout={(event) => { this.setHeight(event.nativeEvent.layout.height) }}>
@@ -206,7 +208,7 @@ export class FieldGuide extends Component {
     const itemDetail = () => {
       const item = this.state.selectedItem
       return (
-        <View>
+        <View style={styles.container}>
           <Animated.View style={[styles.guideContainer, {height: this.state.heightAnim}]}>
               <ScrollView style={styles.itemDetailContainer}>
                 <View onLayout={(event) => { this.setState({ markdownHeight: event.nativeEvent.layout.height + 70 }) }}>
@@ -240,11 +242,8 @@ export class FieldGuide extends Component {
 
     }
 
-    const itemDetailOrList = isEmpty(this.state.selectedItem) ? fieldGuide() : itemDetail()
     return (
-      <View style={styles.container}>
-        { this.state.isVisible ? itemDetailOrList : fieldGuideButton }
-      </View>
+      isEmpty(this.state.selectedItem) ? fieldGuide() : itemDetail()
     )
   }
 }
@@ -254,9 +253,10 @@ const styles = EStyleSheet.create({
   $bottomHeight: 40,
   $containerHeight: 150,
   icon: {
-    fontSize: 12,
-    color: 'white',
-    marginRight: 10,
+    fontSize: 16,
+    color: '$beckyDarkGray',
+    padding: 3,
+    marginRight: 5
   },
   text: {
     color: 'white',
@@ -382,12 +382,21 @@ const styles = EStyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   button: {
-    backgroundColor: '$buttonColor',
-    height: 32,
-    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderColor: '$beckyDisabledIconColor',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 5,
     paddingVertical: 8,
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 10,
+  },
+  buttonText: {
+    color: '$beckyDarkGray',
   },
   backButton: {
     alignSelf: 'flex-start',

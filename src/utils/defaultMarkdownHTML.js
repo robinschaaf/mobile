@@ -40,6 +40,7 @@ module.exports = `<!DOCTYPE html>
               width: auto;
               max-width: 300px;
               max-height: 300px;
+              margin-bottom: 10px;
             }
             p {
               margin: 0;

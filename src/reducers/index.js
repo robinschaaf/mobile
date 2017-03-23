@@ -14,11 +14,12 @@ export const InitialState = {
   notificationPayload: {},
   notifications: { general: true },
   settings: { promptForWorkflow: false },
+  session: {},
   pushEnabled: false,
   pushPrompted: false,
   classifier: {
     currentWorkflowID: 0,
-    currentProjectID: 0,
+    project: {},
     tutorial: {},
     guide: {},
     classification: {},

@@ -45,12 +45,17 @@ export function loadUserData() {
           dispatch(loadSettings())
         ])
       } else {
-        return Promise.all([
-          dispatch(loadUserAvatar()),
-          dispatch(loadUserProjects()),
-          dispatch(loadSettings()),
-          dispatch(loadNotificationSettings()),
-        ])
+        dispatch(getAuthUser()).then(() => {
+          return Promise.all([
+            dispatch(loadUserAvatar()),
+            dispatch(loadUserProjects()),
+            dispatch(loadSettings()),
+            dispatch(loadNotificationSettings()),
+          ])
+        }).catch(() => {
+          dispatch(setState('errorMessage', ''))
+          Actions.SignIn()
+        })
       }
     }).then(() => {
       dispatch(syncUserStore())
@@ -86,13 +91,13 @@ export function loadUserProjects() {
         }).then((preferenceCount) => {
           return userResourse.get('project_preferences', {page_size: preferenceCount, sort: '-updated_at'})
         }).then((projectPreferences) => {
-          const activePreferences = filterActivePreferences(projectPreferences)
-          const projectIDs = map((pref) => { return pref.links.project }, activePreferences)
-          const classifications = classificationCounts(activePreferences)
-          const sortOrders = orderProjects(activePreferences)
-          const completedTutorials = getCompletedTutorials(activePreferences)
+          const sortedPreferences = sortPreferences(projectPreferences)
+          const projectIDs = map((pref) => { return pref.links.project }, sortedPreferences)
+          const classifications = classificationCounts(sortedPreferences)
+          const sortOrders = orderProjects(sortedPreferences)
+          const completedTutorials = getCompletedTutorials(sortedPreferences)
 
-          return apiClient.type('projects').get({ id: projectIDs, page_size: activePreferences.length }).catch(() => {
+          return apiClient.type('projects').get({ id: projectIDs, page_size: sortedPreferences.length }).catch(() => {
             return null
           }).then((projects) => {
             map((project) => {
@@ -101,7 +106,7 @@ export function loadUserProjects() {
                   slug: project.slug,
                   activity_count: classifications[project.id],
                   sort_order: sortOrders[project.id],
-                  tutorials_completed_at: completedTutorials[project.id]
+                  tutorials_completed_at: completedTutorials[project.id] || {}
                 }
               ))
             }, projects)
@@ -128,12 +133,11 @@ export function calculateTotalClassifications() {
   }
 }
 
-function filterActivePreferences(projectPreferences){
-    const activePreferences = filter((pref) => { return pref.activity_count > 0 }, projectPreferences)
+function sortPreferences(projectPreferences){
     return addIndex(map)((preference, i) => {
       preference.sort_order = i
       return preference
-    }, activePreferences)
+    }, projectPreferences)
 }
 
 function getCompletedTutorials(projectPreferences){

@@ -29,6 +29,7 @@ export function setSession() {
       .catch(() => { //nothing here, generate a new session ID
         stored = generateSessionID()
         dispatch(storeSession(stored))
+        dispatch(setState('session', stored))
       })
   }
 }

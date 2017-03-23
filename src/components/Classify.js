@@ -48,6 +48,7 @@ const topPadding = (Platform.OS === 'ios') ? 10 : 0
 const mapStateToProps = (state, ownProps) => ({
   isFetching: state.isFetching,
   workflow: state.classifier.workflow[ownProps.workflowID] || {},
+  project: state.classifier.project[ownProps.workflowID] || {},
   classification: state.classifier.classification[ownProps.workflowID] || {},
   annotations: state.classifier.annotations[ownProps.workflowID] || {},
   tutorial: state.classifier.tutorial[ownProps.workflowID] || {},
@@ -132,10 +133,12 @@ class Classify extends React.Component {
         onAnswered={this.onAnswered}
         onUnlinkedTaskAnswered={this.onUnlinkedTaskAnswered}
         annotations={this.props.annotations}
+        guide={this.props.guide}
       />
 
     const tutorial =
       <Tutorial
+        projectName={this.props.project.display_name}
         isInitialTutorial={this.props.needsTutorial}
         tutorial={this.props.tutorial}
         finishTutorial={() => this.finishTutorial()} />
@@ -165,7 +168,6 @@ class Classify extends React.Component {
     return (
       <View style={styles.container} onLayout={this.onLayout}>
         { this.props.needsTutorial ? tutorial : classificationPanel}
-        { this.props.guide.icons !== undefined && !this.props.needsTutorial ? <FieldGuide guide={this.props.guide} /> : null }
       </View>
     )
   }
@@ -179,12 +181,13 @@ const styles = EStyleSheet.create({
     flex: 1,
     marginTop: 60,
     paddingTop: topPadding,
-    paddingBottom: 3,
+    paddingBottom: 0,
   },
   panelContainer: {
     flex: 1,
     backgroundColor: 'white',
     margin: '$panelMargin',
+    marginBottom: 0
   },
   tabContainer: {
     height: '$tabHeight',
@@ -210,6 +213,7 @@ Classify.propTypes = {
   classification: React.PropTypes.object,
   annotations: React.PropTypes.object,
   seenThisSession: React.PropTypes.array,
+  project: React.PropTypes.object,
   workflow: React.PropTypes.object,
   guide: React.PropTypes.object,
   tutorial: React.PropTypes.object,

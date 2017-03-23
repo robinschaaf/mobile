@@ -93,13 +93,13 @@ export class Tutorial extends Component {
 
     const tutorialHeader =
       <StyledText
-        text={'Project Tutorial'}
+        text={`${this.props.projectName} - Tutorial`}
         additionalStyles={[styles.tutorialHeader]}/>
 
     return (
       <View style={styles.container}>
+        { this.props.isInitialTutorial ? tutorialHeader : null}
         <ScrollView style={styles.content}>
-          { this.props.isInitialTutorial ? tutorialHeader : null}
           { mediaImage }
           <StyledMarkdown
             width={ Dimensions.get('window').width - 80 }
@@ -122,8 +122,9 @@ const styles = EStyleSheet.create({
   },
   content: {
     height: '100% - 300',
-    margin: 20,
-    marginBottom: 0
+    marginHorizontal: 15,
+    padding: 15,
+    backgroundColor: 'white'
   },
   footer: {
     height: 110,
@@ -172,12 +173,14 @@ const styles = EStyleSheet.create({
   },
   tutorialHeader: {
     fontSize: 20,
+    margin: 20,
     marginBottom: 10,
   }
 })
 
 Tutorial.propTypes = {
   tutorial: React.PropTypes.object,
+  projectName: React.PropTypes.string,
   finishTutorial: React.PropTypes.func,
   isInitialTutorial: React.PropTypes.bool,
 }

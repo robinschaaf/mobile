@@ -9,13 +9,18 @@ export function startNewClassification(workflowID) {
   return (dispatch, getState) => {
     dispatch(setIsFetching(true))
     dispatch(setState('classifier.currentWorkflowID', workflowID))
-    dispatch(getAuthUser()).then(() => {
-      return dispatch(fetchWorkflow(workflowID))
-    }).then(() => {
+    dispatch(fetchWorkflow(workflowID)).then(() => {
       if (getState().classifier.tutorial[workflowID] !== undefined) {
         return
       }
       return dispatch(fetchTutorials(workflowID))
+    }).then(() => {
+      if (getState().classifier.project[workflowID] !== undefined) {
+        return
+      }
+      return dispatch(fetchProject(workflowID))
+    }).then(() => {
+      return dispatch(setupProjectPreferences(workflowID))
     }).then(() => {
       return dispatch(setNeedsTutorial())
     }).then(() => {
@@ -82,6 +87,66 @@ export function fetchWorkflow(workflowID) {
         return reject()
       })
    })
+  }
+}
+
+
+export function fetchProject(workflowID) {
+  return (dispatch, getState) => {
+    const workflow = getState().classifier.workflow[workflowID]
+    const projectID = workflow.links.project
+    return new Promise ((resolve, reject) => {
+      apiClient.type('projects').get({id: projectID}).then((project) => {
+        dispatch(setState(`classifier.project.${workflowID}`, head(project)))
+        return resolve()
+      }).catch(() => {
+        return reject()
+      })
+   })
+  }
+}
+
+export function setupProjectPreferences(workflowID) {
+  return (dispatch, getState) => {
+    const workflow = getState().classifier.workflow[workflowID]
+    const projectID = workflow.links.project
+
+    return new Promise ((resolve, reject) => {
+
+      if (getState().user.isGuestUser){
+        return resolve()
+      }
+
+      dispatch(getAuthUser()).then((userResource) => {
+        userResource.get('project_preferences', {project_id: projectID}).then (([projectPreferences]) => {
+          if (!projectPreferences) {
+            const projectPreference = {
+              links: { project: projectID },
+              preferences: {}
+            }
+            apiClient.type('project_preferences').create(projectPreference).save().then((projectPreferenceResource) => {
+
+              projectPreferenceResource.get('project').then((project) => {
+                dispatch(setState(`user.projects.${projectID}`, {
+                    name: project.display_name,
+                    slug: project.slug,
+                    activity_count: 0,
+                    sort_order: '',
+                    tutorials_completed_at: {}
+                  }
+                ))
+                return resolve()
+              })
+            }).catch(() => {
+              return reject()
+            })
+          } else {
+            return resolve()
+          }
+        })
+      })
+
+    })
   }
 }
 
@@ -286,22 +351,22 @@ export function fetchFieldGuide() {
 
 export function setNeedsTutorial() {
   return (dispatch, getState) => {
-    const workflowID = getState().classifier.currentWorkflowID
-    const projectID = getState().classifier.workflow[workflowID].links.project
-    const tutorialID = getState().classifier.tutorial[workflowID].id
-    //const tutorialID = 9809879879
     return new Promise ((resolve) => {
-      if (!tutorialID) {
+      const workflowID = getState().classifier.currentWorkflowID
+      if (!getState().classifier.tutorial[workflowID]) {
         return resolve()
       }
 
-      if (getState().user.isGuestUser){
-        dispatch(setState(`classifier.needsTutorial.${workflowID}`, true))
-        return resolve()
-      } else {
-        dispatch(setState(`classifier.needsTutorial.${workflowID}`, !getState().user.projects[projectID]['tutorials_completed_at'][tutorialID]))
-        return resolve()
+      const projectID = getState().classifier.workflow[workflowID].links.project
+      const tutorialID = getState().classifier.tutorial[workflowID].id
+      let needsTutorial = getState().classifier.needsTutorial[workflowID] !== undefined ? getState().classifier.needsTutorial[workflowID] : true
+
+      if ((!getState().user.isGuestUser) && (getState().user.projects[projectID])) {
+        needsTutorial = !getState().user.projects[projectID]['tutorials_completed_at'][tutorialID]
       }
+
+      dispatch(setState(`classifier.needsTutorial.${workflowID}`, needsTutorial))
+      return resolve()
     })
   }
 }
@@ -320,26 +385,18 @@ export function setTutorialCompleted() {
 
     dispatch(getAuthUser()).then((userResourse) => {
       userResourse.get('project_preferences', {project_id: projectID}).then (([projectPreferences]) => {
-        if (!projectPreferences) {
-          const projectPreference = {
-            links: { project: projectID },
-            preferences: {}
-          }
-          projectPreferences = apiClient.type('project_preferences').create(projectPreference)
-        }
-        if (!projectPreferences.preferences) {
-          projectPreferences.preferences = {}
-        }
         if (!projectPreferences.preferences.tutorials_completed_at) {
           projectPreferences.preferences.tutorials_completed_at = {}
         }
+        const completed = {
+          [tutorialID]: now
+        }
         projectPreferences.update({
           preferences: {
-            tutorials_completed_at: {
-              [tutorialID]: now
-            }
+            tutorials_completed_at: completed
           }
         }).save()
+        dispatch(setState(`user.projects.${projectID}.tutorials_completed_at`, completed))
       })
     })
   }
