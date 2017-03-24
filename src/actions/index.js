@@ -270,6 +270,7 @@ export function syncInterestSubscriptions() {
     MOBILE_PROJECTS.reduce((promise, projectID) => {
       return promise.then(() => {
         var subscribed = getState().notifications[projectID]
+        console.log('dispatching...')
         return dispatch(updateInterestSubscription(projectID, subscribed))
       })
     }, Promise.resolve())
@@ -282,9 +283,9 @@ export function updateInterestSubscription(interest, subscribed) {
     return new Promise((resolve) => {
       NotificationSettings.setInterestSubscription(interest, subscribed).then((message) => {
         //Timeout needed or crashes ios.  Open issue: https://github.com/pusher/libPusher/issues/230
-        setTimeout(()=> {
+        //setTimeout(()=> {
           return resolve(message)
-        }, 500)
+        //}, 500)
       })
 
     })
