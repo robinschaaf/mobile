@@ -23,4 +23,7 @@ export default {
   lightestGrey: '#EFF3F6',
   darkGrey: '#5C5C5C',
   disabledIconColor: '#D5DCE4',
+  darkOrange: '#ff4500',
+  swipeLeft: '#E45950',
+  swipeRight: '#00979D',
 }
