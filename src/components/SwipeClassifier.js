@@ -98,12 +98,12 @@ export class SwipeClassifier extends React.Component {
           </View>
         </View>
 
-        const swipeableSubject =
-          <Swipeable
-            key={this.props.subject.id}
-            workflowID={this.props.workflowID}
-            showFullSize={() => this.setState({showFullSize: true})}
-          />
+      const swipeableSubject =
+        <Swipeable
+          key={this.props.subject.id}
+          workflowID={this.props.workflowID}
+          showFullSize={() => this.setState({showFullSize: true})}
+        />
 
       const tutorial =
         <Tutorial
