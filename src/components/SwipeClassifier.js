@@ -15,8 +15,13 @@ import OverlaySpinner from './OverlaySpinner'
 import NavBar from './NavBar'
 import FullScreenImage from './FullScreenImage'
 import { setState } from '../actions/index'
-import { startNewClassification, setTutorialCompleted } from '../actions/classifier'
-import { isEmpty } from 'ramda'
+import {
+  startNewClassification,
+  setTutorialCompleted,
+  saveAnnotation,
+  saveThenStartNewClassification
+} from '../actions/classifier'
+import { isEmpty, reverse } from 'ramda'
 
 const mapStateToProps = (state, ownProps) => ({
   isFetching: state.classifier.isFetching,
@@ -40,6 +45,12 @@ const mapDispatchToProps = (dispatch) => ({
   },
   setIsFetching(isFetching) {
     dispatch(setState('classifier.isFetching', isFetching))
+  },
+  saveAnnotation(task, value) {
+    dispatch(saveAnnotation(task, value))
+  },
+  saveThenStartNewClassification(answerIndex) {
+    dispatch(saveThenStartNewClassification(answerIndex))
   },
 })
 
@@ -67,6 +78,11 @@ export class SwipeClassifier extends React.Component {
     }
   }
 
+  onAnswered = (answer) => {
+    this.props.saveAnnotation(this.props.workflow.first_task, answer)
+    this.props.saveThenStartNewClassification()
+  }
+
   static renderNavigationBar() {
     return <NavBar title={'Classify'} showBack={true} />;
   }
@@ -75,6 +91,7 @@ export class SwipeClassifier extends React.Component {
     const renderClassifierOrTutorial = () => {
       const key = this.props.workflow.first_task //always just one task
       const task = this.props.workflow.tasks[key]
+      const answers = reverse(task.answers)  //Yes is listed first in project, but we need No listed first (on left)
       const allowPanAndZoom = this.props.workflow.configuration.pan_and_zoom
 
       const backSubject =
@@ -103,6 +120,15 @@ export class SwipeClassifier extends React.Component {
           key={this.props.subject.id}
           workflowID={this.props.workflowID}
           showFullSize={() => this.setState({showFullSize: true})}
+          onAnswered={this.onAnswered}
+          answers={answers}
+        />
+
+      const swipeTabs =
+        <SwipeTabs
+          guide={this.props.guide}
+          onAnswered={this.onAnswered}
+          answers={answers}
         />
 
       const tutorial =
@@ -125,12 +151,12 @@ export class SwipeClassifier extends React.Component {
             { this.state.isQuestionVisible ? classification : tutorial }
           </ClassificationPanel>
           { this.state.isQuestionVisible ? swipeableSubject : null }
-          { this.state.isQuestionVisible ? <SwipeTabs guide={this.props.guide} /> : null }
           <FullScreenImage
             source={{uri: this.props.subject.display.src}}
             isVisible={this.state.showFullSize}
             allowPanAndZoom={allowPanAndZoom}
             handlePress={() => this.setState({ showFullSize: false })} />
+          { this.state.isQuestionVisible ? swipeTabs : null }
         </View>
 
       //needsTutorial is for the first time a guest or user visits this project
@@ -174,6 +200,8 @@ SwipeClassifier.propTypes = {
   subjectSizes: React.PropTypes.object,
   seenThisSession: React.PropTypes.array,
   startNewClassification: React.PropTypes.func,
+  saveThenStartNewClassification: React.PropTypes.func,
+  saveAnnotation: React.PropTypes.func,
   setIsFetching: React.PropTypes.func,
   project: React.PropTypes.shape({
     display_name: React.PropTypes.string,
